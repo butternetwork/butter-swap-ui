@@ -1,7 +1,8 @@
 export default
     {
-        tokenCoin: "0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",//默认链的默认代币地址
-        mapAddress: "0x659BC6aD25AEea579f3eA91086fDbc7ac0432Dc4",//eth测试地址
+        tokenCoin: "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//默认链的默认代币地址
+        // mapAddress: "0xa3441716a5e72d42caBD3234d1a1e62f521eCB24",//eth测试地址
+        mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址
         CHAIN:{
           22776: {
               CHAINNAME:"MAP",
@@ -10,7 +11,11 @@ export default
           3: {
               CHAINNAME:"ETH",
               mapAddress:"0x1d7Ef443d23998e78341e4b437Aaa63303E0635C"
-          }
+          },
+            1: {
+                CHAINNAME:"ETH",
+                mapAddress:"0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c"
+            }
         },
 
         TOKENS:{
@@ -19,11 +24,14 @@ export default
                 USDT:"0x6a33e88b8fa3031ad55d16b5c7def4fd93fa29b1",
             },
             ETH:{
-                MAP:"0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",
-                // USDT:"0x33daba9618a75a7aff103e53afe530fbacf4a3dd",
-                // USDC:"0x9f722b2cb30093f766221fd0d37964949ed66918",
-                IDV:"0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553",
+                MAP:"0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1
+                // MAP:"0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",//0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1
+                USDT:"0xdac17f958d2ee523a2206206994597c13d831ec7",
+                USDC:"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                // IDV:"0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553",//0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553
+                IDV:"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f",//0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553
                 ETH:"0x0000000000000000000000000000000000000000",
+
             },
             HECOTEST:{
                 MAP:"0x6a33e88b8fa3031ad55d16b5c7def4fd93fa29b1",
@@ -51,6 +59,40 @@ export default
                         contract:"0x6a33e88b8fa3031ad55d16b5c7def4fd93fa29b1",
                         img:require('../assets/token/usd.png'),
                         decimal:18
+                    }
+                ]
+            },
+            1:{//以太坊
+                list:[
+                    {
+                        name:"MAP",
+                        contract:"0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",
+                        img:require('../assets/token/map.png'),
+                        decimal:18
+                    },
+                    {
+                        name:"IDV",
+                        contract:"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f",
+                        img:require('../assets/token/idv.png'),
+                        decimal:18
+                    },
+                    {
+                        name:"ETH",
+                        contract:"0x0000000000000000000000000000000000000000",
+                        img:require('../assets/eth-icon.png'),
+                        decimal:18
+                    },
+                    {
+                        name:"USDT",
+                        contract:"0xdac17f958d2ee523a2206206994597c13d831ec7",
+                        img:require('../assets/token/tether.png'),
+                        decimal:6
+                    },
+                    {
+                        name:"USDC",
+                        contract:"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                        img:require('../assets/token/usd.png'),
+                        decimal:6
                     }
                 ]
             },

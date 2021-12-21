@@ -16,10 +16,12 @@ export default new Vuex.Store({
             mutations: {
                 setAccountKey(state, obj) {
                     for (let key in obj) {
+                        console.log(`bbbbbb`,obj)
                         state[key] = obj[key];
                     }
                 },
                 setChangeChain(state, obj) {
+                    console.log(`aaaaaaa`,obj)
                     for (let key in obj) {
                         state[key] = obj[key];
                     }

@@ -53,12 +53,22 @@
                   account_default_address() {
                       return this.$store.state.account.default_address
                   },
+                  account_change_chain() {
+                  return this.$store.state.account.change_chain
+                },
               },
               watch: {
+                //
+                account_change_chain() {
+                  // console.log(333333333)
+                  this.getChainId()
+                },
                   //检测到获取了地址
                   account_default_address() {
-                      this.actionAddress()
-                  }
+                    // console.log(44444444)
+                    this.actionAddress()
+                  },
+
               },
               methods: {
                   actionNetwork() {
@@ -69,12 +79,12 @@
                         method: 'wallet_switchEthereumChain',
                         params: [
                           {
-                            chainId: '0x3'
+                            chainId: '0x1'
                           },
                         ],
                       })
                       .then(() => {
-                        console.log('网络切换成功')
+                        // console.log('网络切换成功')
                         v.error=false
                         this.$router.go(0);
                         this.$eventBus.$emit('ref','页面')
@@ -86,39 +96,26 @@
                   goMap() {
                     window.open('https://www.maplabs.io/','_blank')
                   },
-                  goStake() {
-                    this.tabIndex=0
-                    console.log(this.tabIndex)
-                    this.$router.push('/home')
-                    if (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '256'){
-                      this.error=false
-                    } else  {
-                      this.error=true
-                      // this.actionAddress()
-                    }
-                  },
-                  goManage() {
-                    this.tabIndex=1
-                    console.log(this.tabIndex)
-                    this.$router.push('/manage')
-                    if (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '256'){
-                      this.error=false
-                    } else  {
-                      this.error=true
-                      // this.actionAddress()
-                    }
-                },
                   async actionAddress() {
                     this.address = await this.action.getSortAddress()
-                    if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '256')){
+                    if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
                       this.error=false
                     } else  {
                       this.error=true
                     }
                   },
+                  async getChainId(){
+                  // const chainId = await ethereum.request({ method: 'eth_chainId' });
+                    if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+                      this.error=false
+                    } else  {
+                      this.error=true
+                    }
+                  //！链id不是马上拿到的，如果通过链id来判断是不是主网的方式，请注意异步
+                }
               },
             mounted() {
-                if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '256')){
+                if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
                   this.error=false
                 } else  {
                   this.error=true

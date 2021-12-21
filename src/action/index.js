@@ -22,7 +22,8 @@ export default {
     async scanMetaMaskAccount() {
         //以太坊web3
         const Web3 = require('web3');
-        if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
+        if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+        // if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
             Vue.prototype.myWeb3 =  new Web3(window.web3.currentProvider);
         }
         Vue.prototype.myMaticWeb3 = new Web3('https://rpc-mainnet.maticvigil.com/');
@@ -48,11 +49,18 @@ export default {
                 change_chain: chainId
             }
             // 提交账号状态给全局
+            console.log('change_json',change_json)
             bus.appvue.$store.commit("setChangeChain", change_json);
         }
     },
     listenMetaMask() {
         let me = this
+        window.ethereum.on('accountsChanged', (data) =>{
+
+            if (data.length>0){
+                bus.appvue.$store.commit("setAccountKey", {default_address: data[0]});
+            }
+        });
         window.addEventListener("message", function (e) {
             // console.log('message',e)
             let d = e.data
@@ -63,7 +71,9 @@ export default {
             }
 
             // console.log(d.data.data.method ,'11111111111111')
-            if (d.data.data.method == 'metamask_chainChanged') {
+
+            if (d && d.data && d.data.data && d.data.data.method && d.data.data.method == 'metamask_chainChanged') {
+                // console.log(22222222)
                 me.scanMetaMaskChain()
             }
             });

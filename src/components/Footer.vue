@@ -4,10 +4,10 @@
             <span>Powered by MAP Protocol</span>
             <div class="footer-line"></div>
             <div class="footer-icon">
-              <img src="../assets/footer/dis.png"/>
-              <img src="../assets/footer/tele.png"/>
-              <img  src="../assets/footer/tw.png"/>
-              <img  src="../assets/footer/github.png"/>
+<!--              <a href="" target="_blank"><img src="../assets/footer/dis.png"/></a>-->
+              <a href="https://t.me/MarcoPoloMAP" target="_blank"><img src="../assets/footer/tele.png"/></a>
+              <a href="https://twitter.com/MarcoPoloGlobal" target="_blank"><img  src="../assets/footer/tw.png"/></a>
+              <a href="https://github.com/mapprotocol" target="_blank"><img  src="../assets/footer/github.png"/></a>
             </div>
           </div>
       </div>
@@ -71,7 +71,7 @@
     }
 
     .footer-icon {
-      width: 15%;
+      width: 10%;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -88,6 +88,9 @@
         width: 100%;
         justify-content: center;
       }
+      .footer-icon {
+        width: 20%;
+      }
     }
 
     @media (max-width: 960px) {
@@ -97,7 +100,13 @@
       }
 
       .footer-icon {
-        width: 35%;
+        width: 20%;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .footer-icon {
+        width: 30%;
       }
     }
 

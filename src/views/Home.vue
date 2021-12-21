@@ -82,10 +82,10 @@
                   <span>Received Address:</span>
                   <div class="tran-send-address-input">
                     <input v-model="allAddress" placeholder="Please enter the address"/>
-                    <img @click="getInputAddress()" src="../assets/success.png"/>
+                    <img v-if="allAddress" @click="getInputAddress()" src="../assets/success.png"/>
+                    <img v-else src="../assets/success-gray.png"/>
                   </div>
                 </div>
-
                 <div class="tran-send-fee">
                   <img src="../assets/error.png"/>
                   <span style="padding-top: 3px">Fee:0 {{selectToken.coin}}</span>
@@ -93,9 +93,14 @@
               </div>
               <!--                connect-->
               <div class="tran-connect">
-                <button v-if="!allowance" @click="actionApprove(selectToken.coin)">Approve</button>
-<!--                <button v-if="!allowance &&  approveHash" class="tran-connect-approve">Approveing</button>-->
-                <button v-if="allowance" @click="actionTrans()">Transfer</button>
+                <button v-if="!allowance && !approveHash" @click="actionApprove(selectToken.coin)">Approve</button>
+                <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
+                  Approving... <img src="../assets/loading.gif"/>
+                </button>
+                <button v-if="allowance && !transferBtn" @click="actionTrans()">Transfer</button>
+                <button v-if="allowance && transferBtn" class="tran-connect-approve">
+                  Transfering... <img src="../assets/loading.gif"/>
+                </button>
               </div>
             </div>
             <!--                history-->
@@ -204,7 +209,10 @@
                         <span> {{ item.coin }}</span>
                       </div>
                     </div>
-                    <div class="dialog-token-detail-left-right">{{ item.amount }}{{ item.coin }}</div>
+                    <div class="dialog-token-detail-left-right">{{ item.amount }} {{ item.coin }}</div>
+<!--                    <div v-else class="dialog-token-loading">-->
+<!--                      <img style="width:30px" src="../assets/loading2.gif"/>-->
+<!--                    </div>-->
                   </div>
                   <div class="dialog-token-content-line"></div>
                 </div>
@@ -221,105 +229,107 @@
               <img @click="closeHistoryList()" src="../assets/cancel.png"/>
             </div>
             <div class="dialog-trans-detail-line"></div>
-            <!--            sending-->
-            <div class="dialog-trans-detail">
-              <div class="dialog-trans-detail-left">Sending</div>
-              <div class="dialog-trans-detail-right">
-                <span>{{historyDetailList.sending}} {{historyCoin}}</span>
-                <span>{{historyDetailList.from}}</span>
-              </div>
-            </div>
-            <!--            receiving-->
-            <div class="dialog-trans-detail">
-              <div class="dialog-trans-detail-left">Receiving</div>
-              <div class="dialog-trans-detail-right">
-                <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{historyCoin}}</span>
-                <span v-else>Processing</span>
-                <span>{{historyDetailList.to}}</span>
-              </div>
-            </div>
-            <!--            fee-->
-            <div class="dialog-trans-detail">
-              <div class="dialog-trans-detail-left">Fee</div>
-              <div class="dialog-trans-detail-right">
-                <span v-if="historyDetailList.receiving" class="dialog-trans-detail-fee">{{historyDetailList.sending - historyDetailList.receiving}}  {{historyCoin}}</span>
-                <span v-else>Processing</span>
-              </div>
-            </div>
-            <!--            status-->
-            <div class="dialog-trans-detail">
-              <div class="dialog-trans-detail-left">Status</div>
-              <div class="dialog-trans-detail-rights">
-                <div class="dia-trans">
-                  <div class="dia-trans-top">
-                    <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>
-                    <img v-else src="../assets/dialog/success-write.png"/>
-                    <div class="dia-trans-top-icon">
-                      <img src="../assets/eth-icon.png"/>
-                      <span>Ethereum</span>
-                    </div>
-                  </div>
-                  <div class="dia-trans-bottom dia-trans-bottoms">
-                    <div>
-                      <img v-if="historyDetailList.confirmHeight==6" class="dia-trans-bottom-arrow" src="../assets/dialog/line-red.png"/>
-                      <img v-else  class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
-                    </div>
-                    <div class="dia-trans-bottom-progress">
-                      <span @click="goEth()">{{historyDetailList.confirmHeight}}/6 confirmed</span>
-                      <div class="dia-transStatus-content-bottom">
-                        <div class="dia-transStatus-content-bottom-bg" :style="{width:historyDetailList.confirmHeight/6*100+'%'}"></div>
-                      </div>
-                    </div>
-                  </div>
+            <div class="dialog-content-trans-detail">
+              <!--            sending-->
+              <div class="dialog-trans-detail">
+                <div class="dialog-trans-detail-left">Sending</div>
+                <div class="dialog-trans-detail-right">
+                  <span>{{historyDetailList.sending}} {{historyCoin}}</span>
+                  <span>{{historyDetailList.from}}</span>
                 </div>
-                <div class="dia-trans dia-trans-two">
-                  <div class="dia-trans-top">
-                    <div>
-                      <img v-if="historyDetailList.transferInHeight>0" src="../assets/dialog/success-red.png"/>
+              </div>
+              <!--            receiving-->
+              <div class="dialog-trans-detail">
+                <div class="dialog-trans-detail-left">Receiving</div>
+                <div class="dialog-trans-detail-right">
+                  <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{historyCoin}}</span>
+                  <span v-else>Processing</span>
+                  <span>{{historyDetailList.to}}</span>
+                </div>
+              </div>
+              <!--            fee-->
+              <div class="dialog-trans-detail">
+                <div class="dialog-trans-detail-left">Fee</div>
+                <div class="dialog-trans-detail-right">
+                  <span v-if="historyDetailList.receiving" class="dialog-trans-detail-fee">{{historyDetailList.sending - historyDetailList.receiving}}  {{historyCoin}}</span>
+                  <span v-else>Processing</span>
+                </div>
+              </div>
+              <!--            status-->
+              <div class="dialog-trans-detail">
+                <div class="dialog-trans-detail-left">Status</div>
+                <div class="dialog-trans-detail-rights">
+                  <div class="dia-trans">
+                    <div class="dia-trans-top">
+                      <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>
                       <img v-else src="../assets/dialog/success-write.png"/>
+                      <div class="dia-trans-top-icon">
+                        <img src="../assets/eth-icon.png"/>
+                        <span>Ethereum</span>
+                      </div>
                     </div>
-                    <div class="dia-trans-top-icon">
-                      <img src="../assets/token/map.png"/>
-                      <span>MAP Protocol</span>
-                    </div>
-                  </div>
-                  <div class="dia-trans-bottom dia-trans-bottoms">
-                    <div>
-                      <img v-if="historyDetailList.transferInHeight==6" class="dia-trans-bottom-arrow" src="../assets/dialog/line-red.png"/>
-                      <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
-                    </div>
-                    <div class="dia-trans-bottom-progress">
-                      <span @click="goMap()">{{historyDetailList.transferInHeight}}/6 confirmed</span>
-                      <div class="dia-transStatus-content-bottom">
-                        <div class="dia-transStatus-content-bottom-bg" :style="{width:historyDetailList.transferInHeight/6*100+'%'}"></div>
+                    <div class="dia-trans-bottom dia-trans-bottoms">
+                      <div>
+                        <img v-if="historyDetailList.confirmHeight==6" class="dia-trans-bottom-arrow" src="../assets/dialog/line-red.png"/>
+                        <img v-else  class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
+                      </div>
+                      <div class="dia-trans-bottom-progress">
+                        <span @click="goEth()">{{historyDetailList.confirmHeight}}/6 confirmed <img src="../assets/dialog/send.png"/> </span>
+                        <div class="dia-transStatus-content-bottom">
+                          <div class="dia-transStatus-content-bottom-bg" :style="{width:historyDetailList.confirmHeight/6*100+'%'}"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-             <!--   <div class="dia-trans dia-trans-two">
-                  <div class="dia-trans-top">
-                    <img src="../assets/dialog/success-write.png"/>
-                    <div class="dia-trans-top-icon">
-                      <img src="../assets/polygon.png"/>
-                      <span>Polygon (Matic)</span>
+                  <div class="dia-trans dia-trans-two">
+                    <div class="dia-trans-top">
+                      <div>
+                        <img v-if="historyDetailList.transferInHeight>0" src="../assets/dialog/success-red.png"/>
+                        <img v-else src="../assets/dialog/success-write.png"/>
+                      </div>
+                      <div class="dia-trans-top-icon">
+                        <img src="../assets/token/map.png"/>
+                        <span>MAP Protocol</span>
+                      </div>
                     </div>
-                  </div>
-                  <div class="dia-trans-bottom">
-                    <img src="../assets/dialog/line-write.png"/>
-                    <div class="dia-trans-bottom-progress">
-                      <span>0/12 confirmed</span>
-                      <div class="dia-transStatus-content-bottom">
-                        <div class="dia-transStatus-content-bottom-bg" :style="{width:'0'+'%'}"></div>
+                    <div class="dia-trans-bottom dia-trans-bottoms">
+                      <div>
+                        <img v-if="historyDetailList.transferInHeight==6" class="dia-trans-bottom-arrow" src="../assets/dialog/line-red.png"/>
+                        <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
+                      </div>
+                      <div class="dia-trans-bottom-progress">
+                        <span @click="goMap()">{{historyDetailList.transferInHeight}}/6 confirmed <img style="width: 12px" src="../assets/dialog/send.png"/> </span>
+                        <div class="dia-transStatus-content-bottom">
+                          <div class="dia-transStatus-content-bottom-bg" :style="{width:historyDetailList.transferInHeight/6*100+'%'}"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div> -->
-                <div class="dia-trans dia-trans-three">
-                  <div class="dia-trans-top">
-                    <img v-if="historyDetailList.confirmHeight==6 && historyDetailList.transferInHeight==6" src="../assets/dialog/success-red.png"/>
-                    <img v-else src="../assets/dialog/success-write.png"/>
-                    <div class="dia-trans-top-icon">
-                      <span>Complete</span>
+               <!--   <div class="dia-trans dia-trans-two">
+                    <div class="dia-trans-top">
+                      <img src="../assets/dialog/success-write.png"/>
+                      <div class="dia-trans-top-icon">
+                        <img src="../assets/polygon.png"/>
+                        <span>Polygon (Matic)</span>
+                      </div>
+                    </div>
+                    <div class="dia-trans-bottom">
+                      <img src="../assets/dialog/line-write.png"/>
+                      <div class="dia-trans-bottom-progress">
+                        <span>0/12 confirmed</span>
+                        <div class="dia-transStatus-content-bottom">
+                          <div class="dia-transStatus-content-bottom-bg" :style="{width:'0'+'%'}"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> -->
+                  <div class="dia-trans dia-trans-three">
+                    <div class="dia-trans-top">
+                      <img v-if="historyDetailList.confirmHeight==6 && historyDetailList.transferInHeight==6" src="../assets/dialog/success-red.png"/>
+                      <img v-else src="../assets/dialog/success-write.png"/>
+                      <div class="dia-trans-top-icon">
+                        <span>Complete</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -405,40 +415,40 @@
           },// 选择Token
           tokenList: [
             {
-              url: require('../assets/token/tether.png'),
-              name: 'Tether USD',
-              coin: 'USDT',
-              amount: '0.0',
-              address:'0x33daba9618a75a7aff103e53afe530fbacf4a3dd',
-            },
-            {
-              url: require('../assets/token/usd.png'),
-              name: 'USD',
-              coin: 'USDC',
-              amount: '0.0',
-              address:'0x9f722b2cb30093f766221fd0d37964949ed66918',
-            },
-            {
-              url: require('../assets/token/idv.png'),
-              name: 'IDV',
-              coin: 'IDV',
-              amount: '0.0',
-              address:'0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553',
-            },
-            {
-              url: require('../assets/eth-icon.png'),
-              name: 'ETH',
-              coin: 'ETH',
-              amount: '0.0',
-              address:'0x0000000000000000000000000000000000000000',
-            },
-            {
               url: require('../assets/token/map-black.png'),
               name: 'MAP Protocol',
               coin: 'MAP',
               amount: '0.0',
-              address:'0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1',
+              address:'0x9E976F211daea0D652912AB99b0Dc21a7fD728e4',
             },
+            // {
+            //   url: require('../assets/token/tether.png'),
+            //   name: 'Tether USD',
+            //   coin: 'USDT',
+            //   amount: '0.0',
+            //   address:'0xdac17f958d2ee523a2206206994597c13d831ec7',
+            // },
+            {
+              url: require('../assets/token/usd.png'),
+              name: 'USD Coin',
+              coin: 'USDC',
+              amount: '0.0',
+              address:'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            },
+            {
+              url: require('../assets/token/idv.png'),
+              name: 'Idavoll Network',
+              coin: 'IDV',
+              amount: '0.0',
+              address:'0x92ec47df1aa167806dfa4916d9cfb99da6953b8f',
+            },
+            // {
+            //   url: require('../assets/eth-icon.png'),
+            //   name: 'ETH',
+            //   coin: 'ETH',
+            //   amount: '0.0',
+            //   address:'0x0000000000000000000000000000000000000000',
+            // },
           ],//Token列表
           historyList: [],//history记录
           historyFromLogo: '', //历史记录 From logo
@@ -465,6 +475,9 @@
           setTimeHistory:null,
           historyHash: '',//查看历史详情传的数据
           historyCoin:'',//历史单位
+
+          transferBtn:false,
+          checkApproveToken:''
         }
       },
       watch: {
@@ -593,56 +606,74 @@
 
           let v = this
           v.showSelectToken = true
-          console.log('======',v.showSelectToken)
+          // console.log('======',v.showSelectToken)
           var chainName;
 
           //链名字的币种
           chainName = v.chainForm.coin
 
           //获取地址
-          let balanceAll;
           for (let item of v.tokenList) {
-            console.log("Coin   ", item, chainName)
+            // console.log("Coin   ", item, chainName)
             //如果当前链的币种是选择链上的主币   获取主币余额
             if (item.coin == chainName) {
-              var local_address = await v.action.getAddress()
-              v.myWeb3.eth.getBalance(local_address).then(result => {
-                balanceAll = new Decimal(result).div(Math.pow(10, 18)).toFixed(6)
-                item.amount = balanceAll
-                console.log('Main币的余额', item.amount)
-              })
+              this.getBalance(item)
             }
             //代币余额
             else {
 
               let token_address = config.TOKENS.ETH[item.coin];
-              item.amount = '0.00';
-              console.log('token-Address', token_address, item)
+              // item.amount = '0.00';
+              // console.log('token-Address', token_address, item)
               if (!token_address) {
                 continue;
               }
-              var local_address = await v.action.getAddress()
-              //创建合约
-              let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
-              // console.log('contract',contract)
-              //查询代币余额
-              let balance = await contract.methods.balanceOf(local_address).call();
-              console.log('代币余额', balance)
-              //获取代币精度
-              let decimals = await contract.methods.decimals().call()
-              // console.log(decimals, 'decimals')
-              this.decimals = decimals
-              item.amount = new Decimal(balance).div(Math.pow(10, decimals)).toFixed(2)
-
+              this.getTokenBalance(item)
             }
           }
         },
 
+        //获取主币余额
+        async getBalance(item){
+          let v = this
+          var local_address = await v.action.getAddress()
+          v.myWeb3.eth.getBalance(local_address).then(result => {
+            // item.amount = '0.00'
+            if (result) {
+              item.amount = new Decimal(result).div(Math.pow(10, 18)).toFixed(6)
+            }
+            // console.log('Main币的余额', item.amount)
+          })
+        },
+        async getTokenBalance(item){
+          let v = this
+          let token_address = config.TOKENS.ETH[item.coin];
+          var local_address = await v.action.getAddress()
+          //创建合约
+          let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
+          // console.log('contract',contract)
+          //查询代币余额
+          let balance = await contract.methods.balanceOf(local_address).call();
+          // console.log('代币余额', balance)
+          //获取代币精度
+          let decimals = await contract.methods.decimals().call()
+          // console.log(decimals, 'decimals')
+          this.decimals = decimals
+          if (balance) {
+            item.amount = new Decimal(balance).div(Math.pow(10, decimals))
+            item.amount = Math.floor( item.amount * 1000000) /1000000
+            // if (item.amount==0){
+            //   item.amount = '0.00';
+            // }
+          }
+        },
+
+
         //选择Token
         async actionSelectToken(item, index) {
           const chainName = this.chainForm.coin
-          console.log('actionSelectToken', index, item)
-          console.log('========', chainName, item.coin)
+          // console.log('actionSelectToken', index, item)
+          // console.log('========', chainName, item.coin)
           let path = item.coin;
           switch (index) {
             case 0:
@@ -691,7 +722,7 @@
           //判断选择的Token是否是代币
 
           const chainName = this.chainForm.coin
-          console.log('Chain-Token', chainName, this.selectToken.coin)
+          // console.log('Chain-Token', chainName, this.selectToken.coin)
 
           // 是主币
           if (chainName === this.selectToken.coin) {
@@ -729,21 +760,47 @@
             return
           }
 
-          console.log('sendAmount', v.sendAmount)
-
-
           //当前链
           var chain = v.chainForm.coin
           console.log('chain', chain)
-
 
           //当前选择Token
           var TokenAddress = config.TOKENS[chain][v.selectToken.coin]
           console.log('TokenAddress', TokenAddress)
 
+
+          //decimal
+          var chainId = await v.action.getChainId()
+          chainId = chainId.substr(2)
+
+          var token = config.tokenList[chainId].list
+
+          var decimal;
+
+          token.forEach((i,k) => {
+            if (i.contract.toLowerCase()==TokenAddress.toLowerCase()) {
+              decimal= i.decimal
+              return
+            }
+          })
+
+          console.log('decimal==',decimal)
+
+          let stakeNum = new Decimal(v.sendAmount).mul(Math.pow(10, decimal))
+          console.log('stakeNum', stakeNum)
+          let bl = new Decimal(v.balanceZ).mul(Math.pow(10, decimal));
+
+
+
+          if (stakeNum.comparedTo(bl) > 0) {
+            v.$toast('Insufficient balance')
+            return
+          }
+
+
           //输入的金额
-          v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, 18))
-          console.log('amount', v.sendAllAmount)
+          v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, decimal))
+          console.log('amount', v.sendAllAmount.toFixed())
 
           //To的链Id
           var chainId = '22776'
@@ -751,11 +808,11 @@
 
 
           //To地址
-          if (v.allAddress) {
-            v.langToAddress = v.allAddress
-          } else {
-            v.langToAddress = v.langAddress
-          }
+          // if (v.allAddress) {
+          //   v.langToAddress = v.allAddress
+          // } else {
+          //   v.langToAddress = v.langAddress
+          // }
 
           console.log('ToAddress', v.langToAddress)
 
@@ -796,11 +853,13 @@
             data: reward_stakeData
           }).on('transactionHash', function (hash) {
             v.transHash = hash
+            v.transferBtn = true
             v.actionSubBridge()
             console.log(`hash`, hash)
             v.$toast('Transaction has send please wait result')
           }).on('receipt', function (receipt) {
             //receipt 成功
+            v.transferBtn = false
             console.log(`result`, receipt)
           }).on('error', function (receipt) {
             //receipt 失败
@@ -820,10 +879,11 @@
 
           //获取当前链ID
           var fromChain = await v.action.getChainId()
-
+          console.log('Chain',fromChain)
           fromChain = new BN(fromChain.slice(2), 16)
+          console.log('fromChain',(fromChain))
 
-          console.log('Token========',config.TOKENS[chain][v.selectToken.coin])
+          // console.log('Token========',config.TOKENS[chain][v.selectToken.coin])
 
 
           var params = {
@@ -853,7 +913,7 @@
             pageSize: v.pageSize,
           }
           var result = await v.$http.historyList(params)
-          console.log(result)
+          // console.log(result)
           if (result.code == 200) {
             v.historyList = result.data.list
             v.total = result.data.total
@@ -871,7 +931,12 @@
               if (fromChainId == 3) {
                 newObject.fromLogo = require('../assets/eth-icon.png')
                 newObject.fromChainName ='ETH'
-              } else if (fromChainId == 22776) {
+              }
+              else if (fromChainId == 1) {
+                newObject.fromLogo = require('../assets/eth-icon.png')
+                newObject.fromChainName ='ETH'
+              }
+              else if (fromChainId == 22776) {
                 newObject.fromLogo = require('../assets/token/map.png')
                 newObject.fromChainName ='MAP'
               }
@@ -883,21 +948,24 @@
               if (toChainId == 3) {
                 newObject.toLogo = require('../assets/eth-icon.png')
                 newObject.toChainName ='ETH'
-              } else if (toChainId == 22776) {
+              }
+              else if (toChainId == 1) {
+                newObject.toLogo = require('../assets/eth-icon.png')
+                newObject.toChainName ='ETH'
+              }
+              else if (toChainId == 22776) {
                 newObject.toLogo = require('../assets/token/map.png')
                 newObject.toChainName ='MAP'
               }
 
-              //余额
-              newObject.amount = new Decimal(item.amount).div(Math.pow(10, 18)).toFixed()
-              console.log('amount', item.amount)
+              // console.log('amount', item.amount)
 
 
               //token地址
               // item.tokenAddress
               var chainId = await v.action.getChainId()
               chainId= chainId.substr(2)
-              console.log('chainId', chainId)
+              // console.log('chainId', chainId)
 
 
               var token=config.tokenList[chainId].list
@@ -906,6 +974,13 @@
                 // console.log("i.contract",i.contract)
                 if (i.contract.toLowerCase()==item.tokenAddress.toLowerCase()) {
                   newObject.coin= i.name
+
+                  var decimal = i.decimal
+                  console.log('decimal',decimal)
+
+                  //余额
+                  newObject.amount = new Decimal(item.amount).div(Math.pow(10, decimal)).toFixed()
+
                   return
                 }
               })
@@ -915,7 +990,7 @@
               Object.assign(item, newObject)
 
             }
-            console.log('historyList', v.historyList)
+            // console.log('historyList', v.historyList)
 
           }
         },
@@ -930,11 +1005,12 @@
           v.historyCoin= item.coin
 
           var result = await v.$http.historyDetail({txHash: v.historyHash})
-          console.log(result)
+          // console.log(result)
           if (result.code==200) {
             v.historyDetailList = result.data
-            v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, 18))
-            v.historyDetailList.receiving =   v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, 18)) :  null
+            // v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, 18))
+            v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
+            v.historyDetailList.receiving =   v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiveDecimal).div(Math.pow(10, v.historyDetailList.decimal)) :  null
             //高度
             if (v.historyDetailList.confirmHeight) {
               v.historyDetailList.confirmHeight=(v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)>6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
@@ -963,11 +1039,12 @@
        async refersHistoryDetail() {
          let v = this
           var result = await v.$http.historyDetail({txHash:v.historyHash})
-          console.log(result)
+          // console.log(result)
           if (result.code==200) {
             v.historyDetailList = result.data
-            v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, 18))
-            v.historyDetailList.receiving =   v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, 18)) :  null
+
+            v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
+            v.historyDetailList.receiving =   v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) :  null
             //高度
             if (v.historyDetailList.confirmHeight) {
               v.historyDetailList.confirmHeight=(v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)>6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
@@ -1007,37 +1084,12 @@
           this.setTimeHistory=null;
         },
 
-
-
-        //输入地址填写
-        async getInputAddress() {
-          let v = this
-          if (v.allAddress) {
-            v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
-            this.showAddress = false
-            // console.log('111',v.sortAddress)
-          } else {
-            this.showAddress = false
-          }
-
-        },
-
         //获取地址
         async getSortAddress() {
           this.sortAddress = await this.action.getSortAddress()
-          this.langAddress = await this.action.getAddress()
+          this.langToAddress = await this.action.getAddress()
         },
 
-        //获取主币余额
-        async getBalance() {
-          let v = this
-          var local_address = await v.action.getAddress()
-          let balance = v.myWeb3.eth.getBalance(local_address).then(result => {
-            console.log(result)
-            v.balanceZ = new Decimal(result).div(Math.pow(10, 18)).toFixed(6)
-          })
-          console.log('主币余额', balance)
-        },
 
 
         //获取代币余额
@@ -1050,28 +1102,35 @@
           // })
           // console.log('主币余额', balance)
 
+          if (!v.myWeb3) {
+            return
+          }
+
           //创建合约
 
           let token_address = config.tokenCoin
           var local_address = await v.action.getAddress()
 
-          // console.log(111,token_address,local_address)
+          // console.log('token_address  local_address',token_address,local_address)
           let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
+          // console.log('contract',contract)
           let balance = await contract.methods.balanceOf(local_address).call();
           console.log('balance', balance)
           //获取代币精度
           let decimals = await contract.methods.decimals().call()
-          // console.log(decimals,'decimals')
+          console.log(decimals,'decimals')
           this.decimals = decimals
-          this.balanceZ = new Decimal(balance).div(Math.pow(10, decimals)).toFixed(2)
-
+          if(balance){
+            this.balanceZ = new Decimal(balance).div(Math.pow(10, decimals))
+            this.balanceZ=Math.floor(this.balanceZ * 1000000) /1000000
+          }
         },
 
 
         //切换链
         handleLink(item, index) {
           var v = this
-          console.log(index)
+          // console.log(index)
           let path;
           let chain;
 
@@ -1126,7 +1185,7 @@
                 ],
               })
               .then(() => {
-                console.log('Change Success')
+                // console.log('Change Success')
                 //切换网络
                 if (this.selectChain == 0) {
                   this.sourcePath = path
@@ -1153,14 +1212,21 @@
         },
 
         //显示地址
-        actionShowAddress() {
+       async actionShowAddress() {
           this.showAddress = true
+        },
+
+        //输入地址填写
+        async getInputAddress() {
+          let v = this
+          v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
+          this.langToAddress=v.allAddress
+          v.showAddress = false
         },
 
         //approve
         async actionApprove(token) {
-          var tokenAddress = token
-          console.log('tokenAddress', tokenAddress)
+          console.log('token', token)
           // if (this.balance<=0) {
           //   this.$toast('Insufficient balance')
           //   return
@@ -1169,9 +1235,9 @@
           //当前链
           var chain = this.chainForm.coin
           let reward_address = config.mapAddress
-          let token_address = config.TOKENS[chain][tokenAddress]
+          let token_address = config.TOKENS[chain][token]
           var local_address = await v.action.getAddress()
-          console.log('config[tokenAddress]', config.TOKENS[chain][tokenAddress])
+          console.log('configtoken', config.TOKENS[chain][token])
           // if (config[tokenAddress] === undefined) {
           //   this.$toast('Token Undefined')
           //   return ;
@@ -1211,6 +1277,7 @@
               console.log(`hash: ` + hash)
               v.$toast('Transaction has send please wait result')
               v.approveHash = hash;
+              v.checkApproveToken = token
               v.timer = setInterval(v.checkApproved, 1000);
               //server order
             }).on('receipt', function (receipt) {
@@ -1228,43 +1295,71 @@
 
         //检查是否approve
         async checkApproved(token) {
+
           let v = this
-          return new Promise(async resolve => {
-            var tokenAddress = token
-            console.log(`check approving`)
+          if(!v.myWeb3){
+            return
+          }
+           token = token?token: v.checkApproveToken
+          console.log('Token',token)
+          var chain = this.chainForm.coin
 
-            // if (config[tokenAddress] === undefined) {
-            //   this.$toast('Token Undefined')
-            //   return false;
-            // }
-            var chain = this.chainForm.coin
 
-            var local_address = await v.action.getAddress()
+          if (config.TOKENS[chain][token] === '') {
+            return false;
+          }
 
-            console.log('TokenAddress', config.TOKENS[chain][tokenAddress])
-            let contract = new v.myWeb3.eth.Contract(tokenAbi, config.TOKENS[chain][tokenAddress])
-            console.log(`rewardaddress`, config.mapAddress)
-            try {
-              contract.methods.allowance(local_address, config.mapAddress).call(function (error, result) {
-                console.log('contrantCheckApproved', result)
-                if (error) {
-                  resolve(false);
-                } else if (result == 0) {
-                  resolve(false);
-                } else {
-                  v.allowance = true;
-                  //清空检测事件
-                  v.approveHash = '';
-                  clearInterval(v.timer);
-                  resolve(true);
-                }
+          var local_address = await v.action.getAddress()
 
-              });
-            } catch (e) {
-              console.log("CheckApprove", e)
-              resolve(false);
+          let contract = new v.myWeb3.eth.Contract(tokenAbi, config.TOKENS[chain][token])
+          // console.log(`rewardaddress`, config.mapAddress)
+          contract.methods.allowance(local_address, config.mapAddress).call(function (error, result) {
+            if (result != 0) {
+              v.allowance = true;
+              //清空检测事件
+              v.approveHash = '';
+              v.checkApproveToken = ''
+              clearInterval(v.timer);
             }
           });
+
+
+
+          // let v = this
+          //   var tokenAddress = token
+          //   console.log(`check approving`)
+          //
+          //   // if (config[tokenAddress] === undefined) {
+          //   //   this.$toast('Token Undefined')
+          //   //   return false;
+          //   // }
+          //   var chain = this.chainForm.coin
+          //
+          //   var local_address = await v.action.getAddress()
+          //
+          //   console.log('TokenAddress', config.TOKENS[chain][tokenAddress])
+          //   let contract = new v.myWeb3.eth.Contract(tokenAbi, config.TOKENS[chain][tokenAddress])
+          //   console.log(`rewardaddress`, config.mapAddress)
+          //   try {
+          //     contract.methods.allowance(local_address, config.mapAddress).call(function (error, result) {
+          //       console.log('contrantCheckApproved', result)
+          //       if (error) {
+          //         resolve(false);
+          //       } else if (result == 0) {
+          //         resolve(false);
+          //       } else {
+          //         v.allowance = true;
+          //         //清空检测事件
+          //         v.approveHash = '';
+          //         clearInterval(v.timer);
+          //         resolve(true);
+          //       }
+          //
+          //     });
+          //   } catch (e) {
+          //     console.log("CheckApprove", e)
+          //     resolve(false);
+          //   }
 
         },
 
@@ -1549,7 +1644,14 @@
     }
 
     .tran-connect-approve {
-      background: #545050;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      background: #545050 !important;
+      img {
+        width: 80px;
+      }
     }
 
     .tran-send-address {
@@ -1643,7 +1745,16 @@
       padding-top: 34px;
       padding-bottom: 40px;
       height: 80%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dialog-content-trans-detail {
+      width: 80%;
       overflow-y:scroll;
+      display: flex;
+      flex-direction: column;
     }
 
     .dialog-selectChain-title {
@@ -1837,7 +1948,7 @@
       flex-direction: row;
       align-items: center;
       margin-top: 30px;
-      width: 85%;
+      width: 100%;
     }
 
     .dialog-trans-detail-left {
@@ -1980,6 +2091,14 @@
         cursor: pointer;
         opacity: 0.6;
         font-size: 12px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        img {
+          width: 12px;
+          margin-left: 5px;
+          margin-bottom: 2px;
+        }
       }
     }
 
@@ -2208,7 +2327,7 @@
       }
 
       .tran-send {
-        padding: 25px 10px;
+        //padding: 25px 20px;
       }
 
 
@@ -2244,7 +2363,7 @@
         font-size: 12px;
 
         img {
-          width: 8px;
+          //width: 8px;
         }
       }
 
@@ -2305,8 +2424,8 @@
         font-size: 12px;
 
         span {
-          width: 50%;
-          padding: 14px 5px 14px 5px;
+          width: 28%;
+          //padding: 14px 5px 14px 5px;
         }
       }
 
