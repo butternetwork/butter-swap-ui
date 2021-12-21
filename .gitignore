@@ -1,0 +1,21 @@
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist
+
+# Private information
+servers/private
+
+package-lock.json
+
+# Original design
+DESIGN
+
+.idea/
