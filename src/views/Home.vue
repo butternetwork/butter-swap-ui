@@ -1,5 +1,5 @@
     <template>
-      <div class="home">
+      <div class="home" @click="showAddress=false">
 
         <Header/>
 
@@ -73,7 +73,7 @@
                 <div class="tran-send-bottom">
                   <span>{{ sendAmount }}</span>
                   <!--                  <span>{{ receivedAmount }}</span>-->
-                  <div @click="actionShowAddress()" class="tran-send-btn tran-send-btns">
+                  <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                     <span class="tran-send-btn-address">{{ sortAddress }}</span>
                     <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-red.png"/>
                   </div>
@@ -579,7 +579,7 @@
       methods: {
         goEth() {
           if (this.historyDetailList.confirmHeight>0) {
-            window.open(`https://ropsten.etherscan.io/tx/${this.historyDetailList.fromHash}`,'blank')
+            window.open(`https://etherscan.io/tx/${this.historyDetailList.fromHash}`,'blank')
           }
 
         },
