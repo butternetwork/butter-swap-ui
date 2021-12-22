@@ -248,7 +248,7 @@
 
 
         .header-connect {
-          margin-left: 7px;
+          margin-left: 10px;
           font-size: 12px;
           right: 5%;
         }
@@ -257,6 +257,8 @@
           width: 100px;
           height: 35px;
           font-size: 12px;
+          line-height: 12px;
+          text-align: center;
           img {
             width: 20px;
           }

@@ -78,11 +78,14 @@
                     <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-red.png"/>
                   </div>
                 </div>
-                <div v-show="showAddress" class="tran-send-address">
-                  <span>Received Address:</span>
+                <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
+                  <div class="tran-send-address-left">
+                    <span>Received Address:</span>
+                    <img src="../assets/address.png"/>
+                  </div>
                   <div class="tran-send-address-input">
                     <input v-model="allAddress" placeholder="Please enter the address"/>
-                    <img v-if="allAddress" @click="getInputAddress()" src="../assets/success.png"/>
+                    <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>
                     <img v-else src="../assets/success-gray.png"/>
                   </div>
                 </div>
@@ -209,7 +212,7 @@
                         <span> {{ item.coin }}</span>
                       </div>
                     </div>
-                    <div class="dialog-token-detail-left-right">{{ item.amount }} {{ item.coin }}</div>
+                    <div class="dialog-token-detail-left-right">{{ item.amount }} <span>{{ item.coin }}</span></div>
 <!--                    <div v-else class="dialog-token-loading">-->
 <!--                      <img style="width:30px" src="../assets/loading2.gif"/>-->
 <!--                    </div>-->
@@ -854,7 +857,9 @@
           }).on('transactionHash', function (hash) {
             v.transHash = hash
             v.transferBtn = true
-            v.actionSubBridge()
+            if ( v.transHash!=null &&  v.transHash!='' ) {
+              v.actionSubBridge()
+            }
             console.log(`hash`, hash)
             v.$toast('Transaction has send please wait result')
           }).on('receipt', function (receipt) {
@@ -1663,19 +1668,29 @@
       justify-content: flex-start;
       border-radius: 8px 0 0 8px;
       font-size: 12px;
+    }
 
+    .tran-send-address-left {
+      color: white;
+      border-radius: 8px 0 0 8px;
+      background: #E44E3A;
+      padding: 12px 14px 11px 10px;
+      width: 22%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
       span {
-        color: white;
-        border-radius: 8px 0 0 8px;
-        background: #E44E3A;
-        padding: 12px 14px 11px 10px;
-        width: 22%;
-      }
 
+      }
+      img {
+        display: none;
+        width: 17px;
+      }
     }
 
     .tran-send-address-input {
-      width: 68%;
+      width: 73%;
       height: 43px;
       box-sizing: border-box;
       background: rgba(255, 255, 255, 0.1);
@@ -1730,15 +1745,16 @@
     }
 
     .dialog-content {
-      width: 41%;
-      height: 65%;
+      width: 522px;
+      height: 574px;
       border-radius: 30px;
       background: #FFFFFF;
       box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 46px 0 50px 0;
+      padding: 26px 0 30px 0;
+      box-sizing: border-box;
     }
 
     .dialog-content-trans {
@@ -1764,7 +1780,7 @@
       align-items: center;
       justify-content: space-between;
       //font-family: Poppins;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 600;
 
       span {
@@ -1774,7 +1790,7 @@
 
       img {
         cursor: pointer;
-        width: 18px;
+        width: 15px;
       }
     }
 
@@ -1784,9 +1800,9 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      width: 80%;
+      width: 90%;
       padding: 9px;
-      margin-top: 22px;
+      margin: 15px 0;
 
       img {
         width: 26px;
@@ -1874,6 +1890,9 @@
       .dialog-token-content-line:nth-child(n+1) {
         height: 0;
       }
+      .dialog-token-content-line:nth-child( n -1 ) {
+        height: 0;
+      }
     }
 
     .dialog-token-contentlist {
@@ -1886,15 +1905,15 @@
 
 
     .dialog-token-content-line {
-      margin-top: 20px;
-      width: 80%;
+      margin-top: 15px;
+      width: 92%;
       height: 1px;
       background: rgba(0, 0, 0, 0.1);
     }
 
     .dialog-token-detail {
-      margin-top: 20px;
-      width: 82%;
+      margin-top: 15px;
+      width: 92%;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -1904,19 +1923,17 @@
     .dialog-token-detail-left {
       display: flex;
       flex-direction: row;
-      align-items: center;
+      //align-items: center;
 
       img {
         width: 40px;
+        height: 40px;
       }
     }
 
     .dialog-token-detail-left-text {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
       padding-left: 9px;
-      padding-top: 15px;
+      padding-top: 10px;
       font-size: 16px;
 
       span {
@@ -1929,7 +1946,13 @@
       //font-family: Poppins;
       font-size: 16px;
       font-weight: 500;
-      word-wrap: break-word;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      span {
+        padding-left: 5px;
+        text-align: right;
+      }
     }
 
 
@@ -2367,10 +2390,33 @@
         }
       }
 
+      .tran-send-address {
+        font-size: 12px;
+
+        span {
+          width: 22%;
+          //padding: 14px 5px 14px 5px;
+        }
+      }
+
+      .tran-send-address-input {
+        //width: 60%;
+        input {
+          font-size: 12px;
+          padding-left: 5px;
+        }
+
+        img {
+          width: 15px;
+          margin: 0 5px;
+        }
+      }
+
 
       //dialog
       .dialog-content {
         width: 60%;
+        height: 50%;
         padding: 30px 0 30px 0;
       }
 
@@ -2405,6 +2451,7 @@
       .dialog-token-detail-left {
         img {
           width: 30px;
+          height: 30px;
         }
       }
 
@@ -2420,32 +2467,11 @@
         margin-top: 15px;
       }
 
-      .tran-send-address {
-        font-size: 12px;
-
-        span {
-          width: 28%;
-          //padding: 14px 5px 14px 5px;
-        }
-      }
-
       ::-webkit-input-placeholder {
         font-size: 12px;
         padding-left: 0;
       }
 
-      .tran-send-address-input {
-        //width: 60%;
-        input {
-          font-size: 12px;
-          padding-left: 5px;
-        }
-
-        img {
-          width: 15px;
-          margin: 0 5px;
-        }
-      }
 
 
       //history
@@ -2476,7 +2502,7 @@
 
       //dialog trans
       .dialog-trans-detail {
-        width: 90%;
+        width: 100%;
         margin-top: 10px;
       }
 
@@ -2486,7 +2512,7 @@
       }
 
       .dialog-trans-detail-right {
-        padding: 10px;
+        padding:5px 10px;
         font-size: 12px;
         width: 74%;
 
@@ -2587,13 +2613,17 @@
 
       .dialog-content {
         width: 90%;
+        height: 60%;
       }
+
       .bridge-content {
         width: 90%;
         padding: 30px 10px 30px 10px;
       }
+
       .dialog-content-trans {
         width: 90%;
+        height: 70%;
       }
 
       .dialog-token-detail-left-text {
@@ -2609,6 +2639,65 @@
       .dialog-token-detail-left-right {
         font-size: 14px;
       }
+
+      .dialog-content-trans-detail {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      //trans
+
+      .tran-send {
+        padding: 17px 9px 22px 10px;
+      }
+
+      .tran-from {
+        padding-top: 30px;
+      }
+      .tran-send-bottom {
+        padding-top: 17px;
+      }
+
+      .tran-from-btn {
+        padding: 5px 8px;
+        img:nth-child(3) {
+          width: 10px;
+        }
+      }
+
+      .tran-change {
+        img {
+          width: 25px;
+        }
+      }
+
+      .tran-send-address-left {
+        width: 10%;
+        padding: 5px 10px 6px 10px;
+        span {
+          display: none;
+        }
+        img {
+          display: block;
+        }
+      }
+
+      .tran-send-fee {
+        padding-top: 19px;
+      }
+
+      .home-page-not {
+        padding: 100px;
+      }
+
+      .tran-send-address-input {
+        width: 90%;
+        height: 29px;
+      }
+
+
     }
 
 
