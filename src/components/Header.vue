@@ -129,14 +129,14 @@
 
       .header {
         position: relative;
-        border-bottom:1px solid rgba(255,255,255,0.1);
+        border-bottom:1px solid rgba(0,0,0,0.1);
       }
 
       .header-container {
         width: 1200px;
         margin: 0 auto;
-        padding-top: 27px;
-        padding-bottom: 28px;
+        padding-top: 20px;
+        padding-bottom: 20px;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -144,6 +144,9 @@
       }
 
       .header-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         cursor: pointer;
         img {
           width: 170px;
@@ -179,7 +182,7 @@
         flex-direction: row;
         align-items: center;
         cursor: pointer;
-        margin-left: 40px;
+        margin-left: 10px;
       }
 
       .header-error {

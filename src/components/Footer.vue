@@ -66,7 +66,7 @@
       width: 1px;
       height: 29px;
       opacity: 0.1;
-      background-color: white;
+      background-color: black;
       margin: 0 50px;
     }
 

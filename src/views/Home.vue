@@ -125,7 +125,7 @@
                       <span>Complete</span>
                       <img src="../assets/arrow-right-green.png"/>
                     </div>
-                    <div v-else-if="item.state==2" class="history-status">
+                    <div v-else-if="item.state==998" class="history-status">
                       <span>Failed</span>
                       <img src="../assets/arrow-right-red.png"/>
                     </div>
@@ -461,7 +461,7 @@
           tokenCoin: 'usdc',//token
           destNetwork: 'map',//toChain
           balanceZ: 0,//Token的余额
-          sendAmount: '',//From发送价格
+          sendAmount: '0.0',//From发送价格
           sendAllAmount: '',//From价格*10*18
           receivedAmount: 0.0,//To兑换获得的价格,
           searchVal: '',  //弹窗链查找默认输入为空
@@ -1449,7 +1449,7 @@
       flex-direction: row;
       align-items: center;
       font-size: 22px;
-
+      font-family: 'poppinSemiBold';
       span {
         cursor: pointer;
       }
@@ -1462,14 +1462,15 @@
     }
 
     .tran-title-line-black {
-      margin-top: 19px;
+      margin-top: 22px;
       width: 100%;
       height: 1px;
-      background-color: rgba(255, 255, 255, 0.1);
+      opacity: 0.2;
+      background-color: #e44e3a;
     }
 
     .tran-title-line {
-      margin-top: 18px;
+      margin-top: 22px;
       width: 100%;
       height: 3px;
       border-radius: 6.5px;
@@ -1557,11 +1558,13 @@
       justify-content: space-between;
 
       span {
+        font-family: 'poppinSemiBold';
         font-size: 20px;
         font-weight: 600;
       }
 
       input {
+        font-family: 'poppinSemiBold';
         height: 30px;
         color: black;
         font-size: 20px;
@@ -1634,7 +1637,7 @@
     }
 
     .tran-connect {
-      padding-top: 47px;
+      padding-top: 30px;
 
       button {
         cursor: pointer;
@@ -1642,7 +1645,7 @@
         height: 55px;
         border-radius: 8px;
         background-color: #e44e3a;
-        //font-family: Poppins;
+        font-family: 'poppinsMeduim';
         font-size: 16px;
         color: white;
       }
@@ -1774,6 +1777,7 @@
     }
 
     .dialog-selectChain-title {
+      font-family: 'poppinSemiBold';
       width: 80%;
       display: flex;
       flex-direction: row;
@@ -1805,7 +1809,7 @@
       margin: 15px 0;
 
       img {
-        width: 26px;
+        width: 20px;
         cursor: pointer;
       }
 
@@ -1926,8 +1930,8 @@
       //align-items: center;
 
       img {
-        width: 40px;
-        height: 40px;
+        width: 43px;
+        height: 43px;
       }
     }
 
