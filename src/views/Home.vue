@@ -1018,7 +1018,7 @@
             v.historyDetailList = result.data
             // v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, 18))
             v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
-            v.historyDetailList.receiving =   v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiveDecimal).div(Math.pow(10, v.historyDetailList.decimal)) :  null
+            v.historyDetailList.receiving =   v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) :  null
             //高度
             if (v.historyDetailList.confirmHeight) {
               v.historyDetailList.confirmHeight=(v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)>6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
