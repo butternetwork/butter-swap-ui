@@ -79,7 +79,7 @@
                         method: 'wallet_switchEthereumChain',
                         params: [
                           {
-                            chainId: '0x1'
+                            chainId: '0x3'
                           },
                         ],
                       })
@@ -98,7 +98,7 @@
                   },
                   async actionAddress() {
                     this.address = await this.action.getSortAddress()
-                    if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+                    if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
                       this.error=false
                     } else  {
                       this.error=true
@@ -106,7 +106,7 @@
                   },
                   async getChainId(){
                   // const chainId = await ethereum.request({ method: 'eth_chainId' });
-                    if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+                    if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
                       this.error=false
                     } else  {
                       this.error=true
@@ -115,7 +115,7 @@
                 }
               },
             mounted() {
-                if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+                if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
                   this.error=false
                 } else  {
                   this.error=true

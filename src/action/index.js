@@ -22,8 +22,8 @@ export default {
     async scanMetaMaskAccount() {
         //以太坊web3
         const Web3 = require('web3');
-        if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
-        // if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
+        // if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+        if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
             Vue.prototype.myWeb3 =  new Web3(window.web3.currentProvider);
         }
         Vue.prototype.myMaticWeb3 = new Web3('https://rpc-mainnet.maticvigil.com/');
@@ -49,7 +49,7 @@ export default {
                 change_chain: chainId
             }
             // 提交账号状态给全局
-            console.log('change_json',change_json)
+            // console.log('change_json',change_json)
             bus.appvue.$store.commit("setChangeChain", change_json);
         }
     },

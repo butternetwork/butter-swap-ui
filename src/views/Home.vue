@@ -136,7 +136,7 @@
                   </div>
                   <div class="history-bottom">
                     <span>{{ item.amount }} {{ item.coin }}</span>
-                    <span>{{ item.updatedAt }}</span>
+                    <span>{{ item.nowTime }}</span>
                   </div>
                 </div>
                 <div>
@@ -261,7 +261,7 @@
               <!--            status-->
               <div class="dialog-trans-detail">
                 <div class="dialog-trans-detail-left">Status</div>
-                <div class="dialog-trans-detail-rights">
+                <div class="dialog-trans-detail-rights dialog-trans-detail-rights-status">
                   <div class="dia-trans">
                     <div class="dia-trans-top">
                       <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>
@@ -352,6 +352,7 @@
     import Decimal from 'decimal.js'
 
     import BN from 'bn.js'
+    import moment from "moment";
 
     const tokenAbi = require('@/config/token_abi.json');
     const mapAbi = require('@/config/mapData.json');
@@ -445,13 +446,13 @@
               amount: '0.0',
               address:'0x92ec47df1aa167806dfa4916d9cfb99da6953b8f',
             },
-            // {
-            //   url: require('../assets/eth-icon.png'),
-            //   name: 'ETH',
-            //   coin: 'ETH',
-            //   amount: '0.0',
-            //   address:'0x0000000000000000000000000000000000000000',
-            // },
+            {
+              url: require('../assets/eth-icon.png'),
+              name: 'ETH',
+              coin: 'ETH',
+              amount: '0.0',
+              address:'0x0000000000000000000000000000000000000000',
+            },
           ],//Token列表
           historyList: [],//history记录
           historyFromLogo: '', //历史记录 From logo
@@ -483,6 +484,7 @@
           checkApproveToken:''
         }
       },
+
       watch: {
         sendAmount() {
           this.receivedAmount=this.sendAmount
@@ -492,6 +494,7 @@
           this.getAllData()
         }
       },
+
       computed: {
         listChain() {
           var _this = this;
@@ -580,8 +583,10 @@
           return this.$store.state.account.default_address
         },
       },
+
       created() {
       },
+
       methods: {
         goEth() {
           if (this.historyDetailList.confirmHeight>0) {
@@ -641,16 +646,34 @@
 
         //获取主币余额
         async getBalance(item){
+          console.log('item',item)
           let v = this
           var local_address = await v.action.getAddress()
-          v.myWeb3.eth.getBalance(local_address).then(result => {
-            // item.amount = '0.00'
-            if (result) {
-              item.amount = new Decimal(result).div(Math.pow(10, 18)).toFixed(6)
+          let result =await v.myWeb3.eth.getBalance(local_address)
+          console.log('主币Balance',result)
+
+          var chainId = await v.action.getChainId()
+          chainId = new BN(chainId.slice(2), 16)
+          console.log('chainId', chainId)
+
+          var token=config.tokenList[chainId].list
+
+          token.forEach((i,k) => {
+            // console.log("i.contract",i.contract)
+            if (i.name.toLowerCase()==item.coin.toLowerCase()) {
+
+              var decimal = i.decimal
+              console.log('decimal',decimal)
+              //余额
+              item.amount = new Decimal(result).div(Math.pow(10, decimal))
+              item.amount = Math.floor( item.amount * 1000000) /1000000
+              console.log('主币余额',item.amount )
+
+              return
             }
-            // console.log('Main币的余额', item.amount)
           })
         },
+
         async getTokenBalance(item){
           let v = this
           let token_address = config.TOKENS.ETH[item.coin];
@@ -673,7 +696,6 @@
             // }
           }
         },
-
 
         //选择Token
         async actionSelectToken(item, index) {
@@ -732,22 +754,14 @@
 
           // 是主币
           if (chainName === this.selectToken.coin) {
+            this.allowance = true;
+            //清空检测事件
+            this.approveHash = '';
             return;
           }
 
           //是代币
-          let approvedResult = await this.checkApproved(this.selectToken.coin);
-          this.allowance = approvedResult;
-          this.approveHash = '';
-          //
-          // if (approvedResult) {
-          //   console.log('Approved')
-          //   return
-          // } else {
-          //   console.log('not Approved')
-          //   let actionApproveResult = await this.actionApprove(this.selectToken.coin);
-          // }
-
+          this.checkApproved(this.selectToken.coin);
           return;
 
         },
@@ -827,19 +841,37 @@
           let reward_contract = new v.myWeb3.eth.Contract(mapAbi, reward_address)
           console.log('reward_contract', reward_contract)
 
+          console.log('chain selectToken.coin',chain,v.selectToken.coin)
 
-          const reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-          console.log('reward_stakeData', reward_stakeData)
+          var reward_stakeData;
+
+          var transParams;
+
+          if (chain==v.selectToken.coin) {
+             reward_stakeData = reward_contract.methods.transferOutNative(v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
+            console.log('reward_stakeData', reward_stakeData)
+            transParams= {
+              from: local_address,
+              to: reward_address,
+              data: reward_stakeData,
+              value:v.sendAllAmount
+            }
+
+          }else  {
+             reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
+            console.log('reward_stakeData', reward_stakeData)
+            transParams= {
+              from: local_address,
+              to: reward_address,
+              data: reward_stakeData,
+            }
+          }
 
 
           //报错
           var error;
           try {
-            var gas = await v.myWeb3.eth.estimateGas({
-              from: local_address,
-              to: reward_address,
-              data: reward_stakeData
-            })
+            var gas = await v.myWeb3.eth.estimateGas(transParams)
           } catch (e) {
             let result = e.message.substring(e.message.indexOf("{"))
             error = JSON.parse(result).message
@@ -853,11 +885,7 @@
 
 
           //
-          const rewardReceipt = await v.myWeb3.eth.sendTransaction({
-            from: local_address,
-            to: reward_address,
-            data: reward_stakeData
-          }).on('transactionHash', function (hash) {
+          const rewardReceipt = await v.myWeb3.eth.sendTransaction(transParams).on('transactionHash', function (hash) {
             v.transHash = hash
             v.transferBtn = true
             if ( v.transHash!=null &&  v.transHash!='' ) {
@@ -972,7 +1000,7 @@
               //token地址
               // item.tokenAddress
               var chainId = await v.action.getChainId()
-              chainId= chainId.substr(2)
+              chainId= new BN(chainId.slice(2), 16)
               // console.log('chainId', chainId)
 
 
@@ -988,6 +1016,9 @@
 
                   //余额
                   newObject.amount = new Decimal(item.amount).div(Math.pow(10, decimal)).toFixed()
+
+                  //时间
+                  newObject.nowTime=moment.utc(item.updatedAt).local().format("yyyy-MM-DD HH:mm:ss")
 
                   return
                 }
@@ -1099,7 +1130,6 @@
         },
 
 
-
         //获取代币余额
         async getZbalance() {
           let v = this
@@ -1126,7 +1156,10 @@
           console.log('balance', balance)
           //获取代币精度
           let decimals = await contract.methods.decimals().call()
-          console.log(decimals,'decimals')
+          // console.log(decimals,'decimals')
+          this.selectToken.coin='MAP'
+          this.selectToken.name='MAP'
+          this.selectToken.url=require('../assets/token/map-black.png')
           this.decimals = decimals
           if(balance){
             this.balanceZ = new Decimal(balance).div(Math.pow(10, decimals))
@@ -1286,11 +1319,12 @@
               v.$toast('Transaction has send please wait result')
               v.approveHash = hash;
               v.checkApproveToken = token
-              v.timer = setInterval(v.checkApproved, 1000);
+              // v.timer = setInterval(v.checkApproved, 1000);
               //server order
             }).on('receipt', function (receipt) {
               //receipt
               console.log(receipt)
+              v.timer = setInterval(v.checkApproved, 1000);
               resolve(true);
             }).on('error', function (receipt) {
               //receipt
@@ -1308,36 +1342,54 @@
           if(!v.myWeb3){
             return
           }
-           token = token?token: v.checkApproveToken
-          console.log('Token',token)
-          // var chain = this.chainForm.coin
-          //
-          //
-          // if (config.TOKENS[chain][token] === '') {
-          //   return false;
-          // }
-
-          var chainId = await v.action.getChainId()
-          chainId =parseInt(new BN(chainId.slice(2), 16))
-          console.log('chainId', chainId)
-          console.log('token',token)
-          var tokenAddress=config.tokenList[chainId].list[token]
-          console.log('tokenAddress',tokenAddress)
+           token = token?token: v.selectToken.coin
 
           var local_address = await v.action.getAddress()
 
+
+          var chainId = await v.action.getChainId()
+          chainId= chainId.substr(2)
+          console.log('chainId', chainId)
+
+          var tokenlist=config.tokenList[chainId].list
+
+          var tokenAddress=''
+
+          tokenlist.forEach((i,k) => {
+            if (i.name==token) {
+              // console.log("name",i.name,chain)
+              tokenAddress=i.contract
+              return
+            }
+          })
+
+          console.log('TokenAddress',tokenAddress)
+
+
+
           let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
           // console.log(`rewardaddress`, config.mapAddress)
-          console.log('contractAddress',config.CHAIN[contract])
-          contract.methods.allowance(local_address, config.CHAIN[contract]).call(function (error, result) {
-            if (result != 0) {
+          contract.methods.allowance(local_address, config.mapAddress).call(function (error, result) {
+            // console.log('result',result)
+            if (result && result != 0) {
+              console.log(result)
               v.allowance = true;
               //清空检测事件
               v.approveHash = '';
               v.checkApproveToken = ''
               clearInterval(v.timer);
+            } else {
+              v.allowance = false;
+              v.approveHash=false
+              clearInterval(v.timer);
+              // v.$toast(error)
+              v.timer=''
+            }
+            if (error) {
+              console.log('error',error)
             }
           });
+
 
         },
 
@@ -1370,6 +1422,7 @@
           clearInterval(this.setTimeHistory);
           this.setTimeHistory=null;
       },
+
       mounted() {
         this.getAllData()
       },
@@ -1743,8 +1796,7 @@
     }
 
     .dialog-content-trans-detail {
-      width: 80%;
-      overflow-y:scroll;
+      width: 90%;
       display: flex;
       flex-direction: column;
     }
@@ -1938,7 +1990,7 @@
 
     .dialog-trans-detail-line {
       margin-top: 12px;
-      width: 85%;
+      width: 90%;
       height: 1px;
       background: rgba(255, 255, 255, 0.1);
     }
@@ -1947,21 +1999,26 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      margin-top: 30px;
+      margin-top: 20px;
       width: 100%;
+      height: 60%;
+    }
+
+    .dialog-trans-detail:nth-child(4) {
+      align-items: flex-start;
     }
 
     .dialog-trans-detail-left {
       //font-family: Poppins;
       font-size: 16px;
       font-weight: 600;
-      width: 22%;
+      width: 20%;
     }
 
     .dialog-trans-detail-right {
       box-sizing: border-box;
       //margin-left: 35px;
-      width: 78%;
+      width: 80%;
       //font-family: Poppins;
       font-size: 12px;
       display: flex;
@@ -1991,6 +2048,11 @@
       padding: 21px 24px 28px 20px;
       border-radius: 10px;
       width: 75%;
+    }
+
+    .dialog-trans-detail-rights-status {
+      //height: 85%;
+      height: 260px;
     }
 
     .dia-transStatus-content-bottom {
@@ -2281,6 +2343,16 @@
       padding: 200px;
     }
 
+    @media (max-width: 1520px) {
+      .dialog-content-trans {
+        height: 80%;
+      }
+      .dialog-trans-detail-rights-status {
+        height: 120px;
+        overflow-y: scroll;
+      }
+    }
+
     @media (max-width: 1200px) {
       .dialog-content {
         width: 60%;
@@ -2396,6 +2468,7 @@
         height: 50%;
         padding: 30px 0 30px 0;
       }
+
 
       .dialog-selectChain-title {
         font-size: 18px;
@@ -2567,6 +2640,7 @@
       .dialog-content-trans {
         padding: 20px 0;
         width: 60% ;
+        height: 80%;
       }
 
       .dia-trans-three {
