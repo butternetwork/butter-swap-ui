@@ -5,16 +5,16 @@ export default
         mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址
         CHAIN:{
           22776: {
-              CHAINNAME:"MAP",
-              mapAddress:"0x1d7Ef443d23998e78341e4b437Aaa63303E0635C"
+              name:"MAP",
+              contract:"0x1d7Ef443d23998e78341e4b437Aaa63303E0635C"
           },
           3: {
-              CHAINNAME:"ETH",
-              mapAddress:"0x1d7Ef443d23998e78341e4b437Aaa63303E0635C"
+              name:"ETHTest",
+              contract:"0x1d7Ef443d23998e78341e4b437Aaa63303E0635C"
           },
             1: {
-                CHAINNAME:"ETH",
-                mapAddress:"0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c"
+                name:"ETH",
+                contract:"0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c"
             }
         },
 

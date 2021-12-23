@@ -1310,18 +1310,26 @@
           }
            token = token?token: v.checkApproveToken
           console.log('Token',token)
-          var chain = this.chainForm.coin
+          // var chain = this.chainForm.coin
+          //
+          //
+          // if (config.TOKENS[chain][token] === '') {
+          //   return false;
+          // }
 
-
-          if (config.TOKENS[chain][token] === '') {
-            return false;
-          }
+          var chainId = await v.action.getChainId()
+          chainId =parseInt(new BN(chainId.slice(2), 16))
+          console.log('chainId', chainId)
+          console.log('token',token)
+          var tokenAddress=config.tokenList[chainId].list[token]
+          console.log('tokenAddress',tokenAddress)
 
           var local_address = await v.action.getAddress()
 
-          let contract = new v.myWeb3.eth.Contract(tokenAbi, config.TOKENS[chain][token])
+          let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
           // console.log(`rewardaddress`, config.mapAddress)
-          contract.methods.allowance(local_address, config.mapAddress).call(function (error, result) {
+          console.log('contractAddress',config.CHAIN[contract])
+          contract.methods.allowance(local_address, config.CHAIN[contract]).call(function (error, result) {
             if (result != 0) {
               v.allowance = true;
               //清空检测事件
@@ -1330,44 +1338,6 @@
               clearInterval(v.timer);
             }
           });
-
-
-
-          // let v = this
-          //   var tokenAddress = token
-          //   console.log(`check approving`)
-          //
-          //   // if (config[tokenAddress] === undefined) {
-          //   //   this.$toast('Token Undefined')
-          //   //   return false;
-          //   // }
-          //   var chain = this.chainForm.coin
-          //
-          //   var local_address = await v.action.getAddress()
-          //
-          //   console.log('TokenAddress', config.TOKENS[chain][tokenAddress])
-          //   let contract = new v.myWeb3.eth.Contract(tokenAbi, config.TOKENS[chain][tokenAddress])
-          //   console.log(`rewardaddress`, config.mapAddress)
-          //   try {
-          //     contract.methods.allowance(local_address, config.mapAddress).call(function (error, result) {
-          //       console.log('contrantCheckApproved', result)
-          //       if (error) {
-          //         resolve(false);
-          //       } else if (result == 0) {
-          //         resolve(false);
-          //       } else {
-          //         v.allowance = true;
-          //         //清空检测事件
-          //         v.approveHash = '';
-          //         clearInterval(v.timer);
-          //         resolve(true);
-          //       }
-          //
-          //     });
-          //   } catch (e) {
-          //     console.log("CheckApprove", e)
-          //     resolve(false);
-          //   }
 
         },
 
