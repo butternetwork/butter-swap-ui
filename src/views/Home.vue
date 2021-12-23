@@ -71,7 +71,7 @@
                   <span>Received Address:</span>
                 </div>
                 <div class="tran-send-bottom">
-                  <span>{{ sendAmount }}</span>
+                  <span>{{ receivedAmount }}</span>
                   <!--                  <span>{{ receivedAmount }}</span>-->
                   <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                     <span class="tran-send-btn-address">{{ sortAddress }}</span>
@@ -461,9 +461,9 @@
           tokenCoin: 'usdc',//token
           destNetwork: 'map',//toChain
           balanceZ: 0,//Token的余额
-          sendAmount: '0.0',//From发送价格
+          sendAmount: '',//From发送价格
           sendAllAmount: '',//From价格*10*18
-          receivedAmount: 0.0,//To兑换获得的价格,
+          receivedAmount: '0.0',//To兑换获得的价格,
           searchVal: '',  //弹窗链查找默认输入为空
           searchToken:'',//弹窗 Token查找
           sortAddress: '',//短地址
@@ -484,6 +484,9 @@
         }
       },
       watch: {
+        sendAmount() {
+          this.receivedAmount=this.sendAmount
+        },
         //检测到获取了地址
         account_default_address() {
           this.getAllData()
