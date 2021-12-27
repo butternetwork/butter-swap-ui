@@ -1,9 +1,9 @@
 export default
     {
-        tokenCoin: "0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",//测试链的默认代币地址
-        // tokenCoin: "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//默认链的默认代币地址
-        mapAddress: "0x1cc73FbDA4fDBB80015Fb824807c5f19276243Ee",//eth测试地址
-        // mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址
+        // tokenCoin: "0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",//测试链的默认代币地址
+        tokenCoin: "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//默认链的默认代币地址
+        // mapAddress: "0x1cc73FbDA4fDBB80015Fb824807c5f19276243Ee",//eth测试地址
+        mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址
         CHAIN:{
           22776: {
               CHAINNAME:"MAP",
@@ -25,8 +25,8 @@ export default
                 USDT:"0x6a33e88b8fa3031ad55d16b5c7def4fd93fa29b1",
             },
             ETH:{
-                // MAP:"0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1
-                MAP:"0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",//0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1
+                MAP:"0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1
+                // MAP:"0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1",//0x2020f4b99433067F4a5ED99Ce8392d94a8AC70d1
                 USDT:"0xdac17f958d2ee523a2206206994597c13d831ec7",
                 USDC:"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
                 // IDV:"0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553",//0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553
@@ -79,7 +79,7 @@ export default
                     },
                     {
                         name:"ETH",
-                        contract:"ETH",
+                        contract:"0x0000000000000000000000000000000000000000",
                         img:require('../assets/eth-icon.png'),
                         decimal:18
                     },

@@ -4,8 +4,8 @@ Axios.defaults.timeout = 30000;
 
 let request = function (path, params, isPost) {
     if (process.env.NODE_ENV === 'production') {
-        Axios.defaults.baseURL = 'http://39.99.244.11:8201/';//测试
-        // Axios.defaults.baseURL = 'https://bridge-api.maplabs.io/';
+        // Axios.defaults.baseURL = 'http://39.99.244.11:8201/';//测试
+        Axios.defaults.baseURL = 'https://bridge-api.maplabs.io/';
     } else if (process.env.NODE_ENV === 'development') {
         // Axios.defaults.baseURL = '/api'
         Axios.defaults.baseURL = 'http://39.99.244.11:8201/'

@@ -425,6 +425,13 @@
               amount: '0.0',
               address:'0x9E976F211daea0D652912AB99b0Dc21a7fD728e4',
             },
+            {
+              url: require('../assets/eth-icon.png'),
+              name: 'ETH',
+              coin: 'ETH',
+              amount: '0.0',
+              address:'0x0000000000000000000000000000000000000000',
+            },
             // {
             //   url: require('../assets/token/tether.png'),
             //   name: 'Tether USD',
@@ -446,13 +453,7 @@
               amount: '0.0',
               address:'0x92ec47df1aa167806dfa4916d9cfb99da6953b8f',
             },
-            {
-              url: require('../assets/eth-icon.png'),
-              name: 'ETH',
-              coin: 'ETH',
-              amount: '0.0',
-              address:'0x0000000000000000000000000000000000000000',
-            },
+
           ],//Token列表
           historyList: [],//history记录
           historyFromLogo: '', //历史记录 From logo
