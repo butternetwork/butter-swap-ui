@@ -238,7 +238,7 @@
                 <div class="dialog-trans-detail">
                   <div class="dialog-trans-detail-left">Sending</div>
                   <div class="dialog-trans-detail-right">
-                    <span>{{ historyDetailList.sending }} {{ historyCoin }}</span>
+                    <span>{{ historyDetailList.sending }} {{ historyDetailList.coin }}</span>
                     <span>{{ historyDetailList.from }}</span>
                   </div>
                 </div>
@@ -246,7 +246,7 @@
                 <div class="dialog-trans-detail">
                   <div class="dialog-trans-detail-left">Receiving</div>
                   <div class="dialog-trans-detail-right">
-                    <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{ historyCoin }}</span>
+                    <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{ historyDetailList.coin }}</span>
                     <span v-else>Processing</span>
                     <span>{{ historyDetailList.to }}</span>
                   </div>
@@ -256,7 +256,7 @@
                   <div class="dialog-trans-detail-left">Fee</div>
                   <div class="dialog-trans-detail-right">
                     <span v-if="historyDetailList.receiving"
-                          class="dialog-trans-detail-fee">{{ historyDetailList.sending - historyDetailList.receiving }}  {{ historyCoin }}</span>
+                          class="dialog-trans-detail-fee">{{ historyDetailList.sending - historyDetailList.receiving }}  {{ historyDetailList.coin }}</span>
                     <span v-else>Processing</span>
                   </div>
                 </div>
@@ -264,13 +264,14 @@
                 <div class="dialog-trans-detail">
                   <div class="dialog-trans-detail-left">Status</div>
                   <div class="dialog-trans-detail-rights dialog-trans-detail-rights-status">
+<!--                    from-->
                     <div class="dia-trans">
                       <div class="dia-trans-top">
                         <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>
                         <img v-else src="../assets/dialog/success-write.png"/>
                         <div class="dia-trans-top-icon">
-                          <img src="../assets/eth-icon.png"/>
-                          <span>Ethereum</span>
+                          <img :src="fromLogo"/>
+                          <span>{{historyDetailList.fromChainName}}</span>
                         </div>
                       </div>
                       <div class="dia-trans-bottom dia-trans-bottoms">
@@ -289,6 +290,34 @@
                         </div>
                       </div>
                     </div>
+<!--                    relayer-->
+                    <div v-show="historyDetailList.fromChainId!=22776 && historyDetailList.toChainId!=22776" class="dia-trans dia-trans-two">
+                      <div class="dia-trans-top">
+                        <div>
+                          <img v-if="historyDetailList.relayerConfirmHeight>0" src="../assets/dialog/success-red.png"/>
+                          <img v-else src="../assets/dialog/success-write.png"/>
+                        </div>
+                        <div class="dia-trans-top-icon">
+                          <img src="../assets/token/map.png"/>
+                          <span>MAP Protocol</span>
+                        </div>
+                      </div>
+                      <div class="dia-trans-bottom dia-trans-bottoms">
+                        <div>
+                          <img v-if="historyDetailList.relayerConfirmHeight==6" class="dia-trans-bottom-arrow"
+                               src="../assets/dialog/line-red.png"/>
+                          <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
+                        </div>
+                        <div class="dia-trans-bottom-progress">
+                          <span @click="goMap()">{{ historyDetailList.relayerConfirmHeight }}/6 confirmed <img style="width: 12px" src="../assets/dialog/send.png"/> </span>
+                          <div class="dia-transStatus-content-bottom">
+                            <div class="dia-transStatus-content-bottom-bg"
+                                 :style="{width:historyDetailList.relayerConfirmHeight/6*100+'%'}"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+<!--                    to-->
                     <div class="dia-trans dia-trans-two">
                       <div class="dia-trans-top">
                         <div>
@@ -296,8 +325,8 @@
                           <img v-else src="../assets/dialog/success-write.png"/>
                         </div>
                         <div class="dia-trans-top-icon">
-                          <img src="../assets/token/map.png"/>
-                          <span>MAP Protocol</span>
+                          <img :src="toLogo"/>
+                          <span>{{historyDetailList.toChainName}}</span>
                         </div>
                       </div>
                       <div class="dia-trans-bottom dia-trans-bottoms">
@@ -422,13 +451,10 @@
               chainName: 'Makalu Testnet',
               chainImg: require('../assets/token/map.png'),
               coin: 'MAP',
-              chainId: config.defaultChainTo
+              chainId: config.defaultChainTo,
+              contract: config.toAddress,
             }, //To Chain 选择
-            selectToken: {
-              name: 'MAP',
-              coin: 'MAP',
-              symbol: 'MAP'
-            },// 选择Token
+            selectToken: {},// 选择Token
             tokenList: [
               {
                 url: require('../assets/token/map-black.png'),
@@ -493,6 +519,8 @@
             setTimeHistory: null,
             historyHash: '',//查看历史详情传的数据
             historyCoin: '',//历史单位
+            fromLogo:'', //历史详情fromlogo
+            toLogo:'', //历史详情tologo
 
             transferBtn: false,
             checkApproveToken: '',
@@ -610,9 +638,8 @@
             var v = this
             this.selectChain = 0
             this.changeChain = false
+
             this.handleLink(v.chainTo)
-
-
 
             // if (this.changeChain == true) {
             //
@@ -652,7 +679,7 @@
             }
           },
 
-          //打开Token弹窗
+          //Token弹窗余额获取
           async actionShowToken() {
 
             let v = this
@@ -718,8 +745,7 @@
             this.selectToken.url = item.img
             this.selectToken.address = item.address
 
-            var chain = this.chainForm.chain
-            //console.log('item.coin', config.TOKENS[chain][this.selectToken.coin])
+            console.log('selecToken', this.selectToken.address)
 
             this.balanceZ = item.amount
 
@@ -793,23 +819,20 @@
 
           //判断按钮Approve还是Trans
           async actionApproveOrTransfer() {
-
+            let v =this
 
             //判断选择的Token是否是代币
 
-            const chainName = this.chainForm.coin
-            // //console.log('Chain-Token', chainName, this.selectToken.coin)
-
             // 是主币
-            if (chainName === this.selectToken.coin) {
-              this.allowance = true;
+            if (v.selectToken.address== '0x0000000000000000000000000000000000000000') {
+              v.allowance = true;
               //清空检测事件
-              this.approveHash = '';
+              v.approveHash = '';
               return;
             }
 
             //是代币
-            this.checkApproved(this.selectToken.coin);
+            v.checkApproved(v.selectToken.symbol);
             return;
 
           },
@@ -817,7 +840,8 @@
           //发送Transfer交易
           async actionTrans() {
             let v = this
-            let reward_address = config.mapAddress
+            let reward_address = v.chainForm.contract
+            console.log('reward_address',reward_address)
             var local_address = await v.action.getAddress()
             //console.log('local_address', local_address)
 
@@ -829,24 +853,27 @@
             }
 
             //当前链
-            var chain = v.chainForm.coin
+            var chain = v.chainForm.chain
             //console.log('chain', chain)
 
             //当前选择Token
-            var TokenAddress = config.TOKENS[chain][v.selectToken.coin]
-            //console.log('TokenAddress', TokenAddress)
+            var TokenAddress = v.selectToken.address
+            console.log('1111111TokenAddress', TokenAddress)
 
 
             //decimal
             var chainId = await v.action.getChainId()
             chainId = chainId.substr(2)
 
-            var token = config.tokenList[chainId].list
+            var token = v.tokenList
 
             var decimal;
 
+            console.log('token',token)
+
             token.forEach((i, k) => {
-              if (i.contract.toLowerCase() == TokenAddress.toLowerCase()) {
+              console.log('address',i.address,TokenAddress)
+              if (i.address.toLowerCase() == TokenAddress.toLowerCase()) {
                 decimal = i.decimal
                 return
               }
@@ -870,33 +897,21 @@
             //console.log('amount', v.sendAllAmount.toFixed())
 
             //To的链Id
-            var chainId = '22776'
+            var chainId = this.chainTo.chainId
             //console.log('chainid', chainId)
-
-
-            //To地址
-            // if (v.allAddress) {
-            //   v.langToAddress = v.allAddress
-            // } else {
-            //   v.langToAddress = v.langAddress
-            // }
-
-            //console.log('ToAddress', v.langToAddress)
 
 
             //调用合约执行
             let reward_contract = new v.myWeb3.eth.Contract(mapAbi, reward_address)
-            //console.log('reward_contract', reward_contract)
-
-            //console.log('chain selectToken.coin', chain, v.selectToken.coin)
+            console.log('reward_contract', reward_contract)
 
             var reward_stakeData;
 
             var transParams;
 
-            if (chain == v.selectToken.coin) {
+            if ( TokenAddress =='0x0000000000000000000000000000000000000000') {
               reward_stakeData = reward_contract.methods.transferOutNative(v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-              //console.log('reward_stakeData', reward_stakeData)
+              console.log('reward_stakeData', reward_stakeData)
               transParams = {
                 from: local_address,
                 to: reward_address,
@@ -905,8 +920,9 @@
               }
 
             } else {
+              console.log('代币Trans')
               reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-              //console.log('reward_stakeData', reward_stakeData)
+              console.log('reward_stakeData', reward_stakeData)
               transParams = {
                 from: local_address,
                 to: reward_address,
@@ -963,22 +979,22 @@
             //获取当前链ID
             var fromChain = await v.action.getChainId()
             //console.log('Chain', fromChain)
-            fromChain = new BN(fromChain.slice(2), 16)
+            fromChain = parseInt(fromChain.slice(2), 16)
             //console.log('fromChain', (fromChain))
-
-            // //console.log('Token========',config.TOKENS[chain][v.selectToken.coin])
 
 
             var params = {
-              contract: config.mapAddress,//合约地址
+              contract: this.chainForm.contract,//合约地址
               from: local_address, //from地址
               to: v.langToAddress, //to 地址
-              tokenAddress: config.TOKENS[chain][v.selectToken.coin],//代币地址
+              tokenAddress: v.selectToken.address,//代币地址
               amount: v.sendAllAmount,//数量
               fromChainid: fromChain,
-              toChainid: '22776', //目标链ChainId
+              toChainid: v.chainTo.chainId, //目标链ChainId
               hash: v.transHash  //hash
             }
+
+            console.log('params',params)
             let result = v.$http.getSubBrigge(params)
             if (result.code == 200) {
             }
@@ -989,7 +1005,11 @@
           async actionHistory() {
             let v = this
             var local_address = await v.action.getAddress()
+            var chainId = await v.action.getChainId()
+            chainId = parseInt(chainId.slice(2), 16)
+            console.log('CHAINID',chainId)
             var params = {
+              chainId: chainId,
               address: local_address,
               pageNo: v.currentPage,
               pageSize: v.pageSize,
@@ -1000,7 +1020,7 @@
               v.historyList = result.data.list
               v.total = result.data.total
               v.pageNum = Math.ceil(v.total / v.pageSize) || 1;
-              // //console.log('hisTory', v.historyList)
+              console.log('hisTory', v.historyList)
 
 
               for (const item of v.historyList) {
@@ -1008,50 +1028,29 @@
                 var fromChainId = item.fromChainid
                 var toChainId = item.toChainid
 
-
-                //FromChainId  对应的logo
-                if (fromChainId == 3) {
-                  newObject.fromLogo = require('../assets/eth-icon.png')
-                  newObject.fromChainName = 'ETH'
-                } else if (fromChainId == 1) {
-                  newObject.fromLogo = require('../assets/eth-icon.png')
-                  newObject.fromChainName = 'ETH'
-                } else if (fromChainId == 22776) {
-                  newObject.fromLogo = require('../assets/token/map.png')
-                  newObject.fromChainName = 'MAP'
+                for (const i of v.chainList) {
+                  // console.log('iiiiiiiiiiii',i)
+                  if (fromChainId==i.chainId) {
+                    newObject.fromLogo = i.chainImg
+                    newObject.fromChainName = i.chainName
+                  }
+                  if (toChainId==i.chainId) {
+                    newObject.toLogo = i.chainImg
+                    newObject.toChainName = i.chainName
+                  }
                 }
 
-                // //console.log('fromLogo', item.fromLogo)
+                console.log('amount', item.amount)
 
-                //ToChainId 对应的logo
+                var token = v.tokenAllList[fromChainId]
 
-                if (toChainId == 3) {
-                  newObject.toLogo = require('../assets/eth-icon.png')
-                  newObject.toChainName = 'ETH'
-                } else if (toChainId == 1) {
-                  newObject.toLogo = require('../assets/eth-icon.png')
-                  newObject.toChainName = 'ETH'
-                } else if (toChainId == 22776) {
-                  newObject.toLogo = require('../assets/token/map.png')
-                  newObject.toChainName = 'MAP'
-                }
-
-                // //console.log('amount', item.amount)
-
-
-                //token地址
-                // item.tokenAddress
-                var chainId = await v.action.getChainId()
-                chainId = new BN(chainId.slice(2), 16)
-                // //console.log('chainId', chainId)
-
-
-                var token = config.tokenList[chainId].list
+                console.log('item.tokenAddress',item.tokenAddress)
+                // console.log('tokem',token)
 
                 token.forEach((i, k) => {
-                  // //console.log("i.contract",i.contract)
-                  if (i.contract.toLowerCase() == item.tokenAddress.toLowerCase()) {
-                    newObject.coin = i.name
+                  // console.log("i.contract",i)
+                  if (i.address.toLowerCase() == item.tokenAddress.toLowerCase()) {
+                    newObject.coin = i.symbol
 
                     var decimal = i.decimal
                     //console.log('decimal', decimal)
@@ -1084,6 +1083,9 @@
             v.historyHash = item.hash
             v.historyCoin = item.coin
 
+            v.fromLogo = item.fromLogo
+            v.toLogo = item.toLogo
+
             var result = await v.$http.historyDetail({txHash: v.historyHash})
             // //console.log(result)
             if (result.code == 200) {
@@ -1091,14 +1093,21 @@
               // v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, 18))
               v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
               v.historyDetailList.receiving = v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) : null
-              //高度
+              //高度from
               if (v.historyDetailList.confirmHeight) {
                 v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
               } else {
                 v.historyDetailList.confirmHeight = 0
               }
 
-              //
+              //高度map
+              if (v.historyDetailList.relayerConfirmHeight) {
+                v.historyDetailList.relayerConfirmHeight = (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight) > 6 ? 6 : (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight)
+              } else {
+                v.historyDetailList.relayerConfirmHeight = 0
+              }
+
+              //高度to
               if (v.historyDetailList.transferInConfirmHeight) {
                 v.historyDetailList.transferInHeight = (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight) > 6 ? 6 : (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight)
               } else {
@@ -1123,14 +1132,19 @@
 
               v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
               v.historyDetailList.receiving = v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) : null
-              //高度
+              //高度from
               if (v.historyDetailList.confirmHeight) {
                 v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
               } else {
                 v.historyDetailList.confirmHeight = 0
               }
-
-              //
+              //高度map
+              if (v.historyDetailList.relayerConfirmHeight) {
+                v.historyDetailList.relayerConfirmHeight = (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight) > 6 ? 6 : (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight)
+              } else {
+                v.historyDetailList.relayerConfirmHeight = 0
+              }
+              //高度to
               if (v.historyDetailList.transferInConfirmHeight) {
                 v.historyDetailList.transferInHeight = (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight) > 6 ? 6 : (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight)
               } else {
@@ -1234,7 +1248,6 @@
 
             //console.log(' item.chainId', item.chainId)
             chain = '0x' + parseInt(item.chainId).toString(16)
-            //console.log('CHAINid', chain)
             //From 切换链
             window.ethereum &&
             window.ethereum
@@ -1246,25 +1259,28 @@
                     },
                   ],
                 })
-                .then(() => {
+                .then(async () => {
                   v.changeChain = true
                   // //console.log('Change Success')
                   //切换网络
                   if (v.changeChain) {
-                    this.chainTo= fromChain
-                    this.chainForm= toChain
+                    v.chainTo= fromChain
+                    v.chainForm= toChain
                   }
                   //console.log(' v.chainTo', v.chainTo,v.chainForm)
-                  if (this.selectChain == 0) {
-                    this.sourcePath = item.chain
-                    this.chainForm.chainName = item.chainName
-                    this.chainForm.chainImg = item.chainImg
-                    this.chainForm.chainId = item.chainId
-                    this.chainForm.chain = item.chain
-                    this.chainForm.contract = item.contract
+                  if (v.selectChain == 0) {
+                    v.sourcePath = item.chain
+                    v.chainForm.chainName = item.chainName
+                    v.chainForm.chainImg = item.chainImg
+                    v.chainForm.chainId = item.chainId
+                    v.chainForm.chain = item.chain
+                    v.chainForm.contract = item.contract
 
-                    this.actionCheckChainToken()
-                    this.actionShowToken()
+                    console.log(' v.chainForm.contract', v.chainForm.contract)
+
+                    v.actionCheckChainToken()
+                    v.actionShowToken()
+                    // v.checkApproved(v.selectToken.name);
 
                     // return
                     // //切换链显示当前Map余额
@@ -1423,38 +1439,41 @@
           async checkApproved(token) {
 
             let v = this
+            console.log('TokenAddress',this.selectToken.address)
+
             if (!v.myWeb3) {
               return
             }
+
+            if (v.selectToken.address=='0x0000000000000000000000000000000000000000') {
+              console.log('主币不用Approve')
+              v.allowance = true;
+              v.transferBtn = false
+              return
+            }
+
             token = token ? token : v.selectToken.name
 
             var local_address = await v.action.getAddress()
 
-
-            var chainId = await v.action.getChainId()
-            chainId = chainId.substr(2)
-            //console.log('chainId', chainId)
-
-            var tokenlist = v.tokenAllList[chainId]
-
-            //console.log('tokenlist', tokenlist)
+            console.log('tokenlist', v.tokenList)
 
             var tokenAddress = ''
 
-            tokenlist.forEach(item => {
-              // //console.log("name",item.symbol,token)
+            v.tokenList.forEach(item => {
+
               if (item.symbol == token) {
-                // //console.log("name",item.symbol,token)
+                console.log("name",item.symbol,token)
                 tokenAddress = item.address
                 return
               }
             })
 
-            //console.log('TokenAddress', tokenAddress)
+            console.log('TokenAddress', tokenAddress)
 
 
             let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
-            // //console.log(`rewardaddress`, config.mapAddress)
+            console.log(`rewardaddress`, v.chainForm.contract)
             contract.methods.allowance(local_address, v.chainForm.contract).call(function (error, result) {
               // //console.log('result',result)
               if (result && result != 0) {
@@ -1500,9 +1519,9 @@
             let result = await v.$http.chainList()
             if (result.code == 200) {
               v.chainList = result.data.list
+
               //console.log('chainList', this.chainList)
             }
-            //console.log('chain', result)
           },
 
           //获取Token列表
@@ -1522,22 +1541,18 @@
             var v = this;
             var chainId =await v.action.getChainId()
             chainId = new BN(chainId.slice(2), 16)
-            // //console.log('chainid',parseInt(chainId))
-            // //console.log('tokenlist', v.tokenAllList[chainId])
+            //console.log('chainid',parseInt(chainId))
+            console.log('tokenlist', v.tokenAllList[chainId])
 
             var tokenlist = v.tokenAllList[chainId]
             var flag = false
             for (var i = 0; i < tokenlist.length; i++) {
-              console.log('tokenlist.===============>',tokenlist[i],tokenlist[i].amount)
               if (tokenlist[i].symbol=='MAP') {
-                //console.log(tokenlist[i], "tokenlist[i]")
-                //console.log(tokenlist[i].symbol, "tokenlist[i].symbol")
-                console.log(tokenlist[i].amount, "tokenlist[i].amount")
+                console.log('tokenlist[i].address', tokenlist[i].address)
                 v.selectToken.name = tokenlist[i].symbol
                 v.selectToken.address = tokenlist[i].address
                 v.selectToken.url = tokenlist[i].img
-                // v.balanceZ = tokenlist[i].amount
-                //console.log('v.balanceZ ',v.balanceZ ,tokenlist[i],tokenlist[i].amount)
+                v.checkApproved(v.selectToken.name);
                 flag = true
                 break;
               }
@@ -1546,13 +1561,11 @@
               v.selectToken.name = tokenlist[0].symbol
               v.selectToken.url = tokenlist[0].img
               v.selectToken.address = tokenlist[0].address
-              // v.balanceZ = tokenlist[0][amount]
-              //console.log('v.balanceZ ',v.balanceZ )
+              let approvedResult = await v.checkApproved(this.selectToken.name);
+              console.log('approvedResult', approvedResult)
+              v.allowance = approvedResult;
             }
-
-            //console.log('TokenList', result.data.list)
           },
-
 
           async getAllData() {
             this.getSortAddress()
@@ -1560,9 +1573,9 @@
             this.actionGetChain()
             this.actionTokenList()
             this.actionShowToken()
-            let approvedResult = await this.checkApproved(this.selectToken.coin);
+            // let approvedResult = await this.checkApproved(this.selectToken.coin);
             //console.log('approvedResult', approvedResult)
-            this.allowance = approvedResult;
+            // this.allowance = approvedResult;
             // this.actionHistory()
           },
         },

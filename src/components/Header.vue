@@ -15,8 +15,8 @@
                     <span class="header-error" v-if="error" @click="actionNetwork()">Network Error</span>
                     <div v-else>
                       <span class="header-intall">
-                         <img src="../assets/eth-icon.png"/>
-                          Ethereum Mainnet
+                         <img :src="chainIcon"/>
+                          {{chainName}}
                       </span>
                     </div>
                   </div>
@@ -47,6 +47,8 @@
                     tabIndex:0,
                     address: '' ,//地址
                     error:false,
+                    chainIcon:require('../assets/eth-icon.png'),
+                    chainName:'Ethereum Mainnet'
                   }
               },
               computed: {
@@ -106,19 +108,34 @@
                   },
                   async getChainId(){
                   // const chainId = await ethereum.request({ method: 'eth_chainId' });
-                    if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
-                      this.error=false
-                    } else  {
-                      this.error=true
-                    }
+                  //   if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
+                  //     this.error=false
+                  //   } else  {
+                  //     this.error=true
+                  //   }
+
                   //！链id不是马上拿到的，如果通过链id来判断是不是主网的方式，请注意异步
+                    let v = this
+                    let chainId = await v.action.getChainId()
+                    if (chainId=='0x1' || chainId=='0x3') {
+                      v.chainIcon = require('../assets/eth-icon.png')
+                      v.chainName = 'Ethereum Mainnet'
+                    }
+                    else if (chainId=='0x58f8') {
+                      v.chainIcon = require('../assets/token/map.png')
+                      v.chainName = 'MAP Makalu'
+                    }
+                    else if (chainId=='0x61' || chainId=='0x38') {
+                      v.chainIcon = require('../assets/token/bsc.png')
+                      v.chainName = 'BSC'
+                    }
                 }
               },
             mounted() {
                 if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
-                  this.error=false
+                  // this.error=false
                 } else  {
-                  this.error=true
+                  // this.error=true
                 }
                   this.actionAddress()
               }

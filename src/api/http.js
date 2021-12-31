@@ -10,7 +10,7 @@ let request = function (path, params, isPost) {
         // Axios.defaults.baseURL = '/api'
         // Axios.defaults.baseURL = 'http://39.99.244.11:8201/'
         Axios.defaults.baseURL = 'http://192.168.50.157:8201/'
-        // Axios.defaults.defaultsbaseURL = 'https://bridge-api.maplabs.io/'
+        // Axios.defaults.defaultsbaseURL = 'https://brcidge-api.maplabs.io/'
     }
     else {
         Axios.defaults.baseURL = '/'
