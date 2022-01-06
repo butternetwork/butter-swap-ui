@@ -79,6 +79,7 @@
                 account_default_address() {
                     // console.log(44444444)
                     this.actionAddress()
+                    this.getChainId()
                   },
 
               },
@@ -110,11 +111,12 @@
                   },
                   async actionAddress() {
                     this.address = await this.action.getSortAddress()
-                    if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
-                      this.error=false
-                    } else  {
-                      this.error=true
-                    }
+                    //修改
+                    // if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
+                    //   this.error=false
+                    // } else  {
+                    //   this.error=true
+                    // }
                   },
                   async getChainId(){
                   // const chainId = await ethereum.request({ method: 'eth_chainId' });
@@ -130,18 +132,18 @@
                     const params = v.$route.query;
 
                     console.log('chainIDDDDD',chainId,params.sourceNetwork)
-                    if (chainId=='0x1' && params.sourceNetwork=='ETH') {
+                    if ((chainId=='0x1' || chainId=='1') && params.sourceNetwork=='ETH') {
                     // if (chainId=='0x1' || chainId=='0x3' && params.sourceNetwork=='ETH') {
                       v.error = false
                       v.chainIcon = require('../assets/eth-icon.png')
                       v.chainName = 'Ethereum Mainnet'
                     }
-                    else if (chainId=='0x58f8' && params.sourceNetwork=='MAP') {
+                    else if ((chainId=='0x58f8'|| chainId=='58f8' )&& params.sourceNetwork=='MAP') {
                       v.error = false
                       v.chainIcon = require('../assets/token/map.png')
                       v.chainName = 'MAP Makalu'
                     }
-                    else if (chainId=='0x38' && params.sourceNetwork=='BSC') {
+                    else if ((chainId=='0x38' || chainId=='38') && params.sourceNetwork=='BSC') {
                     // else if (chainId=='0x61' || chainId=='0x38' && params.sourceNetwork=='BSC') {
                       v.error = false
                       v.chainIcon = require('../assets/token/bsc.png')
