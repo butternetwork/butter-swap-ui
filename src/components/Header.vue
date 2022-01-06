@@ -49,7 +49,7 @@
                     error:false,
                     chainIcon:require('../assets/eth-icon.png'),
                     chainName:'Ethereum Mainnet',
-                    chainId:'0x3',
+                    chainId:'0x1',//要修改
                   }
               },
               computed: {
@@ -129,6 +129,7 @@
                     let chainId = await v.action.getChainId()
                     const params = v.$route.query;
 
+                    console.log('chainIDDDDD',chainId,params.sourceNetwork)
                     if (chainId=='0x1' && params.sourceNetwork=='ETH') {
                     // if (chainId=='0x1' || chainId=='0x3' && params.sourceNetwork=='ETH') {
                       v.error = false
