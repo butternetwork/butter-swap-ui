@@ -3,7 +3,7 @@ export default
     tokenCoin: "0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553",//测试链的默认代币地址
     // tokenCoin: "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//默认链的默认代币地址
     mapAddress: "0x1cc73FbDA4fDBB80015Fb824807c5f19276243Ee",//eth测试地址
-    toAddress: "0x3940a232d3f401ddBA1Be9a7acB64146f18881e6",//eth测试地址
+    toAddress: "0x346544CdCDB4452993d90e86ABCeAB8bD1405b7a",//eth测试地址
     defaultChainFrom:'3',
     defaultChainTo:'22776',
     // mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址
