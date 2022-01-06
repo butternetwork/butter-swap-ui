@@ -503,7 +503,7 @@ export default {
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
-      tokenAllList: [],//Token所有列表
+      tokenAllList: {"1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":0,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],"22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]},//Token所有列表
       historyList: [],//history记录
       historyFromLogo: '', //历史记录 From logo
       historyToLogo: '',//历史记录 To logo
@@ -544,6 +544,7 @@ export default {
       approveMapHash: '',//Approve Map hash
       dialogApprovingMap: false,//approveing map diaglog
       mapBalance: '',
+      chainIdRes:1
     }
   },
 
@@ -601,23 +602,26 @@ export default {
       return arrByZM;
     },
     listToken() {
+      console.log(22222222)
       var _this = this;
       //逻辑-->根据input的value值筛选goodsList中的数据
       var inputContent = _this.searchToken.substring(0, 2)
       // //console.log(inputContent)
       if (inputContent !== '0x') {
         var arrByZM = [];//声明一个空数组来存放数据
-        console.log('tokenList',_this.tokenList)
-        for (var i = 0; i < _this.tokenList.length; i++) {
+        let tokenListRes = _this.tokenAllList[this.chainIdRes]
+        console.log('tokenList33333',tokenListRes, parseInt(this.chainIdRes))
+        for (var i = 0; i < tokenListRes.length; i++) {
           //for循环数据中的每一项（根据name值）
-          console.log('tokenList',_this.tokenList)
-          if (_this.tokenList[i] && _this.tokenList[i].name.search(_this.searchToken) != -1) {
+          console.log('tokenList',tokenListRes)
+          if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
             //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(_this.tokenList[i]);
+            arrByZM.push(tokenListRes[i]);
             //向空数组中添加数据
           }
         }
       } else {
+        console.log(555555)
         var arrByZM = [];//声明一个空数组来存放数据
         for (var i = 0; i < _this.tokenList.length; i++) {
           //for循环数据中的每一项（根据name值）
@@ -642,6 +646,7 @@ export default {
       //   });
       // }
       //一定要记得返回筛选后的数据
+      console.log(`token result`,arrByZM)
       return arrByZM;
     },
     account_default_address() {
@@ -852,6 +857,7 @@ export default {
       var local_address = await v.action.getAddress()
       //创建合约
       if (!v.myWeb3) {
+        console.log(666666)
         return
       }
       let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
@@ -1838,7 +1844,7 @@ export default {
 
         let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
         let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
-
+        console.log(`sourceNetwork`,sourceNetwork,`destNetwork`,destNetwork)
         console.log('chainList', this.chainList)
         //chainForm
         for (let chains of v.chainList) {
@@ -1866,6 +1872,7 @@ export default {
         //     // console.log('this.chainTo.contract',  this.chainTo.contract)
         //   }
         // })
+        this.actionTokenList()
         console.log('chainList', this.chainList)
       }
     },
@@ -1874,12 +1881,13 @@ export default {
     async actionTokenList() {
       console.log('actionTokenList')
       let v = this
-      let result = await v.$http.tokenList()
-      if (result.code = 200) {
-
-        v.tokenAllList = result.data.list
-        v.actionCheckChainToken()
-      }
+      // let result = await v.$http.tokenList()
+      // if (result.code = 200) {
+      //
+      //   v.tokenAllList = result.data.list
+      //
+      // }
+      v.actionCheckChainToken()
     },
 
     //获取Chain的Token
@@ -1920,11 +1928,17 @@ export default {
       }
     },
 
+    async getChainIdRes(){
+      var chainId = await this.action.getChainId()
+      this.chainIdRes = new BN(chainId.slice(2), 16)
+    },
+
     async getAllData() {
+      this.getChainIdRes()
       this.getSortAddress()
       // this.getZbalance()
       this.actionGetChain()
-      this.actionTokenList()
+
       this.actionShowToken()
     },
   },
