@@ -1480,6 +1480,7 @@ export default {
               v.actionShowToken()
               v.checkMapApproved()
               v.actionGetChain()
+              v.getAllData()
               // v.checkApproved(v.selectToken.name);
             }
             v.showSelectChain = false
