@@ -998,7 +998,7 @@ export default {
           from: local_address,
           to: reward_address,
           data: reward_stakeData,
-          value: valueFee
+          value: valueFee.toFixed(0)
         }
 
       } else if (v.selectToken.isMint == 1) {
@@ -1008,7 +1008,7 @@ export default {
           from: local_address,
           to: reward_address,
           data: reward_stakeData,
-          value: v.gasFee
+          value: new Decimal(v.gasFee).toFixed(0)
         }
       } else {
         console.log('代币Trans')
@@ -1018,7 +1018,7 @@ export default {
           from: local_address,
           to: reward_address,
           data: reward_stakeData,
-          value: v.gasFee
+          value: new Decimal(v.gasFee).toFixed(0)
         }
       }
 
@@ -1801,7 +1801,7 @@ export default {
         // v.allowance=false
         // v.approveHash=false
         await v.actionGasFee()
-        v.checkApproved()
+        await v.checkApproved()
       }
 
 
@@ -1936,6 +1936,7 @@ export default {
 
   mounted() {
     this.getAllData()
+    // console.log('测试bn',new Decimal(1500000000000000000000).toFixed(0))
   },
 }
 </script>
