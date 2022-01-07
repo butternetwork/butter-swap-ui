@@ -24,14 +24,14 @@ let request = function (path, params, isPost) {
         if (isPost) {
             return Axios.post(path, params, {}).then(
                 res => {
-                    console.log(`res`,res)
+                    // console.log(`res`,res)
                     // if(res.data && res.data.code && res.data.code == 200){
                     if(res.data){
                         resolve(res.data);
                     }
                 },
                 err => {
-                    console.log(`err`,err)
+                    // console.log(`err`,err)
                     resolve({code: -1, message: '请求错误', text: JSON.stringify(err)});
                 });
         } else {

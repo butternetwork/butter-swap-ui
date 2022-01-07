@@ -63,8 +63,8 @@
               watch: {
                 $route: {
                   handler() {
-                    console.log( this.$route.query.sourceNetwork);
-                    console.log( this.$route.query.destNetwork);
+                    // console.log( this.$route.query.sourceNetwork);
+                    // console.log( this.$route.query.destNetwork);
 
                     //深度监听，同时也可监听到param参数变化
                   },
@@ -131,7 +131,7 @@
                     let chainId = await v.action.getChainId()
                     const params = v.$route.query;
 
-                    console.log('chainIDDDDD',chainId,params.sourceNetwork)
+                    // console.log('chainIDDDDD',chainId,params.sourceNetwork)
                     if ((chainId=='0x1' || chainId=='1') && params.sourceNetwork=='ETH') {
                     // if (chainId=='0x1' || chainId=='0x3' && params.sourceNetwork=='ETH') {
                       v.error = false
@@ -308,6 +308,16 @@
           font-size: 12px;
           right: 5%;
         }
+
+        .header-error {
+          width: 100px;
+          height: 35px;
+          line-height: 35px;
+          font-size: 12px;
+          line-height: 35px;
+          text-align: center;
+        }
+
 
         .header-intall {
           width: 100px;

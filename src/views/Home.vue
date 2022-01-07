@@ -602,7 +602,7 @@ export default {
       return arrByZM;
     },
     listToken() {
-      console.log(22222222)
+      // console.log(22222222)
       var _this = this;
       //逻辑-->根据input的value值筛选goodsList中的数据
       var inputContent = _this.searchToken.substring(0, 2)
@@ -610,10 +610,10 @@ export default {
       if (inputContent !== '0x') {
         var arrByZM = [];//声明一个空数组来存放数据
         let tokenListRes = _this.tokenAllList[this.chainIdRes]
-        console.log('tokenList33333',tokenListRes, parseInt(this.chainIdRes))
+        // console.log('tokenList33333',tokenListRes, parseInt(this.chainIdRes))
         for (var i = 0; i < tokenListRes.length; i++) {
           //for循环数据中的每一项（根据name值）
-          console.log('tokenList',tokenListRes)
+          // console.log('tokenList',tokenListRes)
           if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
             //判断输入框中的值是否可以匹配到数据，如果匹配成功
             arrByZM.push(tokenListRes[i]);
@@ -621,13 +621,14 @@ export default {
           }
         }
       } else {
-        console.log(555555)
+        // console.log(555555)
         var arrByZM = [];//声明一个空数组来存放数据
-        for (var i = 0; i < _this.tokenList.length; i++) {
+        let tokenListRes = _this.tokenAllList[this.chainIdRes]
+        for (var i = 0; i < tokenListRes.length; i++) {
           //for循环数据中的每一项（根据name值）
-          if (_this.tokenList[i].address.search(_this.searchToken) != -1) {
+          if (tokenListRes[i] && tokenListRes[i].address.search(_this.searchToken) != -1) {
             //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(_this.tokenList[i]);
+            arrByZM.push(tokenListRes[i]);
             //向空数组中添加数据
           }
         }
@@ -646,7 +647,7 @@ export default {
       //   });
       // }
       //一定要记得返回筛选后的数据
-      console.log(`token result`,arrByZM)
+      // console.log(`token result`,arrByZM)
       return arrByZM;
     },
     account_default_address() {
@@ -664,17 +665,20 @@ export default {
       let v = this
       let contract_address = v.chainForm.contract
       let toChainId = v.chainTo.chainId
-      console.log('toChainId', toChainId)
-      console.log('contract_address', contract_address)
+      // console.log('toChainId', toChainId)
+      // console.log('contract_address', contract_address)
       //创建合约
       let contract = new v.myWeb3.eth.Contract(mapAbi, contract_address)
-      console.log('contract', contract)
+      // console.log('contract', contract)
       //查询代币余额
       let gas = await contract.methods.chainGasFee(toChainId).call();
 
       v.gasFee = gas
+
+      // console.log(`gas test bbbbbbb`,gas,toChainId)
       v.gasFeeVue = new Decimal(gas).div(new Decimal(Math.pow(10, 18)))
-      console.log('gas', parseInt(gas))
+      // console.log(`gas test ccccccc`,gas)
+      // console.log('gas', parseInt(gas))
     },
 
     //交换链
@@ -685,16 +689,6 @@ export default {
       this.changeChain = true
 
       this.handleLink(v.chainTo)
-
-      // if (this.changeChain == true) {
-      //
-      //   let fromChain = v.chainForm
-      //   let toChain = v.chainTo
-      //
-      //   v.chainForm = toChain
-      //   v.chainTo = fromChain
-      // }
-
 
     },
 
@@ -755,7 +749,7 @@ export default {
 
       v.tokenList = v.tokenAllList[chainId]
 
-      console.log('TokenList', v.tokenList)
+      // console.log('TokenList', v.tokenList)
 
       if (!v.tokenList || v.tokenList.length == 0) {
         v.tokenList = []
@@ -803,7 +797,7 @@ export default {
       this.selectToken.url = item.img
       this.selectToken.address = item.address
 
-      console.log('selecToken', this.selectToken.address)
+      // console.log('selecToken', this.selectToken.address)
 
       this.balanceZ = item.amount
 
@@ -821,7 +815,7 @@ export default {
 
     //获取主币余额
     async getBalance(item) {
-      console.log('getBalance')
+      // console.log('getBalance')
       //console.log('TokenAddress', item.address)
       let v = this
       var local_address = await v.action.getAddress()
@@ -851,34 +845,35 @@ export default {
 
     //获取代币余额
     async getTokenBalance(item) {
-      console.log('getTokenBalance', item.address)
+      // console.log('getTokenBalance', item.address)
       let v = this
       let token_address = item.address;
       var local_address = await v.action.getAddress()
+      // console.log('local_address',local_address)
       //创建合约
       if (!v.myWeb3) {
-        console.log(666666)
         return
       }
       let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
-      console.log('contract',contract)
+      // console.log('contract',contract)
       // 查询代币余额
       let balance = await contract.methods.balanceOf(local_address).call();
-      // //console.log('代币余额', balance)
       //获取代币精度
       let decimals = item.decimal
-      // //console.log(decimals, 'decimals')
+      // console.log(decimals, 'decimals')
 
       if (balance) {
         var newObject = {}
         newObject.amount = new Decimal(balance).div(Math.pow(10, decimals))
         newObject.amount = Math.floor(newObject.amount * 1000000) / 1000000
+        // console.log('newObject.amount',newObject.amount)
         item = Object.assign(item, newObject)
         item = JSON.parse(JSON.stringify(item));
         // if (item.amount==0){
         //   item.amount = '0.00';
         // }
       }
+      // console.log('item',item)
       return item
     },
 
@@ -908,7 +903,7 @@ export default {
 
       // return
       let reward_address = v.chainForm.contract
-      console.log('reward_address', reward_address)
+      // console.log('reward_address', reward_address)
       var local_address = await v.action.getAddress()
       //console.log('local_address', local_address)
 
@@ -926,7 +921,7 @@ export default {
 
       //当前选择Token
       var TokenAddress = v.selectToken.address
-      console.log('TokenAddress', TokenAddress)
+      // console.log('TokenAddress', TokenAddress)
 
 
       //chainid
@@ -942,7 +937,7 @@ export default {
       token.forEach((i, k) => {
         // console.log('address',i.address,TokenAddress)
         if (i.symbol == 'MAP') {
-          console.log('i.amount', i.amount)
+          // console.log('i.amount', i.amount)
           v.mapBalance = new Decimal(i.amount).mul(new Decimal(Math.pow(10, 18)))
           // console.log('mapBalance',(v.mapBalance).toString())
         }
@@ -951,17 +946,7 @@ export default {
           return
         }
       })
-
-      console.log('mapBalance', (v.mapBalance).toString())
-
-
       //console.log('decimal==', decimal)
-      //
-      // let stakeNum = new Decimal(v.sendAmount).mul(Math.pow(10, decimal))
-      // //console.log('stakeNum', stakeNum)
-
-      // let bl = new Decimal(v.balanceZ).mul(Math.pow(10, decimal));
-
 
       var reward_stakeData;
 
@@ -986,7 +971,7 @@ export default {
 
       //调用合约执行
       let reward_contract = new v.myWeb3.eth.Contract(mapAbi, reward_address)
-      console.log('reward_contract', reward_contract)
+      // console.log('reward_contract', reward_contract)
 
       var valueFee;
 
@@ -999,7 +984,7 @@ export default {
         } else {
           valueFee = v.sendAllAmount
         }
-        console.log(valueFee, 'valueFee')
+        // console.log(valueFee, 'valueFee')
         transParams = {
           from: local_address,
           to: reward_address,
@@ -1009,7 +994,7 @@ export default {
 
       } else if (v.selectToken.isMint == 1) {
         reward_stakeData = reward_contract.methods.transferOutTokenBurn(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-        console.log('reward_stakeData', reward_stakeData)
+        // console.log('reward_stakeData', reward_stakeData)
         transParams = {
           from: local_address,
           to: reward_address,
@@ -1017,9 +1002,9 @@ export default {
           value: new Decimal(v.gasFee).toFixed(0)
         }
       } else {
-        console.log('代币Trans')
+        // console.log('代币Trans')
         reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-        console.log('reward_stakeData', reward_stakeData)
+        // console.log('reward_stakeData', reward_stakeData)
         transParams = {
           from: local_address,
           to: reward_address,
@@ -1029,12 +1014,12 @@ export default {
       }
 
 
-      console.log('transParams', transParams)
+      // console.log('transParams', transParams)
 
       if (parseInt(v.chainForm.chainId) == 22776) {
         if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
-          console.log('valueFee', parseInt(valueFee))
-          console.log('mapBalance', parseInt(v.mapBalance))
+          // console.log('valueFee', parseInt(valueFee))
+          // console.log('mapBalance', parseInt(v.mapBalance))
           if (valueFee.comparedTo(v.mapBalance) > 0) {
             v.$toast('Insufficient balance')
             return
@@ -1092,7 +1077,7 @@ export default {
         v.dialogTransing = false
         //console.log(`error`, receipt)
       })
-      console.log('rewardReceipt', rewardReceipt);
+      // console.log('rewardReceipt', rewardReceipt);
       this.getAllData()
     },
 
@@ -1122,7 +1107,7 @@ export default {
         hash: v.transHash  //hash
       }
 
-      console.log('params', params)
+      // console.log('params', params)
       let result = v.$http.getSubBrigge(params)
       if (result.code == 200) {
       }
@@ -1135,7 +1120,7 @@ export default {
       var local_address = await v.action.getAddress()
       var chainId = await v.action.getChainId()
       chainId = parseInt(chainId.slice(2), 16)
-      console.log('CHAINID', chainId)
+      // console.log('CHAINID', chainId)
       var params = {
         chainId: chainId,
         address: local_address,
@@ -1148,7 +1133,7 @@ export default {
         v.historyList = result.data.list
         v.total = result.data.total
         v.pageNum = Math.ceil(v.total / v.pageSize) || 1;
-        console.log('hisTory', v.historyList)
+        // console.log('hisTory', v.historyList)
 
 
         for (const item of v.historyList) {
@@ -1168,11 +1153,11 @@ export default {
             }
           }
 
-          console.log('amount', item.amount)
+          // console.log('amount', item.amount)
 
           var token = v.tokenAllList[fromChainId]
 
-          console.log('item.tokenAddress', item.tokenAddress)
+          // console.log('item.tokenAddress', item.tokenAddress)
           // console.log('tokem',token)
 
           token.forEach((i, k) => {
@@ -1245,14 +1230,14 @@ export default {
 
         //链接
         v.chainList.forEach(item => {
-          console.log('item', item)
+          // console.log('item', item)
           if (v.historyDetailList.fromChainId == item.chainId) {
             v.fromHref = item.scanUrl
-            console.log(v.fromHref, 'fromHref')
+            // console.log(v.fromHref, 'fromHref')
           }
           if (v.historyDetailList.toChainId == item.chainId) {
             v.toHref = item.scanUrl
-            console.log(v.toHref, 'toHref')
+            // console.log(v.toHref, 'toHref')
           }
 
         })
@@ -1667,7 +1652,7 @@ export default {
     async checkApproved(token) {
 
       let v = this
-      console.log('TokenAddress', this.selectToken.address)
+      // console.log('TokenAddress', this.selectToken.address)
 
       if (!v.myWeb3) {
         return
@@ -1690,24 +1675,24 @@ export default {
 
       var local_address = await v.action.getAddress()
 
-      console.log('tokenlist', v.tokenList)
+      // console.log('tokenlist', v.tokenList)
 
       var tokenAddress = ''
 
       v.tokenAllList[v.chainForm.chainId].forEach(item => {
 
         if (item.symbol == token) {
-          console.log("name", item.symbol, token)
+          // console.log("name", item.symbol, token)
           tokenAddress = item.address
           return
         }
       })
 
-      console.log('TokenAddress', tokenAddress)
+      // console.log('TokenAddress', tokenAddress)
 
 
       let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
-      console.log(`rewardaddress`, v.chainForm.contract)
+      // console.log(`rewardaddress`, v.chainForm.contract)
       contract.methods.allowance(local_address, v.chainForm.contract).call(function (error, result) {
         // //console.log('result',result)
         if (result && result != 0) {
@@ -1743,7 +1728,7 @@ export default {
     async checkMapApproved() {
 
       let v = this
-      console.log('TokenAddress', this.selectToken.address)
+      // console.log('TokenAddress', this.selectToken.address)
 
       if (!v.myWeb3) {
         return
@@ -1753,13 +1738,13 @@ export default {
 
         await v.actionGasFee()
         // v.gasFee=1
-        console.log('v.gasFee', v.gasFee)
+        // console.log('v.gasFee', v.gasFee)
         if (v.gasFee > 0) {
           v.allowanceMap = false
           v.approveMapHash = false
           var local_address = await v.action.getAddress()
 
-          console.log('tokenlist', v.tokenList)
+          // console.log('tokenlist', v.tokenList)
 
           var tokenAddress = ''
 
@@ -1772,13 +1757,13 @@ export default {
             }
           })
 
-          console.log('TokenAddress', tokenAddress)
+          // console.log('TokenAddress', tokenAddress)
 
 
           let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
-          console.log(`rewardaddress`, v.chainForm.contract)
+          // console.log(`rewardaddress`, v.chainForm.contract)
           contract.methods.allowance(local_address, v.chainForm.contract).call(function (error, result) {
-            console.log('result', result)
+            // console.log('result', result)
             if (result && result != 0) {
               console.log(result)
               v.allowanceMap = true
@@ -1845,11 +1830,11 @@ export default {
 
         let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
         let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
-        console.log(`sourceNetwork`,sourceNetwork,`destNetwork`,destNetwork)
-        console.log('chainList', this.chainList)
+        // console.log(`sourceNetwork`,sourceNetwork,`destNetwork`,destNetwork)
+        // console.log('chainList', this.chainList)
         //chainForm
         for (let chains of v.chainList) {
-          console.log('chains',chains)
+          // console.log('chains',chains)
           if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
             v.chainForm = chains;
 
@@ -1874,13 +1859,13 @@ export default {
         //   }
         // })
         this.actionTokenList()
-        console.log('chainList', this.chainList)
+        // console.log('chainList', this.chainList)
       }
     },
 
     //获取Token列表
     async actionTokenList() {
-      console.log('actionTokenList')
+      // console.log('actionTokenList')
       let v = this
       // let result = await v.$http.tokenList()
       // if (result.code = 200) {
@@ -1893,12 +1878,12 @@ export default {
 
     //获取Chain的Token
     async actionCheckChainToken() {
-      console.log('actionCheckChainToken')
+      // console.log('actionCheckChainToken')
       var v = this;
       var chainId = await v.action.getChainId()
       chainId = new BN(chainId.slice(2), 16)
       //console.log('chainid',parseInt(chainId))
-      console.log('tokenlist', v.tokenAllList[chainId])
+      // console.log('tokenlist', v.tokenAllList[chainId])
 
       v.tokenList = v.tokenAllList[chainId]
 
@@ -1906,13 +1891,13 @@ export default {
       var flag = false
       for (var i = 0; i < tokenlist.length; i++) {
         if (tokenlist[i].symbol == 'MAP') {
-          console.log('tokenlist[i].address', tokenlist[i].address)
+          // console.log('tokenlist[i].address', tokenlist[i].address)
           v.selectToken.name = tokenlist[i].symbol
           v.selectToken.address = tokenlist[i].address
           v.selectToken.url = tokenlist[i].img
           v.selectToken.isMint = tokenlist[i].isMint
           // v.selectToken = tokenlist[i]
-          console.log(' v.selectToken', v.selectToken)
+          // console.log(' v.selectToken', v.selectToken)
           v.checkMapApproved();
           flag = true
           break;
@@ -2809,6 +2794,7 @@ export default {
 }
 
 .history-status {
+  margin-left: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -2817,21 +2803,36 @@ export default {
   border: solid 1px rgba(228, 78, 58, 1);
   padding: 11px 11px 11px 12px;
   color: #e44e3a;
-
+  width: 140px;
+  position: relative;
+  box-sizing: border-box;
   img {
     width: 8px;
+    position: absolute;
+    right: 11px;
     margin-left: 8px;
+  }
+  span {
+    padding-left: 21px;
   }
 }
 
 .history-status-success {
   border: solid 1px #4FC320;
   color: #4FC320;
+  //width: 140px;
+  span {
+    padding-left: 0;
+  }
 }
 
 .history-status-cancel {
   border: solid 1px rgba(255, 184, 46, 1);
   color: #ffb82e;
+  //width: 140px;
+  span {
+    padding-left: 0;
+  }
 }
 
 .history-bottom {
@@ -3104,8 +3105,15 @@ export default {
 
   //history
   .history-coin {
+    font-size: 12px;
     img {
-      width: 30px;
+      width: 25px;
+    }
+    img:nth-child(3) {
+      margin: 0 10px;
+    }
+    span {
+      padding-left: 5px;
     }
   }
 
@@ -3116,8 +3124,27 @@ export default {
 
 
   .history-status {
-    padding: 8px;
-    font-size: 14px;
+    width: 125px;
+    padding: 5px 2px;
+    font-size: 12px;
+    img {
+      width: 5px;
+    }
+    span {
+      padding-left: 25px;
+    }
+  }
+
+  .history-status-success {
+    span {
+      text-align: center;
+    }
+  }
+
+  .history-status-cancel {
+    span {
+      text-align: center;
+    }
   }
 
   .history-bottom {
@@ -3233,6 +3260,13 @@ export default {
         font-size: 14px;
       }
     }
+    .btn-next {
+      button {
+        width: 100px;
+        font-size: 14px;
+      }
+    }
+
   }
 
 
@@ -3327,6 +3361,15 @@ export default {
   .tran-send-address-input {
     width: 90%;
     height: 29px;
+  }
+
+  .history-status {
+    img {
+      width: 5px;
+    }
+    span {
+      padding-left: 5px;
+    }
   }
 
 
