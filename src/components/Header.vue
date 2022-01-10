@@ -38,6 +38,7 @@
 
       <script>
       import Vue from 'vue'
+      import config from '../config/configTest'
       const Web3 = require('web3');
           export default {
               name: "Header",
@@ -49,7 +50,7 @@
                     error:false,
                     chainIcon:require('../assets/eth-icon.png'),
                     chainName:'Ethereum Mainnet',
-                    chainId:'0x1',//要修改
+                    chainId: config.ethId,//要修改
                   }
               },
               computed: {
@@ -63,9 +64,6 @@
               watch: {
                 $route: {
                   handler() {
-                    // console.log( this.$route.query.sourceNetwork);
-                    // console.log( this.$route.query.destNetwork);
-
                     //深度监听，同时也可监听到param参数变化
                   },
                   deep: true,
@@ -111,28 +109,15 @@
                   },
                   async actionAddress() {
                     this.address = await this.action.getSortAddress()
-                    //修改
-                    // if (window.web3 && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1')){
-                    //   this.error=false
-                    // } else  {
-                    //   this.error=true
-                    // }
                   },
                   async getChainId(){
-                  // const chainId = await ethereum.request({ method: 'eth_chainId' });
-                  //   if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
-                  //     this.error=false
-                  //   } else  {
-                  //     this.error=true
-                  //   }
-
                   //！链id不是马上拿到的，如果通过链id来判断是不是主网的方式，请注意异步
                     let v = this
                     let chainId = await v.action.getChainId()
                     const params = v.$route.query;
-
+                    console.log('chainId',chainId,params)
                     // console.log('chainIDDDDD',chainId,params.sourceNetwork)
-                    if ((chainId=='0x1' || chainId=='1') && params.sourceNetwork=='ETH') {
+                    if ((chainId== config.ethId || chainId== config.ethDefaultId) && params.sourceNetwork=='ETH') {
                     // if (chainId=='0x1' || chainId=='0x3' && params.sourceNetwork=='ETH') {
                       v.error = false
                       v.chainIcon = require('../assets/eth-icon.png')
@@ -143,7 +128,7 @@
                       v.chainIcon = require('../assets/token/map.png')
                       v.chainName = 'MAP Makalu'
                     }
-                    else if ((chainId=='0x38' || chainId=='38') && params.sourceNetwork=='BSC') {
+                    else if ((chainId== config.bscId || chainId== config.bscDefaultId) && params.sourceNetwork=='BSC') {
                     // else if (chainId=='0x61' || chainId=='0x38' && params.sourceNetwork=='BSC') {
                       v.error = false
                       v.chainIcon = require('../assets/token/bsc.png')
@@ -154,24 +139,19 @@
                       v.error = true
                       if (params.sourceNetwork=='ETH') {
                         // v.chainId = '0x3'//测试ETH
-                        v.chainId = '0x1'//正式
+                        v.chainId = config.ethId//正式
                       }
                       else if (params.sourceNetwork=='MAP') {
                         v.chainId = '0x58f8'
                       }
                       else if (params.sourceNetwork=='BSC') {
                         // v.chainId = '0x61' //测试
-                        v.chainId = '0x38' // 正式
+                        v.chainId = config.bscId // 正式
                       }
                     }
                 }
               },
             mounted() {
-                // if (window.web3 && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
-                //   // this.error=false
-                // } else  {
-                //   // this.error=true
-                // }
                   this.getChainId()
                   this.actionAddress()
               }

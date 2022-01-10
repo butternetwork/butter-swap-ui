@@ -91,7 +91,7 @@
             </div>
             <div class="tran-send-fee">
               <img src="../assets/error.png"/>
-              <span style="padding-top: 3px">Fee:{{ gasFeeVue }} MAP</span>
+              <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>
             </div>
           </div>
           <!--                connect-->
@@ -439,7 +439,7 @@ import moment from "moment";
 
 const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
-import config from '@/config/base'
+import config from '@/config/configTest'
 
 
 export default {
@@ -503,7 +503,15 @@ export default {
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
-      tokenAllList: {"1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":0,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],"22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]},//Token所有列表
+      // tokenAllList: {
+      //   "1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":0,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
+      //   "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
+      // },//Token所有列表
+      tokenAllList: {
+        "97":[{"id":3,"tokenId":"USDT","address":"0x876776d918845330ce55869F4f784304179B3fdB","name":"USDT","chainId":97,"isMint":0,"symbol":"USDT","decimal":6,"img":"https://files.maplabs.io/bridge/usdt.png"},{"id":6,"tokenId":"MintToken","address":"0x58392329E23eB6783aA010449f41d0D1685770A3","name":"MintToken","chainId":97,"isMint":1,"symbol":"MintToken","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":9,"tokenId":"MAP","address":"0x624F96Ea37bBbEA15Df489f9083Fe786BAf15723","name":"MAP","chainId":97,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"BNB","address":"0x0000000000000000000000000000000000000000","name":"BNB","chainId":97,"isMint":0,"symbol":"BNB","decimal":18,"img":"https://files.maplabs.io/bridge/bnb.png"},{"id":15,"tokenId":"ETH","address":"0x173381BfA52b998E09A54288705aA65Bfa3c0CEB","name":"ETH","chainId":97,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
+        "3":[{"id":1,"tokenId":"USDT","address":"0xD100135b823661EbdE67d12dCA7567723834014d","name":"USDT","chainId":3,"isMint":0,"symbol":"USDT","decimal":6,"img":"https://files.maplabs.io/bridge/usdt.png"},{"id":4,"tokenId":"MintToken","address":"0x4FeF2283a7012021e43Bae13aaAEBE9B638D5c10","name":"MintToken","chainId":3,"isMint":1,"symbol":"MintToken","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":7,"tokenId":"MAP","address":"0x47f423C44976Fbe745588020b85B09A56458f9C0","name":"MAP","chainId":3,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":10,"tokenId":"BNB","address":"0xcCb6a0bE688FEE5E600dbFcF6CA7c3c4a0610027","name":"BNB","chainId":3,"isMint":0,"symbol":"BNB","decimal":18,"img":"https://files.maplabs.io/bridge/bnb.png"},{"id":13,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":3,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
+        "22776":[{"id":2,"tokenId":"USDT","address":"0x1f027B5B09924AC420002C1d09F7241c2041045A","name":"USDT","chainId":22776,"isMint":0,"symbol":"USDT","decimal":6,"img":"https://files.maplabs.io/bridge/usdt.png"},{"id":5,"tokenId":"MintToken","address":"0x6f8a032FfB7872e347D726437d95e52678C8092D","name":"MintToken","chainId":22776,"isMint":1,"symbol":"MintToken","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":8,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP","chainId":22776,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"BNB","address":"0x3396cefCeaBF3EC10a1B98022e5735C0Bf769c34","name":"BNB","chainId":22776,"isMint":0,"symbol":"BNB","decimal":18,"img":"https://files.maplabs.io/bridge/bnb.png"},{"id":14,"tokenId":"ETH","address":"0x86451bd490Ff3607B4311F45d524A2b170Da03E2","name":"ETH","chainId":22776,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
+      },//Token所有列表
       historyList: [],//history记录
       historyFromLogo: '', //历史记录 From logo
       historyToLogo: '',//历史记录 To logo
@@ -564,6 +572,7 @@ export default {
       if (!_this.chainList) {
         return
       }
+      console.log('ssssss',_this.chainList)
       //逻辑-->根据input的value值筛选goodsList中的数据
       if (!_this.isNumber(_this.searchVal)) {
         var arrByZM = [];//声明一个空数组来存放数据
@@ -571,7 +580,7 @@ export default {
           //for循环数据中的每一项（根据name值）
           if (_this.chainList[i].chainName.search(_this.searchVal) != -1) {
             //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(_this.chainList[i]);
+            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
             //向空数组中添加数据
           }
         }
@@ -581,7 +590,7 @@ export default {
           //for循环数据中的每一项（根据name值）
           if (_this.tokenList[i].chainId.search(_this.searchVal) != -1) {
             //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(_this.chainList[i]);
+            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
             //向空数组中添加数据
           }
         }
@@ -609,27 +618,32 @@ export default {
       // //console.log(inputContent)
       if (inputContent !== '0x') {
         var arrByZM = [];//声明一个空数组来存放数据
-        let tokenListRes = _this.tokenAllList[this.chainIdRes]
+        let tokenListRes = _this.tokenAllList[_this.chainIdRes]
         // console.log('tokenList33333',tokenListRes, parseInt(this.chainIdRes))
-        for (var i = 0; i < tokenListRes.length; i++) {
-          //for循环数据中的每一项（根据name值）
-          // console.log('tokenList',tokenListRes)
-          if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
-            //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(tokenListRes[i]);
-            //向空数组中添加数据
+        if (tokenListRes) {
+          for (var i = 0; i < tokenListRes.length; i++) {
+            //for循环数据中的每一项（根据name值）
+            // console.log('tokenList',tokenListRes)
+            if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
+              //判断输入框中的值是否可以匹配到数据，如果匹配成功
+              arrByZM.push(tokenListRes[i]);
+              //向空数组中添加数据
+            }
           }
         }
+
       } else {
         // console.log(555555)
         var arrByZM = [];//声明一个空数组来存放数据
-        let tokenListRes = _this.tokenAllList[this.chainIdRes]
-        for (var i = 0; i < tokenListRes.length; i++) {
-          //for循环数据中的每一项（根据name值）
-          if (tokenListRes[i] && tokenListRes[i].address.search(_this.searchToken) != -1) {
-            //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(tokenListRes[i]);
-            //向空数组中添加数据
+        let tokenListRes = _this.tokenAllList[_this.chainIdRes]
+        if (tokenListRes) {
+          for (var i = 0; i < tokenListRes.length; i++) {
+            //for循环数据中的每一项（根据name值）
+            if (tokenListRes[i] && tokenListRes[i].address.search(_this.searchToken) != -1) {
+              //判断输入框中的值是否可以匹配到数据，如果匹配成功
+              arrByZM.push(tokenListRes[i]);
+              //向空数组中添加数据
+            }
           }
         }
       }
@@ -1346,130 +1360,58 @@ export default {
 
     //切换链
     async handleLink(item) {
-
-      console.log(' v.chain', this.chainForm, this.chainTo)
-
-      var v = this
-
-      var toChain = v.chainTo
-      var fromChain = v.chainForm
-
-      // //console.log(index)
-      let path;
-      let chain;
-
-      // this.$router.push({
-      //   path: '/',
-      //   query: {token: this.selectToken.symbol, sourceNetwork: this.sourcePath, destNetwork: this.destNetwork}
-      // })
-
-
+      let v = this;
       //To 选择
-      if (this.selectChain == 1) {
-        this.destNetwork = path
-        this.chainTo.chainName = item.chainName
-        this.chainTo.chainImg = item.chainImg
-        this.chainTo.chainId = item.chainId
-        this.chainTo.contract = item.contract
-        this.chainTo.chain = item.chain
+      if (this.selectChain === 1) {
+        this.chainTo = JSON.parse(JSON.stringify(item));
         this.destNetwork = item.chain
         v.showSelectChain = false
-        v.actionGetChain()
-
-        // const params = this.$route.query;
-        // params.destNetwork = item.chain
-        // console.log('params',params)
-
         this.$router.push({
           path: '/',
           query: {token: v.selectChain.symbol, sourceNetwork: v.$route.query.sourceNetwork, destNetwork:v.chainTo.chain}
         })
-
+        return
+      }
+      if (!window.ethereum){
         return
       }
 
-      //console.log(' item.chainId', item.chainId)
-      chain = '0x' + parseInt(item.chainId).toString(16)
+
+      let chain='0x' + parseInt(item.chainId).toString(16)
       //From 切换链
-      window.ethereum &&
-      window.ethereum
-          .request({
+      window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [
-              {
-                chainId: chain
-              },
-            ],
+            params: [{chainId: chain}],
           })
           .then(async () => {
-            // v.changeChain = true
-            // //console.log('Change Success')
             //切换网络
             if (v.changeChain) {
-              v.chainTo = fromChain
-              v.chainForm = toChain
+              let temp=v.chainTo;
+              v.chainTo = v.chainForm;
+              v.chainForm = temp;
+              v.changeChain=false;
+              v.$router.push({
+                path: '/',
+                query: {token: v.selectChain.symbol, sourceNetwork:v.$route.query.destNetwork , destNetwork:v.chainTo.chain}
+              })
+              return;
             }
-            //console.log(' v.chainTo', v.chainTo,v.chainForm)
-            if (v.selectChain == 0) {
-              v.selectToken.address = null
-              v.sourcePath = item.chain
-              v.chainForm.chainName = item.chainName
-              v.chainForm.chainImg = item.chainImg
-              v.chainForm.chainId = item.chainId
-              v.chainForm.chain = item.chain
-              v.chainForm.contract = item.contract
-
-
-              console.log('query',v.$route.query)
-              console.log('v.chainForm.chain',v.chainForm.chain)
-              console.log('v.changeChain',v.changeChain)
-
-              // console.log('=========',v.chainForm.chain , v.chainTo.chain)
-              // console.log('=========',v.chainList)
-              // if (v.chainForm.chain == v.chainTo.chain) {
-              //   console.log('=========',v.chainForm.chain , v.chainTo.chain)
-              //   console.log('=========',v.chainList)
-              //     if (v.chainList[0].chain == v.chainForm.chain ) {
-              //       console.log('=========',v.chainForm.chain , v.chainTo.chain)
-              //       console.log('========',v.chainList[1], v.chainTo)
-              //       v.chainTo = v.chainList[1]
-              //     }
-              //     else  {
-              //       v.chainTo= v.chainList[0]
-              //     }
-              //
-              //
-              // }
-
-              if (v.changeChain) {
-                v.$router.push({
-                  path: '/',
-                  query: {token: v.selectChain.symbol, sourceNetwork:v.$route.query.destNetwork , destNetwork:v.chainTo.chain}
-                })
-              }
-            else  {
-                console.log('default change')
-                v.$router.push({
-                  path: '/',
-                  query: {token: v.selectChain.symbol, sourceNetwork:v.chainForm.chain , destNetwork:v.chainTo.chain}
-                })
-              }
-
-              v.changeChain=false
-
-
-
-              console.log(' v.chainForm.contract', v.chainForm.contract)
-
-              v.actionCheckChainToken()
-              v.actionShowToken()
-              v.checkMapApproved()
-              v.actionGetChain()
-              v.getAllData()
-              // v.checkApproved(v.selectToken.name);
+            console.log(' v.chainTo', v.chainTo,v.chainForm)
+            //from
+            if (v.selectChain !== 0) {
+              return
             }
+            v.selectToken.address = null
+            v.sourcePath = item.chain
+            v.chainForm = JSON.parse(JSON.stringify(item));
             v.showSelectChain = false
-
+            if (v.chainForm.chain === v.chainTo.chain) {
+              v.chainTo = this.getDifChain(v.chainTo.chain)
+            }
+            v.$router.replace({
+              path: '/',
+              query: {sourceNetwork:item.chain , destNetwork:v.chainTo.chain}
+            })
           })
           .catch((e) => {
             //console.log(e)
@@ -1478,12 +1420,23 @@ export default {
 
     //打开选择链弹窗
     actionChain(i) {
-      // this.showSelectChain = true
+      this.showSelectChain = true
       if (i == 0) {
         this.selectChain = 0
       } else if (i == 1) {
         this.selectChain = 1
       }
+    },
+
+    //判断当前的From chain 与 To chain 是否一样
+    getDifChain(chainName){
+      for (let item of this.chainList) {
+        if (chainName!==item.chain){
+          return JSON.parse(JSON.stringify(item));
+        }
+      }
+      return null;
+
     },
 
     //显示地址
@@ -1836,30 +1789,19 @@ export default {
         for (let chains of v.chainList) {
           // console.log('chains',chains)
           if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
-            v.chainForm = chains;
+            v.chainForm = JSON.parse(JSON.stringify(chains));
 
             console.log()
             // v.chainForm.contract = chains.contract
           }
           if (chains.chain.toUpperCase() == destNetwork.toUpperCase()) {
-            v.chainTo = chains;
+            v.chainTo = JSON.parse(JSON.stringify(chains));
             // v.chainTo.contract = chains.contract
           }
         }
-
-
-        // v.chainList.forEach(item => {
-        //   if (item.chain == 'ETH') {
-        //
-        //     // console.log('this.chainForm.contract',this.chainForm.contract)
-        //   }
-        //   if (item.chain == 'MAP') {
-        //
-        //     // console.log('this.chainTo.contract',  this.chainTo.contract)
-        //   }
-        // })
+        console.log('chainList', this.chainList)
         this.actionTokenList()
-        // console.log('chainList', this.chainList)
+
       }
     },
 
@@ -1867,12 +1809,12 @@ export default {
     async actionTokenList() {
       // console.log('actionTokenList')
       let v = this
-      // let result = await v.$http.tokenList()
-      // if (result.code = 200) {
-      //
-      //   v.tokenAllList = result.data.list
-      //
-      // }
+      let result = await v.$http.tokenList()
+      if (result.code = 200) {
+
+        v.tokenAllList = result.data.list
+
+      }
       v.actionCheckChainToken()
     },
 

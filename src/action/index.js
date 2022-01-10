@@ -1,5 +1,6 @@
 import bus from '../bus.js'
 import Vue from "vue";
+import config from '../config/configTest'
 
 export default {
     async getAddress() {
@@ -22,7 +23,7 @@ export default {
     async scanMetaMaskAccount() {
         //以太坊web3
         const Web3 = require('web3');
-        if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x1' || window.ethereum.chainId == '1' || window.ethereum.chainId == '0x58f8' || window.ethereum.chainId == '58f8' || window.ethereum.chainId == '22776')){
+        if (window.web3 && window.ethereum && (window.ethereum.chainId == config.ethId || window.ethereum.chainId == config.ethDefaultId || window.ethereum.chainId == '0x58f8' || window.ethereum.chainId == '58f8' || window.ethereum.chainId == '22776')){
         // if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
             Vue.prototype.myWeb3 =  new Web3(window.web3.currentProvider);
         }
