@@ -160,7 +160,6 @@
                 No data
               </div>
             </div>
-
             <div class="history-ant">
               <!--              <img src="../assets/ant.png"/>-->
               <!--              <span>In the end</span>-->
@@ -176,7 +175,8 @@
     <div v-show="showSelectChain" class="dialog-selectChain">
       <div class="dialog-content">
         <div class="dialog-selectChain-title">
-          <span>Select Source Chain</span>
+          <span v-if="selectChain==0">Select Source Chain</span>
+          <span v-else>Select Destination Chain</span>
           <img @click="showSelectChain=false" src="../assets/cancel.png"/>
         </div>
         <div class="dialog-selectChain-search">
@@ -206,7 +206,7 @@
           <input v-model="searchToken" placeholder="Search token by name or address">
         </div>
         <div class="dialog-token">
-          <div v-for="(item,index) in listToken" :key="index" @click="actionSelectToken(item,index)"
+          <div v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"
                class="dialog-token-content">
             <div class="dialog-token-contentlist">
               <div class="dialog-token-detail">
@@ -217,8 +217,10 @@
                     <span> {{ item.symbol }}</span>
                   </div>
                 </div>
-                <div v-if="item.amount || item.amount==0" class="dialog-token-detail-left-right">{{ item.amount }}
-                  <span>{{ item.symbol }}</span></div>
+                <div v-if="item.amount!=null && item.amount>=0"
+                     class="dialog-token-detail-left-right">{{ item.amount }}
+                  <span>{{ item.symbol }}</span>
+                </div>
                 <div v-else class="dialog-token-loading">
                   <img style="width:30px" src="../assets/loading2.gif"/>
                 </div>
@@ -508,9 +510,159 @@ export default {
       //   "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
       // },//Token所有列表
       tokenAllList: {
-        "97":[{"id":3,"tokenId":"USDT","address":"0x876776d918845330ce55869F4f784304179B3fdB","name":"USDT","chainId":97,"isMint":0,"symbol":"USDT","decimal":6,"img":"https://files.maplabs.io/bridge/usdt.png"},{"id":6,"tokenId":"MintToken","address":"0x58392329E23eB6783aA010449f41d0D1685770A3","name":"MintToken","chainId":97,"isMint":1,"symbol":"MintToken","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":9,"tokenId":"MAP","address":"0x624F96Ea37bBbEA15Df489f9083Fe786BAf15723","name":"MAP","chainId":97,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"BNB","address":"0x0000000000000000000000000000000000000000","name":"BNB","chainId":97,"isMint":0,"symbol":"BNB","decimal":18,"img":"https://files.maplabs.io/bridge/bnb.png"},{"id":15,"tokenId":"ETH","address":"0x173381BfA52b998E09A54288705aA65Bfa3c0CEB","name":"ETH","chainId":97,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
-        "3":[{"id":1,"tokenId":"USDT","address":"0xD100135b823661EbdE67d12dCA7567723834014d","name":"USDT","chainId":3,"isMint":0,"symbol":"USDT","decimal":6,"img":"https://files.maplabs.io/bridge/usdt.png"},{"id":4,"tokenId":"MintToken","address":"0x4FeF2283a7012021e43Bae13aaAEBE9B638D5c10","name":"MintToken","chainId":3,"isMint":1,"symbol":"MintToken","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":7,"tokenId":"MAP","address":"0x47f423C44976Fbe745588020b85B09A56458f9C0","name":"MAP","chainId":3,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":10,"tokenId":"BNB","address":"0xcCb6a0bE688FEE5E600dbFcF6CA7c3c4a0610027","name":"BNB","chainId":3,"isMint":0,"symbol":"BNB","decimal":18,"img":"https://files.maplabs.io/bridge/bnb.png"},{"id":13,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":3,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
-        "22776":[{"id":2,"tokenId":"USDT","address":"0x1f027B5B09924AC420002C1d09F7241c2041045A","name":"USDT","chainId":22776,"isMint":0,"symbol":"USDT","decimal":6,"img":"https://files.maplabs.io/bridge/usdt.png"},{"id":5,"tokenId":"MintToken","address":"0x6f8a032FfB7872e347D726437d95e52678C8092D","name":"MintToken","chainId":22776,"isMint":1,"symbol":"MintToken","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":8,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP","chainId":22776,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"BNB","address":"0x3396cefCeaBF3EC10a1B98022e5735C0Bf769c34","name":"BNB","chainId":22776,"isMint":0,"symbol":"BNB","decimal":18,"img":"https://files.maplabs.io/bridge/bnb.png"},{"id":14,"tokenId":"ETH","address":"0x86451bd490Ff3607B4311F45d524A2b170Da03E2","name":"ETH","chainId":22776,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
+        "97": [{
+          "id": 3,
+          "tokenId": "USDT",
+          "address": "0x876776d918845330ce55869F4f784304179B3fdB",
+          "name": "USDT",
+          "chainId": 97,
+          "isMint": 0,
+          "symbol": "USDT",
+          "decimal": 6,
+          "img": "https://files.maplabs.io/bridge/usdt.png"
+        }, {
+          "id": 6,
+          "tokenId": "MintToken",
+          "address": "0x58392329E23eB6783aA010449f41d0D1685770A3",
+          "name": "MintToken",
+          "chainId": 97,
+          "isMint": 1,
+          "symbol": "MintToken",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/idv.png"
+        }, {
+          "id": 9,
+          "tokenId": "MAP",
+          "address": "0x624F96Ea37bBbEA15Df489f9083Fe786BAf15723",
+          "name": "MAP",
+          "chainId": 97,
+          "isMint": 0,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 12,
+          "tokenId": "BNB",
+          "address": "0x0000000000000000000000000000000000000000",
+          "name": "BNB",
+          "chainId": 97,
+          "isMint": 0,
+          "symbol": "BNB",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/bnb.png"
+        }, {
+          "id": 15,
+          "tokenId": "ETH",
+          "address": "0x173381BfA52b998E09A54288705aA65Bfa3c0CEB",
+          "name": "ETH",
+          "chainId": 97,
+          "isMint": 0,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }],
+        "3": [{
+          "id": 1,
+          "tokenId": "USDT",
+          "address": "0xD100135b823661EbdE67d12dCA7567723834014d",
+          "name": "USDT",
+          "chainId": 3,
+          "isMint": 0,
+          "symbol": "USDT",
+          "decimal": 6,
+          "img": "https://files.maplabs.io/bridge/usdt.png"
+        }, {
+          "id": 4,
+          "tokenId": "MintToken",
+          "address": "0x4FeF2283a7012021e43Bae13aaAEBE9B638D5c10",
+          "name": "MintToken",
+          "chainId": 3,
+          "isMint": 1,
+          "symbol": "MintToken",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/idv.png"
+        }, {
+          "id": 7,
+          "tokenId": "MAP",
+          "address": "0x47f423C44976Fbe745588020b85B09A56458f9C0",
+          "name": "MAP",
+          "chainId": 3,
+          "isMint": 0,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 10,
+          "tokenId": "BNB",
+          "address": "0xcCb6a0bE688FEE5E600dbFcF6CA7c3c4a0610027",
+          "name": "BNB",
+          "chainId": 3,
+          "isMint": 0,
+          "symbol": "BNB",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/bnb.png"
+        }, {
+          "id": 13,
+          "tokenId": "ETH",
+          "address": "0x0000000000000000000000000000000000000000",
+          "name": "ETH",
+          "chainId": 3,
+          "isMint": 0,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }],
+        "22776": [{
+          "id": 2,
+          "tokenId": "USDT",
+          "address": "0x1f027B5B09924AC420002C1d09F7241c2041045A",
+          "name": "USDT",
+          "chainId": 22776,
+          "isMint": 0,
+          "symbol": "USDT",
+          "decimal": 6,
+          "img": "https://files.maplabs.io/bridge/usdt.png"
+        }, {
+          "id": 5,
+          "tokenId": "MintToken",
+          "address": "0x6f8a032FfB7872e347D726437d95e52678C8092D",
+          "name": "MintToken",
+          "chainId": 22776,
+          "isMint": 1,
+          "symbol": "MintToken",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/idv.png"
+        }, {
+          "id": 8,
+          "tokenId": "MAP",
+          "address": "0x0000000000000000000000000000000000000000",
+          "name": "MAP",
+          "chainId": 22776,
+          "isMint": 1,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 11,
+          "tokenId": "BNB",
+          "address": "0x3396cefCeaBF3EC10a1B98022e5735C0Bf769c34",
+          "name": "BNB",
+          "chainId": 22776,
+          "isMint": 0,
+          "symbol": "BNB",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/bnb.png"
+        }, {
+          "id": 14,
+          "tokenId": "ETH",
+          "address": "0x86451bd490Ff3607B4311F45d524A2b170Da03E2",
+          "name": "ETH",
+          "chainId": 22776,
+          "isMint": 0,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }]
       },//Token所有列表
       historyList: [],//history记录
       historyFromLogo: '', //历史记录 From logo
@@ -552,7 +704,9 @@ export default {
       approveMapHash: '',//Approve Map hash
       dialogApprovingMap: false,//approveing map diaglog
       mapBalance: '',
-      chainIdRes:1
+      chainIdRes: 1,
+
+      selectTokens:[]
     }
   },
 
@@ -563,63 +717,24 @@ export default {
     //检测到获取了地址
     account_default_address() {
       this.getAllData()
-    }
-  },
-
-  computed: {
-    listChain() {
-      var _this = this;
-      if (!_this.chainList) {
-        return
-      }
-      console.log('ssssss',_this.chainList)
-      //逻辑-->根据input的value值筛选goodsList中的数据
-      if (!_this.isNumber(_this.searchVal)) {
-        var arrByZM = [];//声明一个空数组来存放数据
-        for (var i = 0; i < _this.chainList.length; i++) {
-          //for循环数据中的每一项（根据name值）
-          if (_this.chainList[i].chainName.search(_this.searchVal) != -1) {
-            //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
-            //向空数组中添加数据
-          }
-        }
-      } else {
-        var arrByZM = [];//声明一个空数组来存放数据
-        for (var i = 0; i < _this.chainList.length; i++) {
-          //for循环数据中的每一项（根据name值）
-          if (_this.tokenList[i].chainId.search(_this.searchVal) != -1) {
-            //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
-            //向空数组中添加数据
-          }
-        }
-      }
-
-      //逻辑-->升序降序排列 false: 默认从小到大 true：默认从大到小
-      //判断，如果要letter不为空，说明要进行排序
-      // if(this.letter != ''){
-      //   arrByZM.sort(function( a , b){
-      //     if(_this.original){
-      //       return b[_this.letter] - a[_this.letter];
-      //     }else{
-      //       return a[_this.letter] - b[_this.letter];
-      //     }
-      //   });
-      // }
-      //一定要记得返回筛选后的数据
-      return arrByZM;
     },
-    listToken() {
-      // console.log(22222222)
+    account_change_chain() {
+      // this.getAllData()
+    },
+    searchToken(newV,oldV){
+      // console.log('searchToken',newV)
+      // if (newV.length<2){
+      //   return ;
+      // }
+
       var _this = this;
       //逻辑-->根据input的value值筛选goodsList中的数据
       var inputContent = _this.searchToken.substring(0, 2)
       // //console.log(inputContent)
+      var arrByZM = [];//声明一个空数组来存放数据
       if (inputContent !== '0x') {
-        var arrByZM = [];//声明一个空数组来存放数据
+
         let tokenListRes = _this.tokenAllList[_this.chainIdRes]
-        // console.log('tokenList33333',tokenListRes, parseInt(this.chainIdRes))
         if (tokenListRes) {
           for (var i = 0; i < tokenListRes.length; i++) {
             //for循环数据中的每一项（根据name值）
@@ -631,10 +746,7 @@ export default {
             }
           }
         }
-
       } else {
-        // console.log(555555)
-        var arrByZM = [];//声明一个空数组来存放数据
         let tokenListRes = _this.tokenAllList[_this.chainIdRes]
         if (tokenListRes) {
           for (var i = 0; i < tokenListRes.length; i++) {
@@ -646,8 +758,39 @@ export default {
             }
           }
         }
-      }
 
+      }
+        _this.selectTokens=arrByZM;
+    }
+
+  },
+
+  computed: {
+    listChain() {
+      var _this = this;
+      if (!_this.chainList) {
+        return
+      }
+      if (!_this.isNumber(_this.searchVal)) {
+        var arrByZM = [];
+        for (var i = 0; i < _this.chainList.length; i++) {
+          //for循环数据中的每一项（根据name值）
+          if (_this.chainList[i].chainName.search(_this.searchVal) != -1) {
+            //判断输入框中的值是否可以匹配到数据，如果匹配成功
+            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
+          }
+        }
+      } else {
+        var arrByZM = [];
+        for (var i = 0; i < _this.chainList.length; i++) {
+          //search 需要传递 toString类型 才能传递
+          if (_this.chainList[i] && (_this.chainList[i].chainId).toString().search((_this.searchVal).toString()) != -1) {
+            //判断输入框中的值是否可以匹配到数据
+            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
+            // arrByZM.push(_this.chainList[i]);
+          }
+        }
+      }
 
       //逻辑-->升序降序排列 false: 默认从小到大 true：默认从大到小
       //判断，如果要letter不为空，说明要进行排序
@@ -661,11 +804,63 @@ export default {
       //   });
       // }
       //一定要记得返回筛选后的数据
-      // console.log(`token result`,arrByZM)
       return arrByZM;
     },
+    // listToken() {
+    //   console.log('Computed listToken',new Date())
+    //   var _this = this;
+    //   //逻辑-->根据input的value值筛选goodsList中的数据
+    //   var inputContent = _this.searchToken.substring(0, 2)
+    //   // //console.log(inputContent)
+    //   if (inputContent !== '0x') {
+    //     var arrByZM = [];//声明一个空数组来存放数据
+    //     let tokenListRes = _this.tokenAllList[_this.chainIdRes]
+    //     if (tokenListRes) {
+    //       for (var i = 0; i < tokenListRes.length; i++) {
+    //         //for循环数据中的每一项（根据name值）
+    //         // console.log('tokenList',tokenListRes)
+    //         if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
+    //           //判断输入框中的值是否可以匹配到数据，如果匹配成功
+    //           arrByZM.push(tokenListRes[i]);
+    //           //向空数组中添加数据
+    //         }
+    //       }
+    //     }
+    //
+    //   } else {
+    //     var arrByZM = [];
+    //     let tokenListRes = _this.tokenAllList[_this.chainIdRes]
+    //     if (tokenListRes) {
+    //       for (var i = 0; i < tokenListRes.length; i++) {
+    //         //for循环数据中的每一项（根据name值）
+    //         if (tokenListRes[i] && tokenListRes[i].address.search(_this.searchToken) != -1) {
+    //           //判断输入框中的值是否可以匹配到数据，如果匹配成功
+    //           arrByZM.push(tokenListRes[i]);
+    //           //向空数组中添加数据
+    //         }
+    //       }
+    //     }
+    //   }
+    //   //逻辑-->升序降序排列 false: 默认从小到大 true：默认从大到小
+    //   //判断，如果要letter不为空，说明要进行排序
+    //   // if(this.letter != ''){
+    //   //   arrByZM.sort(function( a , b){
+    //   //     if(_this.original){
+    //   //       return b[_this.letter] - a[_this.letter];
+    //   //     }else{
+    //   //       return a[_this.letter] - b[_this.letter];
+    //   //     }
+    //   //   });
+    //   // }
+    //   //一定要记得返回筛选后的数据
+    //   // console.log(`token result`,arrByZM)
+    //   return arrByZM;
+    // },
     account_default_address() {
       return this.$store.state.account.default_address
+    },
+    account_change_chain() {
+      return this.$store.state.account.change_chain
     },
   },
 
@@ -747,9 +942,10 @@ export default {
     //Token弹窗余额获取
     async actionShowToken() {
 
+      this.selectTokens.forEach(item=>{
+        item.amount=null;
+      })
       let v = this
-
-      // //console.log('======',v.showSelectToken)
       var chainName;
 
       //链名字的币种
@@ -759,9 +955,9 @@ export default {
       chainId = new BN(chainId.slice(2), 16)
       //console.log('chainId', parseInt(chainId))
 
-      // v.tokenList.length=0
-
       v.tokenList = v.tokenAllList[chainId]
+      v.selectTokens = v.tokenAllList[chainId]
+      // console.log('actionShowToken', this.tokenList)
 
       // console.log('TokenList', v.tokenList)
 
@@ -790,15 +986,18 @@ export default {
           v.balanceZ = item.amount
           flag = true;
         }
-        a.push(item2)
+        a.push(JSON.parse(JSON.stringify(item2)))
 
         // console.log("item22222", item2)
         // v.$set(v.tokenList, i, item2)
       }
       v.tokenList = a
+      v.selectTokens=a;
       // console.log('tokenListsss',v.tokenList)
       if (!flag) {
-        v.balanceZ = v.tokenList[0].amount
+        // v.balanceZ = v.tokenList[0].amount
+        v.balanceZ = v.selectTokens[0].amount
+
       }
     },
 
@@ -859,13 +1058,16 @@ export default {
 
     //获取代币余额
     async getTokenBalance(item) {
-      // console.log('getTokenBalance', item.address)
+      // console.log('getTokenBalance', item)
       let v = this
       let token_address = item.address;
       var local_address = await v.action.getAddress()
       // console.log('local_address',local_address)
       //创建合约
       if (!v.myWeb3) {
+        return
+      }
+      if (!v.chainList) {
         return
       }
       let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
@@ -1323,80 +1525,58 @@ export default {
       this.langToAddress = await this.action.getAddress()
     },
 
-    //获取默认代币余额
-    async getZbalance() {
-      let v = this
-      // let balance = v.myWeb3.eth.getBalance(local_address).then(result => {
-      //   //console.log(result)
-      //
-      //   v.balanceZ = new Decimal(result).div(Math.pow(10, 18)).toFixed(6)
-      // })
-      // //console.log('主币余额', balance)
-
-      if (!v.myWeb3) {
-        return
-      }
-
-      //创建合约
-
-      let token_address = config.tokenCoin
-      var local_address = await v.action.getAddress()
-
-      // //console.log('token_address  local_address',token_address,local_address)
-      let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
-      // //console.log('contract',contract)
-      let balance = await contract.methods.balanceOf(local_address).call();
-      //console.log('balance', balance)
-      //获取代币精度
-      let decimals = await contract.methods.decimals().call()
-      // //console.log(decimals,'decimals')
-      // this.selectToken.coin = 'MAP'
-      // this.selectToken.name = 'MAP'
-      // this.selectToken.url = require('../assets/token/map-black.png')
-      this.decimals = decimals
-      this.balanceZ = new Decimal(balance).div(Math.pow(10, decimals))
-      this.balanceZ = Math.floor(this.balanceZ * 1000000) / 1000000
-    },
-
     //切换链
     async handleLink(item) {
       let v = this;
       //To 选择
       if (this.selectChain === 1) {
+        if (item.chain === v.chainForm.chain) {
+          v.$toast('Source Chain and Destination Chain cannot be the same')
+          return
+        }
         this.chainTo = JSON.parse(JSON.stringify(item));
         this.destNetwork = item.chain
         v.showSelectChain = false
         this.$router.push({
           path: '/',
-          query: {token: v.selectChain.symbol, sourceNetwork: v.$route.query.sourceNetwork, destNetwork:v.chainTo.chain}
+          query: {
+            token: v.selectChain.symbol,
+            sourceNetwork: v.$route.query.sourceNetwork,
+            destNetwork: v.chainTo.chain
+          }
         })
         return
       }
-      if (!window.ethereum){
+      if (!window.ethereum) {
         return
       }
 
 
-      let chain='0x' + parseInt(item.chainId).toString(16)
+      let chain = '0x' + parseInt(item.chainId).toString(16)
       //From 切换链
       window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{chainId: chain}],
-          })
+        method: 'wallet_switchEthereumChain',
+        params: [{chainId: chain}],
+      })
           .then(async () => {
             //切换网络
             if (v.changeChain) {
-              let temp=v.chainTo;
+              let temp = v.chainTo;
               v.chainTo = v.chainForm;
               v.chainForm = temp;
-              v.changeChain=false;
+              v.changeChain = false;
               v.$router.push({
                 path: '/',
-                query: {token: v.selectChain.symbol, sourceNetwork:v.$route.query.destNetwork , destNetwork:v.chainTo.chain}
+                query: {
+                  token: v.selectChain.symbol,
+                  sourceNetwork: v.$route.query.destNetwork,
+                  destNetwork: v.chainTo.chain
+                }
               })
+              v.getAllData()
               return;
             }
-            console.log(' v.chainTo', v.chainTo,v.chainForm)
+            console.log(' v.chainTo', v.chainTo, v.chainForm)
             //from
             if (v.selectChain !== 0) {
               return
@@ -1410,8 +1590,9 @@ export default {
             }
             v.$router.replace({
               path: '/',
-              query: {sourceNetwork:item.chain , destNetwork:v.chainTo.chain}
+              query: {sourceNetwork: item.chain, destNetwork: v.chainTo.chain}
             })
+            v.getAllData()
           })
           .catch((e) => {
             //console.log(e)
@@ -1429,9 +1610,9 @@ export default {
     },
 
     //判断当前的From chain 与 To chain 是否一样
-    getDifChain(chainName){
+    getDifChain(chainName) {
       for (let item of this.chainList) {
-        if (chainName!==item.chain){
+        if (chainName !== item.chain) {
           return JSON.parse(JSON.stringify(item));
         }
       }
@@ -1776,7 +1957,7 @@ export default {
 
         //判断当前路由路由
         const params = this.$route.query;
-        if (! params.sourceNetwork){
+        if (!params.sourceNetwork) {
           this.$router.replace('/home?sourceNetwork=ETH&destNetwork=MAP')
           return
         }
@@ -1856,18 +2037,16 @@ export default {
       }
     },
 
-    async getChainIdRes(){
+    async getChainIdRes() {
       var chainId = await this.action.getChainId()
       this.chainIdRes = new BN(chainId.slice(2), 16)
     },
 
     async getAllData() {
-      this.getChainIdRes()
-      this.getSortAddress()
-      // this.getZbalance()
-      this.actionGetChain()
-
-      this.actionShowToken()
+      await this.getChainIdRes()
+      await this.getSortAddress()
+      await this.actionGetChain()
+      await this.actionShowToken()
     },
   },
 
@@ -1878,7 +2057,6 @@ export default {
 
   mounted() {
     this.getAllData()
-    // console.log('测试bn',new Decimal(1500000000000000000000).toFixed(0))
   },
 }
 </script>
@@ -2247,9 +2425,9 @@ export default {
 
 .dialog-content {
   max-width: 522px;
-  width: 522px ;
+  width: 522px;
   max-height: 574px;
-  height:574px;
+  height: 574px;
   border-radius: 30px;
   background: #FFFFFF;
   box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.05);
@@ -2556,6 +2734,7 @@ export default {
 .dialog-trans-detail-rights-status {
   //height: 85%;
   height: 260px;
+  max-height: 260px;
 }
 
 .dia-transStatus-content-bottom {
@@ -2748,12 +2927,14 @@ export default {
   width: 140px;
   position: relative;
   box-sizing: border-box;
+
   img {
     width: 8px;
     position: absolute;
     right: 11px;
     margin-left: 8px;
   }
+
   span {
     padding-left: 21px;
   }
@@ -2878,6 +3059,13 @@ export default {
 @media (max-width: 1200px) {
   .dialog-content {
     width: 60%;
+  }
+}
+
+@media (max-height: 1000px) {
+  .dialog-trans-detail-rights-status {
+    overflow-y: scroll;
+    height: 140px;
   }
 }
 
@@ -3048,12 +3236,15 @@ export default {
   //history
   .history-coin {
     font-size: 12px;
+
     img {
       width: 25px;
     }
+
     img:nth-child(3) {
       margin: 0 10px;
     }
+
     span {
       padding-left: 5px;
     }
@@ -3069,9 +3260,11 @@ export default {
     width: 125px;
     padding: 5px 2px;
     font-size: 12px;
+
     img {
       width: 5px;
     }
+
     span {
       padding-left: 25px;
     }
@@ -3202,6 +3395,7 @@ export default {
         font-size: 14px;
       }
     }
+
     .btn-next {
       button {
         width: 100px;
@@ -3309,6 +3503,7 @@ export default {
     img {
       width: 5px;
     }
+
     span {
       padding-left: 5px;
     }
