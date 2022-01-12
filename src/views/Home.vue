@@ -664,6 +664,7 @@ export default {
           "img": "https://files.maplabs.io/bridge/eth.png"
         }]
       },//Token所有列表
+      // tokenAllList:[],
       historyList: [],//history记录
       historyFromLogo: '', //历史记录 From logo
       historyToLogo: '',//历史记录 To logo
@@ -761,7 +762,12 @@ export default {
 
       }
         _this.selectTokens=arrByZM;
+    },
+    '$store.state.account.change_chain'(data){
+      console.log("account",data)
+      this.$emit('ChainChanged',data);
     }
+
 
   },
 
@@ -1009,6 +1015,9 @@ export default {
       this.selectToken.name = item.symbol
       this.selectToken.url = item.img
       this.selectToken.address = item.address
+      this.selectToken.isMint = item.isMint
+
+      // this.selectToken=item
 
       // console.log('selecToken', this.selectToken.address)
 
@@ -1178,7 +1187,7 @@ export default {
 
       //输入的金额
       v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, decimal))
-      //console.log('amount', v.sendAllAmount.toFixed())
+      console.log('amount', v.sendAllAmount.toFixed(),decimal)
 
       //To的链Id
       var chainId = this.chainTo.chainId
@@ -1191,6 +1200,7 @@ export default {
 
       var valueFee;
 
+      // console.log('v.selectToken',v.selectToken)
       if (TokenAddress == '0x0000000000000000000000000000000000000000') {
         reward_stakeData = reward_contract.methods.transferOutNative(v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
         // console.log('reward_stakeData', reward_stakeData)
@@ -1219,6 +1229,7 @@ export default {
         }
       } else {
         // console.log('代币Trans')
+        // console.log(' v.sendAllAmount',v.sendAllAmount)
         reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
         // console.log('reward_stakeData', reward_stakeData)
         transParams = {
@@ -1253,6 +1264,7 @@ export default {
         }
       }
 
+      // console.log('transParams',transParams)
 
       //报错
       var error;
@@ -1527,6 +1539,8 @@ export default {
 
     //切换链
     async handleLink(item) {
+      let chainId = this.$store.state.account.change_chain
+
       let v = this;
       //To 选择
       if (this.selectChain === 1) {
@@ -1537,6 +1551,7 @@ export default {
         this.chainTo = JSON.parse(JSON.stringify(item));
         this.destNetwork = item.chain
         v.showSelectChain = false
+        v.actionGasFee()
         this.$router.push({
           path: '/',
           query: {
@@ -1550,51 +1565,126 @@ export default {
       if (!window.ethereum) {
         return
       }
-
-
+      //获取0xchainId
       let chain = '0x' + parseInt(item.chainId).toString(16)
+      //获取rpc 需要转换成 数组
+      let rpc = Array(item.rpc)
+      let method;
+      let params;
+      console.log('handleLink 01',chainId,chain)
+      if (chain=='0x1' || chain=='0x3' ) {
+        method='wallet_switchEthereumChain';
+        params ={
+          chainId: chain,
+        }
+      }
+      else  {
+        method='wallet_addEthereumChain';
+        params ={
+          chainId: chain,
+          rpcUrls: rpc,
+          chainName: item.chainName,
+        }
+      }
+      // // this.$store.commit("setChangeChain", (data)=>{});
+      // this.$once('ChainChanged',(data)=>{
+      //   console.log('ChainChanged chainId  chain --',chain,data)
+      //   if (data!==chain){
+      //     return
+      //   }
+      //
+      //   //切换网络
+      //   if (v.changeChain) {
+      //     let temp = v.chainTo;
+      //     v.chainTo = v.chainForm;
+      //     v.chainForm = temp;
+      //     v.changeChain = false;
+      //     v.$router.push({
+      //       path: '/',
+      //       query: {
+      //         token: v.selectChain.symbol,
+      //         sourceNetwork: v.$route.query.destNetwork,
+      //         destNetwork: v.chainTo.chain
+      //       }
+      //     })
+      //     v.getAllData()
+      //     return;
+      //   }
+      //   console.log(' v.chainTo', v.chainTo, v.chainForm)
+      //   //from
+      //   if (v.selectChain !== 0) {
+      //     return
+      //   }
+      //
+      //   v.selectToken.address = null
+      //   v.sourcePath = item.chain
+      //   v.chainForm = JSON.parse(JSON.stringify(item));
+      //   v.showSelectChain = false
+      //   if (v.chainForm.chain === v.chainTo.chain) {
+      //     v.chainTo = this.getDifChain(v.chainTo.chain)
+      //   }
+      //   v.$router.replace({
+      //     path: '/',
+      //     query: {sourceNetwork: item.chain, destNetwork: v.chainTo.chain}
+      //   })
+      //   v.getAllData()
+      // })
+
+
       //From 切换链
       window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{chainId: chain}],
-      })
-          .then(async () => {
-            //切换网络
-            if (v.changeChain) {
-              let temp = v.chainTo;
-              v.chainTo = v.chainForm;
-              v.chainForm = temp;
-              v.changeChain = false;
-              v.$router.push({
-                path: '/',
-                query: {
-                  token: v.selectChain.symbol,
-                  sourceNetwork: v.$route.query.destNetwork,
-                  destNetwork: v.chainTo.chain
-                }
-              })
-              v.getAllData()
-              return;
-            }
-            console.log(' v.chainTo', v.chainTo, v.chainForm)
-            //from
-            if (v.selectChain !== 0) {
-              return
-            }
-            v.selectToken.address = null
-            v.sourcePath = item.chain
-            v.chainForm = JSON.parse(JSON.stringify(item));
-            v.showSelectChain = false
-            if (v.chainForm.chain === v.chainTo.chain) {
-              v.chainTo = this.getDifChain(v.chainTo.chain)
-            }
-            v.$router.replace({
+        method: method,
+        params: [params],
+      }).then(async () => {
+        // setTimeout(()=>{this.$emit('ChainChanged',null)},2000);
+        //   //切换网络
+        // console.log('切换')
+        var id =await v.action.getChainId()
+        if (chain != id) {
+          return
+        }
+        console.log('change success',id,chain)
+          if (v.changeChain) {
+            let temp = v.chainTo;
+            v.chainTo = v.chainForm;
+            v.chainForm = temp;
+            v.changeChain = false;
+            v.$router.push({
               path: '/',
-              query: {sourceNetwork: item.chain, destNetwork: v.chainTo.chain}
+              query: {
+                token: v.selectChain.symbol,
+                sourceNetwork: v.$route.query.destNetwork,
+                destNetwork: v.chainTo.chain
+              }
             })
             v.getAllData()
+            return;
+          }
+          console.log(' v.chainTo', v.chainTo, v.chainForm)
+          //from
+          if (v.selectChain !== 0) {
+            return
+          }
+
+          v.selectToken.address = null
+          v.sourcePath = item.chain
+          v.chainForm = JSON.parse(JSON.stringify(item));
+          v.showSelectChain = false
+          if (v.chainForm.chain === v.chainTo.chain) {
+            v.chainTo = this.getDifChain(v.chainTo.chain)
+          }
+          v.$router.replace({
+            path: '/',
+            query: {sourceNetwork: item.chain, destNetwork: v.chainTo.chain}
+          })
+          v.getAllData()
+
           })
           .catch((e) => {
+            v.$router.replace({
+              path: '/',
+              query: {sourceNetwork: v.$route.query.sourceNetwork, destNetwork: v.$route.query.destNetwork}
+            })
             //console.log(e)
           })
     },
@@ -1797,7 +1887,7 @@ export default {
       }
 
       if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
-        console.log('主币不用Approve')
+        // console.log('主币不用Approve')
         v.allowance = true;
         v.transferBtn = false
         v.allowanceMap = true
@@ -1980,7 +2070,7 @@ export default {
             // v.chainTo.contract = chains.contract
           }
         }
-        console.log('chainList', this.chainList)
+        // console.log('chainList', this.chainList)
         this.actionTokenList()
 
       }
@@ -1992,9 +2082,7 @@ export default {
       let v = this
       let result = await v.$http.tokenList()
       if (result.code = 200) {
-
         v.tokenAllList = result.data.list
-
       }
       v.actionCheckChainToken()
     },

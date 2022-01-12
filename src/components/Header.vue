@@ -115,7 +115,7 @@
                     let v = this
                     let chainId = await v.action.getChainId()
                     const params = v.$route.query;
-                    console.log('chainId',chainId,params)
+                    // console.log('chainId',chainId,params)
                     // console.log('chainIDDDDD',chainId,params.sourceNetwork)
                     if ((chainId== config.ethId || chainId== config.ethDefaultId) && params.sourceNetwork=='ETH') {
                     // if (chainId=='0x1' || chainId=='0x3' && params.sourceNetwork=='ETH') {
