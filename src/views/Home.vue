@@ -963,6 +963,24 @@ export default {
 
       v.tokenList = v.tokenAllList[chainId]
       v.selectTokens = v.tokenAllList[chainId]
+
+
+      let formTokenList = v.tokenAllList[chainId]
+      let toTokenList = v.tokenAllList[v.chainTo.chainId]
+      let intersection = []
+
+      for (const item of formTokenList) {
+        for (const i of toTokenList) {
+          if (item.symbol == i.symbol) {
+            intersection.push(item)
+          }
+        }
+      }
+      v.tokenList = intersection
+      this.selectTokens = intersection
+
+      // console.log('v.intersection ',  intersection )
+
       // console.log('actionShowToken', this.tokenList)
 
       // console.log('TokenList', v.tokenList)
