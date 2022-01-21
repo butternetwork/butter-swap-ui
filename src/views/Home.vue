@@ -948,9 +948,12 @@ export default {
     //Token弹窗余额获取
     async actionShowToken() {
 
-      this.selectTokens.forEach(item=>{
-        item.amount=null;
-      })
+      console.log(this.selectTokens)
+      if (this.selectTokens) {
+        this.selectTokens.forEach(item=>{
+          item.amount=null;
+        })
+      }
       let v = this
       var chainName;
 
@@ -977,7 +980,7 @@ export default {
         }
       }
       v.tokenList = intersection
-      this.selectTokens = intersection
+      v.selectTokens = intersection
 
       // console.log('v.intersection ',  intersection )
 
@@ -1219,14 +1222,14 @@ export default {
       var valueFee;
 
       // console.log('v.selectToken',v.selectToken)
-      if (TokenAddress == '0x0000000000000000000000000000000000000000') {
+      if (parseInt(v.chainForm.chainId) == 22776) {
         reward_stakeData = reward_contract.methods.transferOutNative(v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
         // console.log('reward_stakeData', reward_stakeData)
 
-        if (parseInt(v.chainForm.chainId) == 22776) {
+        if (TokenAddress == '0x0000000000000000000000000000000000000000') {
           valueFee = new Decimal(v.sendAllAmount).add(new Decimal(v.gasFee))
         } else {
-          valueFee = v.sendAllAmount
+          valueFee = v.gasFee
         }
         // console.log(valueFee, 'valueFee')
         transParams = {
@@ -1243,18 +1246,17 @@ export default {
           from: local_address,
           to: reward_address,
           data: reward_stakeData,
-          value: new Decimal(v.gasFee).toFixed(0)
+          value: 0
         }
       } else {
         // console.log('代币Trans')
-        // console.log(' v.sendAllAmount',v.sendAllAmount)
         reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
         // console.log('reward_stakeData', reward_stakeData)
         transParams = {
           from: local_address,
           to: reward_address,
           data: reward_stakeData,
-          value: new Decimal(v.gasFee).toFixed(0)
+          value: 0
         }
       }
 
@@ -1589,7 +1591,7 @@ export default {
       let rpc = Array(item.rpc)
       let method;
       let params;
-      console.log('handleLink 01',chainId,chain)
+      // console.log('handleLink 01',chainId,chain)
       if (chain=='0x1' || chain=='0x3' ) {
         method='wallet_switchEthereumChain';
         params ={
@@ -1661,7 +1663,7 @@ export default {
         if (chain != id) {
           return
         }
-        console.log('change success',id,chain)
+        // console.log('change success',id,chain)
           if (v.changeChain) {
             let temp = v.chainTo;
             v.chainTo = v.chainForm;
