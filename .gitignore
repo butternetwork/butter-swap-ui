@@ -19,3 +19,7 @@ package-lock.json
 DESIGN
 
 .idea/
+
+yarn.lock
+package-lock.json
+*.zip
