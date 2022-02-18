@@ -116,22 +116,24 @@
                     let chainId = await v.action.getChainId()
                     const params = v.$route.query;
 
-                    if ((chainId== config.ethId || chainId== config.ethDefaultId) && params.sourceNetwork=='ETH') {
+                    if ((chainId == config.ethId || chainId == config.ethDefaultId) && params.sourceNetwork =='ETH') {
                       v.error = false
                       v.chainIcon = require('../assets/eth-icon.png')
                       v.chainName = 'Ethereum Mainnet'
                     }
-                    else if ((chainId=='0x58f8'|| chainId=='58f8' )&& params.sourceNetwork=='MAP') {
+
+                    else if ((chainId =='0x58f8'|| chainId =='58f8' )&& params.sourceNetwork =='MAP') {
                       v.error = false
                       v.chainIcon = require('../assets/token/map.png')
                       v.chainName = 'MAP Makalu'
                     }
-                    else if ((chainId== config.bscId || chainId== config.bscDefaultId) && params.sourceNetwork=='BSC') {
+                    else if ((chainId == config.bscId || chainId == config.bscDefaultId) && params.sourceNetwork =='BSC') {
                       v.error = false
                       v.chainIcon = require('../assets/token/bsc.png')
                       v.chainName = 'BSC'
                     }
-                    else if ((chainId== config.polygonId || chainId== config.polygonDefaultId) && params.sourceNetwork=='Polygon') {
+                    else if ((chainId == config.polygonId || chainId == config.polygonDefaultId) && params.sourceNetwork =='MATIC') {
+                      console.log(chainId)
                       v.error = false
                       v.chainIcon = require('../assets/token/polygon.png')
                       v.chainName = 'Polygon'
@@ -148,7 +150,7 @@
                       else if (params.sourceNetwork=='BSC') {
                         v.chainId = config.bscId
                       }
-                      else if (params.sourceNetwork=='Polygon') {
+                      else if (params.sourceNetwork=='MATIC') {
                         v.chainId = config.polygonId
                       }
                     }
