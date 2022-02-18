@@ -115,10 +115,8 @@
                     let v = this
                     let chainId = await v.action.getChainId()
                     const params = v.$route.query;
-                    // console.log('chainId',chainId,params)
-                    // console.log('chainIDDDDD',chainId,params.sourceNetwork)
+
                     if ((chainId== config.ethId || chainId== config.ethDefaultId) && params.sourceNetwork=='ETH') {
-                    // if (chainId=='0x1' || chainId=='0x3' && params.sourceNetwork=='ETH') {
                       v.error = false
                       v.chainIcon = require('../assets/eth-icon.png')
                       v.chainName = 'Ethereum Mainnet'
@@ -129,24 +127,29 @@
                       v.chainName = 'MAP Makalu'
                     }
                     else if ((chainId== config.bscId || chainId== config.bscDefaultId) && params.sourceNetwork=='BSC') {
-                    // else if (chainId=='0x61' || chainId=='0x38' && params.sourceNetwork=='BSC') {
                       v.error = false
                       v.chainIcon = require('../assets/token/bsc.png')
                       v.chainName = 'BSC'
+                    }
+                    else if ((chainId== config.polygonId || chainId== config.polygonDefaultId) && params.sourceNetwork=='Polygon') {
+                      v.error = false
+                      v.chainIcon = require('../assets/token/polygon.png')
+                      v.chainName = 'Polygon'
                     }
                     else  {
                       //要修改 chainID
                       v.error = true
                       if (params.sourceNetwork=='ETH') {
-                        // v.chainId = '0x3'//测试ETH
-                        v.chainId = config.ethId//正式
+                        v.chainId = config.ethId
                       }
                       else if (params.sourceNetwork=='MAP') {
                         v.chainId = '0x58f8'
                       }
                       else if (params.sourceNetwork=='BSC') {
-                        // v.chainId = '0x61' //测试
-                        v.chainId = config.bscId // 正式
+                        v.chainId = config.bscId
+                      }
+                      else if (params.sourceNetwork=='Polygon') {
+                        v.chainId = config.polygonId
                       }
                     }
                 }
@@ -225,6 +228,8 @@
         text-align: center;
         line-height: 40px;
         border: solid 1px #E44E3A;
+        background: #E44E3A;
+        color: white;
       }
 
       .header-intall {
