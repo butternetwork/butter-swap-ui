@@ -116,28 +116,59 @@
                     if (result.code == 200) {
                       v.chainList = result.data.list
                     }
+                    var ethIcon;
+                    var mapIcon;
+                    var macticIcon;
+                    var bscIcon;
+
+                    var ethName;
+                    var mapName;
+                    var macticName;
+                    var bscName;
+
                     const params = this.$route.query;
+                    for (const item of v.chainList) {
+                        if (item.chain =='ETH' ) {
+                          ethIcon =  item.chainImg
+                          ethName = item.chainName
+                        }
+                         else if (item.chain =='MAP' ) {
+                          mapIcon =  item.chainImg
+                          mapName = item.chainName
+                         }
+                        else if (item.chain =='MATIC' ) {
+                          macticIcon =  item.chainImg
+                          macticName = item.chainName
+                        }
+                        else if (item.chain =='BSC' ) {
+                          bscIcon =  item.chainImg
+                          bscName = item.chainName
+                        }
+
+                    }
+
+
 
 
                     if ((chainId == config.ethId || chainId == config.ethDefaultId)) {
                       v.error = false
-                      v.chainIcon = require('../assets/eth-icon.png')
-                      v.chainName = 'Ethereum Mainnet'
+                      v.chainIcon = ethIcon
+                      v.chainName = ethName
                     }
                     else if ((chainId =='0x58f8'|| chainId =='58f8' )) {
                       v.error = false
-                      v.chainIcon = require('../assets/token/map.png')
-                      v.chainName = 'MAP Makalu'
+                      v.chainIcon = mapIcon
+                      v.chainName = mapName
                     }
                     else if ((chainId == config.bscId || chainId == config.bscDefaultId)) {
                       v.error = false
-                      v.chainIcon = require('../assets/token/bsc.png')
-                      v.chainName = 'BSC'
+                      v.chainIcon = bscIcon
+                      v.chainName = bscName
                     }
                     else if ((chainId == config.polygonId || chainId == config.polygonDefaultId)) {
                       v.error = false
-                      v.chainIcon = require('../assets/token/polygon.png')
-                      v.chainName = 'Polygon'
+                      v.chainIcon = macticIcon
+                      v.chainName = macticName
                     }
                     else  {
                       //要修改 chainID
