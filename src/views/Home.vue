@@ -1010,7 +1010,6 @@
 
             var chainId = await v.action.getChainId()
             chainId = new BN(chainId.slice(2), 16)
-            //console.log('chainId', parseInt(chainId))
 
             v.tokenList = v.tokenAllList[chainId]
             v.selectTokens = v.tokenAllList[chainId]
@@ -1030,16 +1029,11 @@
             v.tokenList = intersection
             v.selectTokens = intersection
 
-            // console.log('v.intersection ',  intersection )
-
-            // console.log('actionShowToken', this.tokenList)
-
-            // console.log('TokenList', v.tokenList)
-
             if (!v.tokenList || v.tokenList.length == 0) {
               v.tokenList = []
               return
             }
+
 
             //获取地址
             let a = [];
@@ -1048,7 +1042,6 @@
               let item = v.tokenList[i]
               //如果当前链的币种是选择链上的主币   获取主币余额
               let item2 = {};
-              //console.log('Symbol ChainName', item.symbol, chainName)
               if (item.address == '0x0000000000000000000000000000000000000000') {
                 item2 = await v.getBalance(item)
               }
@@ -1057,28 +1050,23 @@
                 let token_address = item.address;
                 item2 = await v.getTokenBalance(item)
               }
-              if (item.symbol == 'MAP') {
-                v.balanceZ = item.amount
-                flag = true;
-              }
+
               a.push(JSON.parse(JSON.stringify(item2)))
 
-              // console.log("item22222", item2)
-              // v.$set(v.tokenList, i, item2)
             }
             v.tokenList = a
             v.selectTokens=a;
-            // console.log('tokenListsss',v.tokenList)
-            if (!flag) {
-              // v.balanceZ = v.tokenList[0].amount
-              v.balanceZ = v.selectTokens[0].amount
 
+            for (const item of v.selectTokens) {
+                if ( v.selectToken.name == item.symbol) {
+                  v.balanceZ = item.amount
+                }
             }
+
           },
 
           //选择Token
           async actionSelectToken(item, index) {
-            //console.log('actionSelectToken', item)
 
             this.selectToken.symbol = item.symbol
             this.selectToken.name = item.symbol
@@ -1096,10 +1084,6 @@
 
             this.actionApproveOrTransfer()
 
-            // this.$router.push({
-            //   path: '/',
-            //   query: {token: this.selectToken.symbol, sourceNetwork: this.sourcePath, destNetwork: this.destNetwork}
-            // })
 
 
           },
@@ -1140,8 +1124,7 @@
             let v = this
             let token_address = item.address;
             var local_address = await v.action.getAddress()
-            // console.log('local_address',local_address)
-            //创建合约
+
             if (!v.myWeb3) {
               return
             }
@@ -1149,12 +1132,12 @@
               return
             }
             let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
-            // console.log('contract',contract)
+
             // 查询代币余额
             let balance = await contract.methods.balanceOf(local_address).call();
             //获取代币精度
             let decimals = item.decimal
-            // console.log(decimals, 'decimals')
+
 
             if (balance) {
               var newObject = {}
@@ -1167,7 +1150,6 @@
               //   item.amount = '0.00';
               // }
             }
-            // console.log('item',item)
             return item
           },
 
@@ -1253,39 +1235,27 @@
             var transParams;
 
 
-            //判断当前输入金额是否大于余额
-            // if (stakeNum.comparedTo(bl) > 0) {
-            //   v.$toast('Insufficient balance')
-            //   return
-            // }
-
-
             //输入的金额
             v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, decimal))
-            console.log('amount', v.sendAllAmount.toFixed(),decimal)
 
             //To的链Id
             var chainId = this.chainTo.chainId
-            //console.log('chainid', chainId)
 
 
             //调用合约执行
             let reward_contract = new v.myWeb3.eth.Contract(mapAbi, reward_address)
-            console.log('reward_contract', reward_contract)
 
             var valueFee;
 
-            // console.log('v.selectToken',v.selectToken)
-            if (parseInt(v.chainForm.chainId) == 22776) {
+            if (TokenAddress == '0x0000000000000000000000000000000000000000') {
               reward_stakeData = reward_contract.methods.transferOutNative(v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-              // console.log('reward_stakeData', reward_stakeData)
 
-              if (TokenAddress == '0x0000000000000000000000000000000000000000') {
+              if (parseInt(v.chainForm.chainId) == 22776) {
                 valueFee = new Decimal(v.sendAllAmount).add(new Decimal(v.gasFee))
               } else {
-                valueFee = v.gasFee
+                valueFee = new Decimal(v.sendAllAmount)
               }
-              // console.log(valueFee, 'valueFee')
+              console.log(valueFee, 'valueFee')
               transParams = {
                 from: local_address,
                 to: reward_address,
@@ -1302,10 +1272,9 @@
                 data: reward_stakeData,
                 value: 0
               }
-            } else {
-              // console.log('代币Trans')
+            }
+              else {
               reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, v.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-              // console.log('reward_stakeData', reward_stakeData)
               transParams = {
                 from: local_address,
                 to: reward_address,
@@ -1313,9 +1282,6 @@
                 value: 0
               }
             }
-
-
-            // console.log('transParams', transParams)
 
             if (parseInt(v.chainForm.chainId) == 22776) {
               if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
@@ -1337,12 +1303,16 @@
                 return
               }
             }
+            console.log('transParams',transParams)
 
-            // console.log('transParams',transParams)
+            console.log('reward_stakeData',reward_stakeData)
+
+
 
             //报错
             var error;
             try {
+              console.log('transParams',transParams)
               var gas = await v.myWeb3.eth.estimateGas(transParams)
             } catch (e) {
               // let result = e.message.substring(e.message.indexOf("{"))
@@ -2004,20 +1974,13 @@
            //   v.dialogApproving = false
            // }
 
-            console.log( 'v.dialogApproving',  v.dialogApproving)
+            // console.log( 'v.dialogApproving',  v.dialogApproving)
 
             let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
-            // console.log(`rewardaddress`, v.chainForm.contract)
+
             contract.methods.allowance(local_address, v.chainForm.contract).call(function (error, result) {
-              // //console.log('result',result)
+
               if (result && result != 0) {
-                //console.log(result)
-                // if (token=='MAP'){
-                //   v.allowanceMap = true;
-                //   //清空检测事件
-                //   v.approveMapHash = true;
-                //   v.checkApproved()
-                // }else  {
                 v.allowance = true;
                 //清空检测事件
                 v.approveHash = '';
@@ -2031,7 +1994,7 @@
                 // v.$toast(error)
                 v.timer = ''
               }
-              console.log( 'v.dialogApproving',v.dialogApproving)
+              // console.log( 'v.dialogApproving',v.dialogApproving)
               if (error) {
                 //console.log('error', error)
               }
@@ -2146,21 +2109,16 @@
 
               let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
               let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
-              // console.log(`sourceNetwork`,sourceNetwork,`destNetwork`,destNetwork)
-              // console.log('chainList', this.chainList)
+
               //chainForm
               for (let chains of v.chainList) {
-                // console.log('chains',chains)
                 if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
                   v.chainForm = JSON.parse(JSON.stringify(chains));
-                  // v.chainForm.contract = chains.contract
                 }
                 if (chains.chain.toUpperCase() == destNetwork.toUpperCase()) {
                   v.chainTo = JSON.parse(JSON.stringify(chains));
-                  // v.chainTo.contract = chains.contract
                 }
               }
-              // console.log('chainList', this.chainList)
               this.actionTokenList()
 
             }
@@ -2192,7 +2150,6 @@
             var flag = false
             for (var i = 0; i < tokenlist.length; i++) {
               if (tokenlist[i].symbol == 'MAP') {
-                // console.log('tokenlist[i].address', tokenlist[i].address)
                 v.selectToken.name = tokenlist[i].symbol
                 v.selectToken.address = tokenlist[i].address
                 v.selectToken.url = tokenlist[i].img
@@ -2210,14 +2167,12 @@
               v.selectToken.address = tokenlist[0].address
               v.selectToken.isMint = tokenlist[0].isMint
               let approvedResult = await v.checkMapApproved();
-              console.log('approvedResult', approvedResult)
               v.allowance = approvedResult;
             }
           },
 
           //判断当前链跟选择的from链是否一致
           async actionChainSuccess() {
-            console.log(this.chainForm,parseInt(this.chainForm.chainId))
             if (parseInt(this.chainForm.chainId) == parseInt(this.chainIdRes)) {
               this.chainSuccess = true
             }
