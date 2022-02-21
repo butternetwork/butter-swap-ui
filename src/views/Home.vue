@@ -917,7 +917,7 @@
           //输入数值超出时 显示红色
           actionInputFont() {
             let input = document.getElementById('tran-send-bottom-red')
-            if (new Decimal(parseInt(this.sendAmount)).sub(new Decimal(parseInt(this.balanceZ))) > 0) {
+            if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
               input.style.color = '#E44E3A'
             }else  {
               input.style.color = 'black'
@@ -1255,7 +1255,7 @@
               } else {
                 valueFee = new Decimal(v.sendAllAmount)
               }
-              console.log(valueFee, 'valueFee')
+              // console.log(valueFee, 'valueFee')
               transParams = {
                 from: local_address,
                 to: reward_address,
@@ -1303,16 +1303,11 @@
                 return
               }
             }
-            console.log('transParams',transParams)
-
-            console.log('reward_stakeData',reward_stakeData)
-
-
+            // console.log('transParams',transParams)
 
             //报错
             var error;
             try {
-              console.log('transParams',transParams)
               var gas = await v.myWeb3.eth.estimateGas(transParams)
             } catch (e) {
               // let result = e.message.substring(e.message.indexOf("{"))
