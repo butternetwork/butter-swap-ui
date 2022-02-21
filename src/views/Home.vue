@@ -799,9 +799,9 @@
           },
           '$store.state.account.change_chain'(data){
             console.log("account",data)
+            this.getAllData()
             this.$emit('ChainChanged',data);
           }
-
 
         },
 
@@ -2096,24 +2096,57 @@
               v.chainList = result.data.list
 
               //判断当前路由路由
-              const params = this.$route.query;
-              if (!params.sourceNetwork) {
-                this.$router.replace('/home?sourceNetwork=ETH&destNetwork=MAP')
-                return
-              }
+              const params = JSON.parse(JSON.stringify(this.$route.query));;
+              // const params = this.$route.query;
+              // if (!params.sourceNetwork) {
+
+                let chainId = await v.action.getChainId()
+
+                if ((chainId == config.ethId || chainId == config.ethDefaultId)) {
+                   params.sourceNetwork='ETH'
+                }
+
+                else if ((chainId =='0x58f8'|| chainId =='58f8' )) {
+                   params.sourceNetwork='MAP'
+                }
+                else if ((chainId == config.bscId || chainId == config.bscDefaultId)) {
+                   params.sourceNetwork='BSC'
+                }
+                else if ((chainId == config.polygonId || chainId == config.polygonDefaultId)) {
+                   params.sourceNetwork='MATIC'
+                }
+                else  {
+                  params.sourceNetwork='ETH'
+                }
 
               let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
-              let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
+
+              v.$router.push({path:'home',query:{sourceNetwork:sourceNetwork,destNetwork:'MAP'}})
+
+
+                for (let chains of v.chainList) {
+                  if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
+                    v.chainForm = JSON.parse(JSON.stringify(chains));
+                    break
+                  }else  {
+                    if (chains.chain.toUpperCase() == 'ETH') {
+                      v.chainForm = JSON.parse(JSON.stringify(chains));
+                    }
+                  }
+                }
+
+              // let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
+              // let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
 
               //chainForm
-              for (let chains of v.chainList) {
-                if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
-                  v.chainForm = JSON.parse(JSON.stringify(chains));
-                }
-                if (chains.chain.toUpperCase() == destNetwork.toUpperCase()) {
-                  v.chainTo = JSON.parse(JSON.stringify(chains));
-                }
-              }
+              // for (let chains of v.chainList) {
+              //   if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
+              //     v.chainForm = JSON.parse(JSON.stringify(chains));
+              //   }
+              //   if (chains.chain.toUpperCase() == destNetwork.toUpperCase()) {
+              //     v.chainTo = JSON.parse(JSON.stringify(chains));
+              //   }
+              // }
               this.actionTokenList()
 
             }
@@ -2132,12 +2165,9 @@
 
           //获取Chain的Token
           async actionCheckChainToken() {
-            // console.log('actionCheckChainToken')
             var v = this;
             var chainId = await v.action.getChainId()
             chainId = new BN(chainId.slice(2), 16)
-            //console.log('chainid',parseInt(chainId))
-            // console.log('tokenlist', v.tokenAllList[chainId])
 
             v.tokenList = v.tokenAllList[chainId]
 
@@ -2150,7 +2180,6 @@
                 v.selectToken.url = tokenlist[i].img
                 v.selectToken.isMint = tokenlist[i].isMint
                 // v.selectToken = tokenlist[i]
-                // console.log(' v.selectToken', v.selectToken)
                 v.checkMapApproved();
                 flag = true
                 break;

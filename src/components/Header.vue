@@ -51,6 +51,7 @@
                     chainIcon:require('../assets/eth-icon.png'),
                     chainName:'Ethereum Mainnet',
                     chainId: config.ethId,//要修改
+                    chainList:[],
                   }
               },
               computed: {
@@ -70,12 +71,10 @@
                 },
                 //
                 account_change_chain() {
-                  // console.log(333333333)
                   this.getChainId()
                 },
                   //检测到获取了地址
                 account_default_address() {
-                    // console.log(44444444)
                     this.actionAddress()
                     this.getChainId()
                   },
@@ -95,7 +94,6 @@
                         ],
                       })
                       .then(() => {
-                        // console.log('网络切换成功')
                         v.error=false
                         this.$router.go(0);
                         // this.$eventBus.$emit('ref',true)
@@ -114,26 +112,29 @@
                   //！链id不是马上拿到的，如果通过链id来判断是不是主网的方式，请注意异步
                     let v = this
                     let chainId = await v.action.getChainId()
-                    const params = v.$route.query;
+                    let result = await v.$http.chainList()
+                    if (result.code == 200) {
+                      v.chainList = result.data.list
+                    }
+                    const params = this.$route.query;
 
-                    if ((chainId == config.ethId || chainId == config.ethDefaultId) && params.sourceNetwork =='ETH') {
+
+                    if ((chainId == config.ethId || chainId == config.ethDefaultId)) {
                       v.error = false
                       v.chainIcon = require('../assets/eth-icon.png')
                       v.chainName = 'Ethereum Mainnet'
                     }
-
-                    else if ((chainId =='0x58f8'|| chainId =='58f8' )&& params.sourceNetwork =='MAP') {
+                    else if ((chainId =='0x58f8'|| chainId =='58f8' )) {
                       v.error = false
                       v.chainIcon = require('../assets/token/map.png')
                       v.chainName = 'MAP Makalu'
                     }
-                    else if ((chainId == config.bscId || chainId == config.bscDefaultId) && params.sourceNetwork =='BSC') {
+                    else if ((chainId == config.bscId || chainId == config.bscDefaultId)) {
                       v.error = false
                       v.chainIcon = require('../assets/token/bsc.png')
                       v.chainName = 'BSC'
                     }
-                    else if ((chainId == config.polygonId || chainId == config.polygonDefaultId) && params.sourceNetwork =='MATIC') {
-                      console.log(chainId)
+                    else if ((chainId == config.polygonId || chainId == config.polygonDefaultId)) {
                       v.error = false
                       v.chainIcon = require('../assets/token/polygon.png')
                       v.chainName = 'Polygon'
@@ -141,18 +142,7 @@
                     else  {
                       //要修改 chainID
                       v.error = true
-                      if (params.sourceNetwork=='ETH') {
-                        v.chainId = config.ethId
-                      }
-                      else if (params.sourceNetwork=='MAP') {
-                        v.chainId = '0x58f8'
-                      }
-                      else if (params.sourceNetwork=='BSC') {
-                        v.chainId = config.bscId
-                      }
-                      else if (params.sourceNetwork=='MATIC') {
-                        v.chainId = config.polygonId
-                      }
+                      v.chainId = config.ethId
                     }
                 }
               },
