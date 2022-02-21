@@ -41,7 +41,7 @@
                 <div class="tran-send">
                   <div class="tran-send-top">
                     <span>Sending Amount:</span>
-                    <span @click="sendAmount=balanceZ" style="cursor: pointer">Max: {{ balanceZ }}</span>
+                    <span @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
                   </div>
                   <div class="tran-send-bottom">
                     <input  id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" placeholder="0.0"/>
@@ -908,6 +908,12 @@
         },
 
         methods: {
+          //获取最大值
+          actionMaxBalance() {
+            this.sendAmount=this.balanceZ
+            this.actionInputFont()
+          },
+
           //输入数值超出时 显示红色
           actionInputFont() {
             let input = document.getElementById('tran-send-bottom-red')
