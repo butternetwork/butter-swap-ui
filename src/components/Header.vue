@@ -98,7 +98,7 @@
                         // console.log('网络切换成功')
                         v.error=false
                         this.$router.go(0);
-                        this.$eventBus.$emit('ref','页面')
+                        // this.$eventBus.$emit('ref',true)
                       })
                       .catch((e) => {
                         console.log(e)

@@ -44,7 +44,7 @@
                     <span @click="sendAmount=balanceZ" style="cursor: pointer">Max: {{ balanceZ }}</span>
                   </div>
                   <div class="tran-send-bottom">
-                    <input type="number" id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" placeholder="0.0"/>
+                    <input  id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" placeholder="0.0"/>
                     <div @click="actionOpenToken()" class="tran-send-btn">
                       <img :src="selectToken.url"/>
                       <span>{{ selectToken.name }}</span>
@@ -242,11 +242,7 @@
                        :key="index"
                        class="history-list">
                     <div class="history-top">
-                      <div class="history-coin">
-                        <img :src="item.fromLogo"/> <span>{{ item.fromChainName }}</span>
-                        <img src="../assets/tranform.png"/>
-                        <img :src="item.toLogo"/> <span>{{ item.toChainName }}</span>
-                      </div>
+                      <span style="padding-left: 10px">{{ item.amount }} {{ item.coin }}</span>
                       <div v-if="item.state==0" class="history-status history-status-cancel">
                         <span>Pending</span>
                         <img src="../assets/arrow-right-yellow.png"/>
@@ -265,7 +261,12 @@
                       </div>
                     </div>
                     <div class="history-bottom">
-                      <span>{{ item.amount }} {{ item.coin }}</span>
+                      <div class="history-coin">
+                        <img :src="item.fromLogo"/> <span>{{ item.fromChainName }}</span>
+                        <img src="../assets/tranform.png"/>
+                        <img :src="item.toLogo"/> <span>{{ item.toChainName }}</span>
+                      </div>
+
                       <span>{{ item.nowTime }}</span>
                     </div>
                   </div>
@@ -910,7 +911,7 @@
           //输入数值超出时 显示红色
           actionInputFont() {
             let input = document.getElementById('tran-send-bottom-red')
-            if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
+            if (new Decimal(parseInt(this.sendAmount)).sub(new Decimal(parseInt(this.balanceZ))) > 0) {
               input.style.color = '#E44E3A'
             }else  {
               input.style.color = 'black'
@@ -1264,7 +1265,7 @@
 
             //调用合约执行
             let reward_contract = new v.myWeb3.eth.Contract(mapAbi, reward_address)
-            // console.log('reward_contract', reward_contract)
+            console.log('reward_contract', reward_contract)
 
             var valueFee;
 
@@ -1338,10 +1339,10 @@
             try {
               var gas = await v.myWeb3.eth.estimateGas(transParams)
             } catch (e) {
-              let result = e.message.substring(e.message.indexOf("{"))
-              error = JSON.parse(result).message
-              //console.log('error', error)
-              this.$toast(error)
+              // let result = e.message.substring(e.message.indexOf("{"))
+              error = e.message
+              console.log('error', e.message)
+              this.$toast(e.message)
             }
             //console.log('gas', gas)
             if (error) {
@@ -1834,9 +1835,9 @@
                   data: approveData
                 })
               } catch (e) {
-                let result = e.message.substring(e.message.indexOf("{"))
-                error = JSON.parse(result).message
-                this.$toast(error)
+                error = e.message
+                console.log('error', e.message)
+                this.$toast(e.message)
               }
               if (error) {
                 resolve(false);
@@ -1911,9 +1912,12 @@
                   data: approveData
                 })
               } catch (e) {
-                let result = e.message.substring(e.message.indexOf("{"))
-                error = JSON.parse(result).message
-                this.$toast(error)
+                // let result = e.message.substring(e.message.indexOf("{"))
+                // error = JSON.parse(result).message
+                // this.$toast(error)
+                error = e.message
+                console.log('error', e.message)
+                this.$toast(e.message)
               }
               if (error) {
                 resolve(false);
@@ -2143,8 +2147,6 @@
                 // console.log('chains',chains)
                 if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
                   v.chainForm = JSON.parse(JSON.stringify(chains));
-
-                  console.log()
                   // v.chainForm.contract = chains.contract
                 }
                 if (chains.chain.toUpperCase() == destNetwork.toUpperCase()) {
@@ -3255,6 +3257,10 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+        span {
+          font-size: 16px;
+          font-weight: 700;
+        }
       }
 
       .history-coin {
@@ -3263,10 +3269,11 @@
         align-items: center;
 
         img {
-          width: 40px;
+          width: 25px;
         }
 
         span {
+          font-size: 12px;
           padding-left: 10px;
         }
 
