@@ -242,7 +242,11 @@
                        :key="index"
                        class="history-list">
                     <div class="history-top">
-                      <span style="padding-left: 10px">{{ item.amount }} {{ item.coin }}</span>
+                      <div class="history-top-left">
+                        <img :src="item.coinImg"/>
+                        <span>{{ item.coin }}</span>
+                        <span>{{ item.amount }}</span>
+                      </div>
                       <div v-if="item.state==0" class="history-status history-status-cancel">
                         <span>Pending</span>
                         <img src="../assets/arrow-right-yellow.png"/>
@@ -524,7 +528,7 @@
           <div v-show="dialogApproving" class="dialog-selectChain">
             <div class="dialog-content dialog-content-approve">
               <div class="dialog-approve-title">
-                <img v-show="approveHash" @click="dialogApproving=false" src="../assets/cancel.png"/>
+                <img @click="dialogApproving=false" src="../assets/cancel.png"/>
               </div>
               <img class="loading-icon" src="../assets/dialog/loading.png"/>
               <div class="dialog-content-approve-text">Approving...</div>
@@ -774,7 +778,7 @@
                 for (var i = 0; i < tokenListRes.length; i++) {
                   //for循环数据中的每一项（根据name值）
                   // console.log('tokenList',tokenListRes)
-                  if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
+                  if (tokenListRes[i] && tokenListRes[i].name.toUpperCase().search(_this.searchToken.toUpperCase()) != -1) {
                     //判断输入框中的值是否可以匹配到数据，如果匹配成功
                     arrByZM.push(tokenListRes[i]);
                     //向空数组中添加数据
@@ -796,6 +800,7 @@
 
             }
               _this.selectTokens=arrByZM;
+            console.log( _this.selectTokens)
           },
           '$store.state.account.change_chain'(data){
             console.log("account",data)
@@ -815,7 +820,7 @@
               var arrByZM = [];
               for (var i = 0; i < _this.chainList.length; i++) {
                 //for循环数据中的每一项（根据name值）
-                if (_this.chainList[i].chainName.search(_this.searchVal) != -1) {
+                if (_this.chainList[i].chainName.toUpperCase().search(_this.searchVal.toUpperCase()) != -1) {
                   //判断输入框中的值是否可以匹配到数据，如果匹配成功
                   arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
                 }
@@ -908,6 +913,38 @@
         },
 
         methods: {
+          getApproveStatus(key,tokenAddress){
+            let approving=localStorage.getItem(key);
+            console.log('getApproveStatus',approving)
+            if (approving){
+              if (typeof approving==='string'){
+                approving = JSON.parse(approving);
+              }
+              approving = approving[tokenAddress];
+              if (approving==false){
+                return 'done';
+              }
+              if (approving){
+                return 'doing';
+              }
+            }
+            return 'none';
+          },
+          setApproveStatus(key,tokenAddress,status){
+            console.log('setApproveStatus',status)
+            // console.trace('setApproveStatus');
+            let approving=localStorage.getItem(key);
+            if (approving){
+              if (typeof approving==='string'){
+                approving = JSON.parse(approving);
+              }
+            }else{
+              approving={}
+            }
+            approving[tokenAddress]=status;
+            localStorage.setItem(key,JSON.stringify(approving));
+          },
+
           //获取最大值
           actionMaxBalance() {
             this.sendAmount=this.balanceZ
@@ -1409,7 +1446,6 @@
                 var toChainId = item.toChainid
 
                 for (const i of v.chainList) {
-                  // console.log('iiiiiiiiiiii',i)
                   if (fromChainId == i.chainId) {
                     newObject.fromLogo = i.chainImg
                     newObject.fromChainName = i.chainName
@@ -1431,6 +1467,7 @@
                   // console.log("i.contract",i)
                   if (i.address.toLowerCase() == item.tokenAddress.toLowerCase()) {
                     newObject.coin = i.symbol
+                    newObject.coinImg = i.img
 
                     var decimal = i.decimal
                     //console.log('decimal', decimal)
@@ -1450,7 +1487,7 @@
                 Object.assign(item, newObject)
 
               }
-              // //console.log('historyList', v.historyList)
+              console.log('historyList', v.historyList)
 
             }
           },
@@ -1796,7 +1833,6 @@
             //console.log('approvedata', approveData)
 
             return new Promise(async resolve => {
-
               //报错
               let error = null;
               try {
@@ -1819,24 +1855,28 @@
                 to: token_address,
                 value: 0,
                 data: approveData
-              }).on('transactionHash', function (hash) {
+              }).on('transactionHash',  (hash) =>{
                 //hash
                 //console.log(`hash: ` + hash)
                 // v.$toast('Transaction has send please wait result')
                 v.dialogApproving = true
                 v.approveHash = hash;
-                 // localStorage.setItem('key',local_address+reward_address+token_address)
                 v.checkApproveToken = token
                 v.chainSuccess=true
+                this.setApproveStatus(local_address+reward_address,token_address,true);
                 //server order
               }).on('receipt', function (receipt) {
                 //receipt
                 //console.log(receipt)
+                console.log('receipt',receipt)
                 v.dialogApproving = false
-                v.timer = setInterval(v.checkApproved(), 1000);
+                this.setApproveStatus(local_address+reward_address,token_address,false);
+                let timer = setInterval(()=>{v.checkApproved(timer)}, 1000);
                 resolve(true);
               }).on('error', function (receipt) {
                 //receipt
+                localStorage.removeItem(local_address+reward_address)
+                // localStorage.setItem(local_address+reward_address+token_address,'false')
                 v.approveHash = false;
                 v.dialogApproving = false
                 //console.log(receipt)
@@ -1866,6 +1906,7 @@
             })
 
             var local_address = await v.action.getAddress()
+            v.approveMapHash = '111';
 
             //approve
             let contract = new v.myWeb3.eth.Contract(tokenAbi, token_address)
@@ -1905,16 +1946,17 @@
                 // v.$toast('Transaction has send please wait result')
                 v.dialogApprovingMap = true
                 v.approveMapHash = hash;
-                // v.timer = setInterval(v.checkApproved, 1000);
-                //server order
+                v.setApproveStatus(local_address+reward_address,token_address,true);
               }).on('receipt', function (receipt) {
                 //receipt
                 //console.log(receipt)
-                v.timer = setInterval(v.checkMapApproved(), 1000);
                 v.dialogApprovingMap = false
+                v.setApproveStatus(local_address+reward_address,token_address,false);
+                let timer = setInterval(()=>{v.checkMapApproved(timer)}, 1000);
                 resolve(true);
               }).on('error', function (receipt) {
                 //receipt
+                localStorage.removeItem(local_address+reward_address)
                 v.approveMapHash = false;
                 v.dialogApprovingMap = false
                 //console.log(receipt)
@@ -1924,15 +1966,36 @@
 
           },
 
-          //检查是否approve
-          async checkApproved(token) {
-            console.log()
+          //判断approve刷新后的状态
+          async actionStatus() {
             let v = this
 
+            var local_address = await v.action.getAddress()
+            let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,v.selectToken.address);
+
+            console.log(approving)
+            if (approving == 'done'){
+              //关闭弹窗
+              return;
+            }
+            // if (!v.allowanceMap && !v.approveMapHash) {
+            //   let timer = setInterval(()=>{v.checkMapApproved(timer);}, 2500);
+            // }
+            // else if(!v.allowanceMap &&  v.approveMapHash){
+            //   let timer = setInterval(()=>{v.checkApproved(timer);}, 2500);
+            // }
+            let timer = setInterval(()=>{v.checkApproved(timer);}, 1000);
+            //打开弹窗
+          },
+
+
+
+          //检查是否approve
+          async checkApproved(timer) {
+            let v = this
             if (!v.myWeb3) {
               return
             }
-
             if (!v.selectToken.address) {
               return
             }
@@ -1946,10 +2009,8 @@
               return
             }
 
-            token = token ? token : v.selectToken.name
-
+           let token = v.selectToken.name
             var local_address = await v.action.getAddress()
-
             var tokenAddress = ''
 
             v.tokenAllList[v.chainForm.chainId].forEach(item => {
@@ -1960,36 +2021,36 @@
                 return
               }
             })
-
-           //  var key = local_address + v.chainForm.contract + v.selectToken.address
-           //  console.log(key ,localStorage.getItem('key'))
-           // if (key == localStorage.getItem('key')) {
-           //   v.dialogApproving = true
-           // }else  {
-           //   v.dialogApproving = false
-           // }
-
-            // console.log( 'v.dialogApproving',  v.dialogApproving)
-
+            let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress)
+            v.dialogApproving = false;
+            if(approving==='done'){
+              v.allowance = true;
+              //清空检测事件
+              v.approveHash = '';
+              v.checkApproveToken = ''
+              return;
+            }
+            if (approving==='doing'){
+              v.dialogApproving = true;
+              v.approveHash = true
+            }
             let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
-
-            contract.methods.allowance(local_address, v.chainForm.contract).call(function (error, result) {
+            contract.methods.allowance(local_address, v.chainForm.contract).call( (error, result)=> {
 
               if (result && result != 0) {
                 v.allowance = true;
                 //清空检测事件
                 v.approveHash = '';
                 v.checkApproveToken = ''
-                // }
-                clearInterval(v.timer);
+                if (timer){
+                  clearInterval(timer);
+                }
+                v.dialogApproving = false;
+                this.setApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress,false);
               } else {
                 v.allowance = false;
-                v.approveHash = false
-                clearInterval(v.timer);
-                // v.$toast(error)
-                v.timer = ''
+                v.approveHash = false;
               }
-              // console.log( 'v.dialogApproving',v.dialogApproving)
               if (error) {
                 //console.log('error', error)
               }
@@ -1999,8 +2060,7 @@
           },
 
           //检查MAP是否approve
-          async checkMapApproved() {
-
+          async checkMapApproved(timer) {
             let v = this
             // console.log('TokenAddress', this.selectToken.address)
 
@@ -2031,7 +2091,18 @@
                   }
                 })
 
-                // console.log('TokenAddress', tokenAddress)
+                let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress)
+                v.dialogApproving = false;
+                if(approving==='done'){
+                  v.allowanceMap = true
+                  v.approveMapHash = true
+                  v.checkApproved()
+                  return;
+                }
+                if (approving==='doing'){
+                  v.dialogApproving = true;
+                  // v.approveMapHash = true
+                }
 
 
                 let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
@@ -2042,13 +2113,16 @@
                     console.log(result)
                     v.allowanceMap = true
                     v.approveMapHash = true
-                    v.checkApproved()
+                    v.dialogApprovingMap = false;
+                    if (timer){
+                      clearInterval(timer);
+                    }
+                    v.dialogApprovingMap = false;
+                    v.setApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress,false);
+
                   } else {
                     v.allowance = false
                     v.approveHash = false
-                    clearInterval(v.timer);
-                    // v.$toast(error)
-                    v.timer = ''
                   }
                   if (error) {
                     //console.log('error', error)
@@ -2064,8 +2138,6 @@
             } else {
               v.allowanceMap = true
               v.approveMapHash = true
-              // v.allowance=false
-              // v.approveHash=false
               await v.actionGasFee()
               await v.checkApproved()
             }
@@ -2218,7 +2290,8 @@
             await this.actionGetChain()
             await this.actionChainSuccess()
             await this.actionShowToken()
-
+            await this.actionStatus()
+            // await this.actionMapStatus()
           },
         },
 
@@ -2228,6 +2301,7 @@
         },
 
         mounted() {
+          //local_address+reward_address+token_address
           this.getAllData()
         },
       }
@@ -2265,7 +2339,7 @@
 
       .bridge-content {
         width: 622px;
-        border-radius: 30px;
+        max-width: 622px ;
         border-radius: 30px;
         background: white;
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
@@ -3245,6 +3319,19 @@
         span {
           font-size: 16px;
           font-weight: 700;
+        }
+      }
+
+      .history-top-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        img {
+          width: 25px;
+        }
+        span {
+          padding-top: 3px;
+          padding-left: 10px;
         }
       }
 
