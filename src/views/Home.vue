@@ -7,7 +7,7 @@
             <div class="bridge-content">
               <div class="bridge-title">
                 <div class="tran">
-                  <div @click="showTab=0" class="tran-title"><span>Transfer funds</span></div>
+                  <div @click="actionOpenTransfer(showTab=0)" class="tran-title"><span>Transfer funds</span></div>
                   <div :class="showTab==0?'tran-title-line':'tran-title-line-black'" class=""></div>
                 </div>
 <!--                <div class="tran">-->
@@ -17,7 +17,7 @@
                 <div class="tran">
                   <div @click="actionHistory(showTab=1)" class="tran-title">
                     <span>History</span>
-                    <img @click="actionHistory(showTab=1)" v-show="showTab==1" src="../assets/change-round.png"/>
+                    <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>
                   </div>
                   <div :class="showTab==1?'tran-title-line':'tran-title-line-black'" class=""></div>
                 </div>
@@ -539,7 +539,7 @@
           <div v-show="dialogApprovingMap" class="dialog-selectChain">
             <div class="dialog-content dialog-content-approve">
               <div class="dialog-approve-title">
-                <img v-show="approveMapHash" @click="dialogApprovingMap=false" src="../assets/cancel.png"/>
+                <img @click="dialogApprovingMap=false" src="../assets/cancel.png"/>
               </div>
               <img class="loading-icon" src="../assets/dialog/loading.png"/>
               <div class="dialog-content-approve-text">Approving...</div>
@@ -611,6 +611,12 @@
         components: {Footer, Header},
         data() {
           return {
+            historyTimerLoading:null,
+            historyLoading:false,
+            setTimeHistoryLoading:false,
+
+            statusTimer:false,
+
             chainSuccess:false,//当前选择链和当前链是否一致
             gasFee: 0,//gas费
             gasFeeVue: 0,//gas费页面显示
@@ -913,9 +919,10 @@
         },
 
         methods: {
+
           getApproveStatus(key,tokenAddress){
             let approving=localStorage.getItem(key);
-            console.log('getApproveStatus',approving)
+            // console.log('getApproveStatus',approving)
             if (approving){
               if (typeof approving==='string'){
                 approving = JSON.parse(approving);
@@ -930,6 +937,7 @@
             }
             return 'none';
           },
+
           setApproveStatus(key,tokenAddress,status){
             console.log('setApproveStatus',status)
             // console.trace('setApproveStatus');
@@ -1119,8 +1127,9 @@
 
             this.showSelectToken = false
 
-            this.actionApproveOrTransfer()
+            this.actionStatus()
 
+            this.actionApproveOrTransfer()
 
 
           },
@@ -1203,9 +1212,8 @@
               v.approveHash = '';
               return;
             }
-
-            //是代币
             v.checkMapApproved();
+
             return;
 
           },
@@ -1259,6 +1267,7 @@
             token.forEach((i, k) => {
               // console.log('address',i.address,TokenAddress)
               if (i.symbol == 'MAP') {
+                console.log(new Decimal(i.amount),'111111')
                 v.mapBalance = new Decimal(i.amount).mul(new Decimal(Math.pow(10, 18)))
               }
               if (i.address.toLowerCase() == TokenAddress.toLowerCase()) {
@@ -1366,6 +1375,7 @@
               if (v.transHash != null && v.transHash != '') {
                 v.actionSubBridge()
               }
+              v.actionUndoneTransfer()
               console.log(`hash`, hash)
               v.dialogTransing = true
               // v.$toast('Transaction has send please wait result')
@@ -1418,26 +1428,75 @@
 
           },
 
+          //打开Transfer
+          async actionOpenTransfer() {
+            clearInterval(this.setTimeHistoryLoading)
+            this.setTimeHistoryLoading = null
+          },
+
+
+          //查询未完成的历史交易
+          async  actionUndoneTransfer() {
+            let v = this
+            var local_address = await v.action.getAddress()
+            var chainId = await v.action.getChainId()
+            chainId = parseInt(chainId.slice(2), 16)
+            var params = {
+              chainId: chainId,
+              address: local_address,
+            }
+            var result = await v.$http.undoneTransfer(params)
+            // console.log('History',result)
+            if (result.code == 200) {
+              v.historyLoading = result.data.count
+            }
+
+
+            if ( v.historyLoading &&  v.historyLoading >0 ) {
+             v.historyTimerLoading = setInterval(async() => {
+                var result = await v.$http.undoneTransfer(params)
+                if (result.code == 200) {
+                  v.historyLoading = result.data.count
+                  if (  v.historyLoading <1) {
+                    v.actionHistory()
+                    clearInterval(v.historyTimerLoading)
+                  }
+                }
+              },1000)
+            } else  {
+              if (v.historyTimerLoading) {
+                clearInterval(v.historyTimerLoading)
+              }
+              v.actionHistory()
+            }
+
+          },
+
+
           //获取历史记录
           async actionHistory() {
             let v = this
             var local_address = await v.action.getAddress()
             var chainId = await v.action.getChainId()
             chainId = parseInt(chainId.slice(2), 16)
-            // console.log('CHAINID', chainId)
+
             var params = {
               chainId: chainId,
               address: local_address,
               pageNo: v.currentPage,
               pageSize: v.pageSize,
             }
+
             var result = await v.$http.historyList(params)
-            // //console.log(result)
+
             if (result.code == 200) {
               v.historyList = result.data.list
               v.total = result.data.total
               v.pageNum = Math.ceil(v.total / v.pageSize) || 1;
-              // console.log('hisTory', v.historyList)
+
+              if (v.historyList.length<=0) {
+                return
+              }
 
 
               for (const item of v.historyList) {
@@ -1456,12 +1515,7 @@
                   }
                 }
 
-                // console.log('amount', item.amount)
-
                 var token = v.tokenAllList[fromChainId]
-
-                // console.log('item.tokenAddress', item.tokenAddress)
-                // console.log('tokem',token)
 
                 token.forEach((i, k) => {
                   // console.log("i.contract",i)
@@ -1482,12 +1536,10 @@
                   }
                 })
 
-                // //console.log('newObject',newObject)
 
                 Object.assign(item, newObject)
 
               }
-              console.log('historyList', v.historyList)
 
             }
           },
@@ -1863,13 +1915,15 @@
                 v.approveHash = hash;
                 v.checkApproveToken = token
                 v.chainSuccess=true
-                this.setApproveStatus(local_address+reward_address,token_address,true);
+                this.setApproveStatus(local_address+reward_address,token_address,'doing');
+                // this.setApproveStatus(local_address+reward_address,token_address,'true');
                 //server order
               }).on('receipt', function (receipt) {
                 //receipt
                 //console.log(receipt)
                 console.log('receipt',receipt)
                 v.dialogApproving = false
+                v.allowance = true;
                 this.setApproveStatus(local_address+reward_address,token_address,false);
                 let timer = setInterval(()=>{v.checkApproved(timer)}, 1000);
                 resolve(true);
@@ -1946,11 +2000,13 @@
                 // v.$toast('Transaction has send please wait result')
                 v.dialogApprovingMap = true
                 v.approveMapHash = hash;
-                v.setApproveStatus(local_address+reward_address,token_address,true);
+                v.setApproveStatus(local_address+reward_address,token_address,'doing');
               }).on('receipt', function (receipt) {
                 //receipt
                 //console.log(receipt)
                 v.dialogApprovingMap = false
+                v.allowanceMap = true
+                v.approveMapHash = false;
                 v.setApproveStatus(local_address+reward_address,token_address,false);
                 let timer = setInterval(()=>{v.checkMapApproved(timer)}, 1000);
                 resolve(true);
@@ -1969,26 +2025,27 @@
           //判断approve刷新后的状态
           async actionStatus() {
             let v = this
-
-            var local_address = await v.action.getAddress()
+            let timer
+            if (v.statusTimer){
+              clearInterval( v.statusTimer);
+              v.statusTimer = null;
+            }
+            let local_address = await v.action.getAddress();
             let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,v.selectToken.address);
-
-            console.log(approving)
             if (approving == 'done'){
               //关闭弹窗
+              v.dialogApprovingMap = false;
               return;
             }
-            // if (!v.allowanceMap && !v.approveMapHash) {
-            //   let timer = setInterval(()=>{v.checkMapApproved(timer);}, 2500);
-            // }
-            // else if(!v.allowanceMap &&  v.approveMapHash){
-            //   let timer = setInterval(()=>{v.checkApproved(timer);}, 2500);
-            // }
-            let timer = setInterval(()=>{v.checkApproved(timer);}, 1000);
-            //打开弹窗
+             if (approving == 'doing') {
+              //打开弹窗
+              v.dialogApprovingMap = true
+              timer = setInterval(()=>{
+                v.checkMapApproved(timer);
+                }, 1000);
+              v.statusTimer = timer
+            }
           },
-
-
 
           //检查是否approve
           async checkApproved(timer) {
@@ -2023,17 +2080,24 @@
             })
             let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress)
             v.dialogApproving = false;
+
             if(approving==='done'){
               v.allowance = true;
               //清空检测事件
               v.approveHash = '';
               v.checkApproveToken = ''
+              if (timer){
+                clearInterval(timer);
+              }
+              v.dialogApproving = false;
+              this.setApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress,false);
               return;
-            }
-            if (approving==='doing'){
+            } else if (approving==='doing'){
               v.dialogApproving = true;
               v.approveHash = true
             }
+
+
             let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
             contract.methods.allowance(local_address, v.chainForm.contract).call( (error, result)=> {
 
@@ -2062,67 +2126,62 @@
           //检查MAP是否approve
           async checkMapApproved(timer) {
             let v = this
-            // console.log('TokenAddress', this.selectToken.address)
 
             if (!v.myWeb3) {
               return
             }
 
+            let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress)
+            // v.dialogApprovingMap = false;
+
             if (parseInt(v.chainForm.chainId) != 22776) {
 
               await v.actionGasFee()
-              // v.gasFee=1
-              // console.log('v.gasFee', v.gasFee)
+
               if (v.gasFee > 0) {
                 v.allowanceMap = false
                 v.approveMapHash = false
                 var local_address = await v.action.getAddress()
-
-                // console.log('tokenlist', v.tokenList)
 
                 var tokenAddress = ''
 
                 v.tokenList.forEach(item => {
 
                   if (item.symbol == 'MAP') {
-                    console.log("name", item.symbol)
                     tokenAddress = item.address
                     return
                   }
                 })
 
-                let approving = this.getApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress)
-                v.dialogApproving = false;
                 if(approving==='done'){
                   v.allowanceMap = true
                   v.approveMapHash = true
-                  v.checkApproved()
+                  if (timer){
+                    clearInterval(timer);
+                  }
+                  v.dialogApprovingMap = false;
+                  v.setApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress,false);
                   return;
+                } else if (approving==='doing'){
+                  v.allowanceMap = false
+                  v.approveMapHash = true
                 }
-                if (approving==='doing'){
-                  v.dialogApproving = true;
-                  // v.approveMapHash = true
-                }
-
+                console.log(' v.dialogApprovingMap',   v.allowanceMap, v.approveMapHash)
 
                 let contract = new v.myWeb3.eth.Contract(tokenAbi, tokenAddress)
                 // console.log(`rewardaddress`, v.chainForm.contract)
                 contract.methods.allowance(local_address, v.chainForm.contract).call(function (error, result) {
-                  // console.log('result', result)
                   if (result && result != 0) {
-                    console.log(result)
                     v.allowanceMap = true
                     v.approveMapHash = true
-                    v.dialogApprovingMap = false;
                     if (timer){
                       clearInterval(timer);
                     }
                     v.dialogApprovingMap = false;
                     v.setApproveStatus(`${local_address}${v.chainForm.contract}`,tokenAddress,false);
-
+                    v.checkApproved()
                   } else {
-                    v.allowance = false
-                    v.approveHash = false
+                    v.allowanceMap = false
                   }
                   if (error) {
                     //console.log('error', error)
@@ -2141,7 +2200,6 @@
               await v.actionGasFee()
               await v.checkApproved()
             }
-
 
           },
 
@@ -2180,6 +2238,7 @@
 
                 else if ((chainId =='0x58f8'|| chainId =='58f8' )) {
                    params.sourceNetwork='MAP'
+                   params.destNetwork='ETH'
                 }
                 else if ((chainId == config.bscId || chainId == config.bscDefaultId)) {
                    params.sourceNetwork='BSC'
@@ -2192,17 +2251,21 @@
                 }
 
               let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
+              let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
 
-              v.$router.push({path:'home',query:{sourceNetwork:sourceNetwork,destNetwork:'MAP'}})
-
+              v.$router.push({path:'home',query:{sourceNetwork:sourceNetwork,destNetwork:destNetwork}})
 
                 for (let chains of v.chainList) {
-                  if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
-                    v.chainForm = JSON.parse(JSON.stringify(chains));
-                    break
-                  }else  {
-                    if (chains.chain.toUpperCase() == 'ETH') {
+                  let sourceNetwork = params.sourceNetwork ? params.sourceNetwork : 'ETH';
+                  let destNetwork = params.destNetwork ? params.destNetwork : 'MAP';
+
+                  // chainForm
+                  for (let chains of v.chainList) {
+                    if (chains.chain.toUpperCase() == sourceNetwork.toUpperCase()) {
                       v.chainForm = JSON.parse(JSON.stringify(chains));
+                    }
+                    if (chains.chain.toUpperCase() == destNetwork.toUpperCase()) {
+                      v.chainTo = JSON.parse(JSON.stringify(chains));
                     }
                   }
                 }
@@ -2291,6 +2354,7 @@
             await this.actionChainSuccess()
             await this.actionShowToken()
             await this.actionStatus()
+            await this.actionUndoneTransfer()
             // await this.actionMapStatus()
           },
         },
@@ -2298,6 +2362,8 @@
         beforeDestroy() {
           clearInterval(this.setTimeHistory);
           this.setTimeHistory = null;
+          clearInterval(this.historyTimerLoading)
+          this.historyTimerLoading=null
         },
 
         mounted() {
