@@ -5,11 +5,15 @@ import config from '../config/configTest'
 export default {
     async getAddress() {
         if (window.ethereum) {
-            let address = await window.ethereum.selectedAddress
-            if (address) {
-                return address
+            try {
+                let address = await window.ethereum.selectedAddress
+                if (address) {
+                    return address
+                }
+            } catch (e) {
             }
         }
+        return null;
     },
     async getSortAddress() {
         if (window.ethereum) {
