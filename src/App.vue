@@ -52,8 +52,8 @@ input {
   width: 100%;
   height: 100vh;
   background-color: #f8f8f8;
-  color: black;
-  font-family: 'poppinssemibold';
+  color: #333333;
+  font-family: 'productRegular';
 }
 ::-webkit-input-placeholder {
   font-size: 20px;

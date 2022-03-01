@@ -1,14 +1,13 @@
     <template>
       <div class="footer">
           <div class="footer-content">
-            <span>Powered by MAP Protocol</span>
-            <div class="footer-line"></div>
             <div class="footer-icon">
 <!--              <a href="" target="_blank"><img src="../assets/footer/dis.png"/></a>-->
               <a href="https://t.me/MarcoPoloMAP" target="_blank"><img src="../assets/footer/tele.png"/></a>
               <a href="https://twitter.com/MarcoPoloGlobal" target="_blank"><img  src="../assets/footer/tw.png"/></a>
               <a href="https://github.com/mapprotocol" target="_blank"><img  src="../assets/footer/github.png"/></a>
             </div>
+            <span>Powered by MAP Protocol</span>
           </div>
       </div>
     </template>
@@ -48,18 +47,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 14px 0;
+      padding: 20px 0;
       border-top: 1px solid rgba(0,0,0,0.1);
     }
 
     .footer-content {
       width: 1200px;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: center;
       //font-family: Poppins;
       font-size: 12px;
+      span {
+        padding-top: 11px;
+      }
     }
 
     .footer-line {

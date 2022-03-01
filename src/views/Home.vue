@@ -1,19 +1,29 @@
         <template>
-          <div class="home" @click="showAddress=false">
+          <div class="home">
 
-            <Header/>
+            <Header @listenTab="acitonEmitHeader"/>
+
+            <div class="header-middle">
+              <div @click="actionOpenTransfer(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">Transfer funds</div>
+              <div @click="actionHistory(showTab=1)" :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">History</div>
+            </div>
+
 
             <div class="bridge">
+              <div class="bridge-switch" v-show="!chainSuccess">
+                <img src="../assets/warn-two.png"/>
+                <span>You must switch <span style="color:#e44e3a;padding-left: 0">{{chainForm.chainName}}</span>  to begin the transfer</span>
+              </div>
               <div class="bridge-content">
-                <div class="bridge-title">
+               <!-- <div class="bridge-title">
                   <div class="tran">
                     <div @click="actionOpenTransfer(showTab=0)" class="tran-title"><span>Transfer funds</span></div>
                     <div :class="showTab==0?'tran-title-line':'tran-title-line-black'" class=""></div>
                   </div>
-                  <!--                <div class="tran">-->
-                  <!--                  <div @click="showTab=2" class="tran-title"><span>Transfer Nft</span></div>-->
-                  <!--                  <div :class="showTab==2?'tran-title-line':'tran-title-line-black'" class=""></div>-->
-                  <!--                </div>-->
+                   <div class="tran">
+                       <div @click="showTab=2" class="tran-title"><span>Transfer Nft</span></div
+                          <div :class="showTab==2?'tran-title-line':'tran-title-line-black'" class=""></div>
+                    </div>
                   <div class="tran">
                     <div @click="actionHistory(showTab=1)" class="tran-title">
                       <span>History</span>
@@ -21,7 +31,7 @@
                     </div>
                     <div :class="showTab==1?'tran-title-line':'tran-title-line-black'" class=""></div>
                   </div>
-                </div>
+                </div> -->
                 <!--              tranfer-->
                 <div v-show="showTab==0">
                   <!--                tran-from-->
@@ -32,7 +42,7 @@
                         <!--                  <div class="tran-from-btn">-->
                         <img :src="chainForm.chainImg"/>
                         <span>{{ chainForm.chainName }}</span>
-                        <img src="../assets/arrow-bottom-red.png"/>
+                        <img src="../assets/arrow-bottom-black.png"/>
                       </div>
                     </div>
                     <div class="tran-from-right">Source Chain</div>
@@ -48,7 +58,7 @@
                       <div @click="actionOpenToken()" class="tran-send-btn">
                         <img :src="selectToken.url"/>
                         <span>{{ selectToken.name }}</span>
-                        <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-red.png"/>
+                        <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>
                       </div>
                     </div>
                   </div>
@@ -64,7 +74,7 @@
                         <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
                         <img :src="chainTo.chainImg"/>
                         <span>{{ chainTo.chainName }}</span>
-                        <img src="../assets/arrow-bottom-red.png"/>
+                        <img src="../assets/arrow-bottom-black.png"/>
                       </div>
                     </div>
                     <div class="tran-from-right">Destination Chain</div>
@@ -77,26 +87,44 @@
                     <div class="tran-send-bottom">
                       <span>{{ receivedAmount }}</span>
                       <!--                  <span>{{ receivedAmount }}</span>-->
-                      <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
+                     <!-- <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                         <span class="tran-send-btn-address">{{ sortAddress }}</span>
                         <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-red.png"/>
-                      </div>
+                      </div>-->
                     </div>
-                    <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
-                      <div class="tran-send-address-left">
-                        <span>Received Address:</span>
-                        <img src="../assets/address.png"/>
+                    <div class="tran-custom">
+                      <div class="tran-custom-content">
+                        <div class="tran-custom-left">
+                          <img v-if="!showAddress" @click.stop="showAddress=true" src="../assets/frame.png"/>
+                          <img v-else @click.stop="showAddress=false" src="../assets/frame-red.png"/>
+                          <span>Custom</span>
+                        </div>
+                        <div class="tran-custom-right">
+                          <input :disabled="showAddress?false:'disabled'" v-model="langToAddress">
+                        </div>
                       </div>
+
+                    </div>
+                    <!--  <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
+                       <div class="tran-send-address-left">
+                         <span>Received Address:</span>
+                         <img src="../assets/address.png"/>
+                       </div>
                       <div class="tran-send-address-input">
-                        <input v-model="allAddress" placeholder="Please enter the address"/>
-                        <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>
-                        <img v-else src="../assets/success-gray.png"/>
-                      </div>
-                    </div>
-                    <div class="tran-send-fee">
+                         <input v-model="allAddress" placeholder="Please enter the address"/>
+                         <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>
+                         <img v-else src="../assets/success-gray.png"/>
+                       </div>
+                    </div>-->
+                   <div class="tran-send-fee">
                       <img src="../assets/error.png"/>
                       <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>
                     </div>
+                  </div>
+<!--                  余额不足提醒-->
+                  <div v-show="showInsuffcientBalance" class="tran-insuff">
+                    <img src="../assets/warn-two.png"/>
+                    <span>Insufficient balance</span>
                   </div>
                   <!--                connect-->
                   <div class="tran-connect">
@@ -113,7 +141,7 @@
                       Approving... <img src="../assets/loading.gif"/>
                     </button>
                     <button v-if="allowance && !transferBtn && allowanceMap"
-                            :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionTrans()">Transfer
+                            :class="chainSuccess==false ? 'tran-connect-approve' :''" id="tranferBtn" @click="actionTrans()">Transfer
                     </button>
                     <button v-if="allowance && transferBtn" class="tran-connect-approve">
                       Transfering... <img src="../assets/loading.gif"/>
@@ -205,7 +233,7 @@
                       <!--                  <span>{{ receivedAmount }}</span>-->
                       <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                         <span class="tran-send-btn-address">{{ sortAddress }}</span>
-                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-red.png"/>
+                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-black.png"/>
                       </div>
                     </div>
                     <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
@@ -245,21 +273,45 @@
                 <div v-show="showTab==1" class="">
 <!--                  pc-->
                   <div class="history">
+                    <div class="history-title">
+                      History
+                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>
+                    </div>
                     <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
                          :key="index"
-                         class="history-list">
-                      <div class="history-top">
-                        <div class="history-top-show">
+                         class="history-list history-lists">
+                      <div class="history-tops">
+                          <div class="history-tops-icon">
+                            <img :src="item.fromLogo"/>
+                          </div>
+                          <div class="history-tops-from">
+                            <div class="history-top-left">
+                              <span class="history-top-amount history-top-amounts">{{ item.amount }}</span>
+                              <span class="history-top-coin">{{ item.coin }}</span>
+                            </div>
+                            <div class="history-tops-from-text">
+                              <span>{{ item.fromChainName }}</span>
+                            </div>
+                          </div>
+                          <div class="history-tops-tranfrom">
+                            <img src="../assets/tranform.png"/>
+                          </div>
+                      </div>
+                      <div class="history-tops">
+                        <div class="history-tops-icon">
+                          <img :src="item.toLogo"/>
+                        </div>
+                        <div class="history-tops-from">
                           <div class="history-top-left">
-                            <span class="history-top-amount">{{ item.amount }}</span>
+                            <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>
                             <span class="history-top-coin">{{ item.coin }}</span>
                           </div>
-                          <div class="history-top-left history-top-left-two">
-                            <span class="history-top-amount">{{ item.inAmount }}</span>
-                            <span class="history-top-coin">{{ item.coin }}</span>
+                          <div class="history-tops-from-text">
+                            <span>{{ item.toChainName }}</span>
                           </div>
                         </div>
-
+                      </div>
+                      <div class="historys-statu">
                         <div v-if="item.state==0" class="history-status history-status-cancel">
                           <span>Pending</span>
                           <img src="../assets/arrow-right-yellow.png"/>
@@ -276,15 +328,7 @@
                           <span>Processing</span>
                           <img src="../assets/arrow-right-yellow.png"/>
                         </div>
-                      </div>
-                      <div class="history-bottom">
-                        <div class="history-coin">
-                          <img :src="item.fromLogo"/> <span>{{ item.fromChainName }}</span>
-                          <img src="../assets/tranform.png"/>
-                          <img :src="item.toLogo"/> <span>{{ item.toChainName }}</span>
-                        </div>
-
-                        <span class="history-coin-time">{{ item.nowTime }}</span>
+                        <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>
                       </div>
                     </div>
                     <div>
@@ -310,6 +354,10 @@
                   </div>
 <!--                  h5-->
                   <div class="history-h5">
+                    <div class="history-title">
+                      History
+                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>
+                    </div>
                     <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
                          :key="index"
                          class="">
@@ -359,7 +407,6 @@
                           </div>
                         </div>
                     </div>
-
                     <div>
                       <div v-if="historyList && historyList.length>0" class="home-page">
                         <div :class="currentPage==1?'btn-pre':'btn-next'" @click="prePage()" class="">
@@ -383,6 +430,32 @@
                   </div>
                 </div>
               </div>
+              <!--<div  class="bridge-rate" v-show="showTab==0">
+                <div class="bridge-rate-content">
+                    <div class="bridge-rate-content-item">
+                      <div class="bridge-rate-left">Bridge Rate:</div>
+                      <div class="bridge-rate-right">1 ETH on   <img/>    ≈ 1.0000717639923096 ETH on <img/></div>
+                    </div>
+                  <div class="bridge-rate-content-item">
+                    <div class="bridge-rate-left">
+                      Fee<img src="../assets/error.png"/>
+                    </div>
+                    <div class="bridge-rate-right">0.00048004 ETH</div>
+                  </div>
+                  <div class="bridge-rate-content-item">
+                    <div class="bridge-rate-left">Minimum Received<img src="../assets/error.png"/></div>
+                    <div class="bridge-rate-right">0.098527 ETH</div>
+                  </div>
+                  <div class="bridge-rate-content-item">
+                    <div class="bridge-rate-left">Estimated Time of Arrival</div>
+                    <div class="bridge-rate-right">5-20 minutes</div>
+                  </div>
+                  <div class="bridge-rate-content-item">
+                    <div class="bridge-rate-left">Received Gas Tokens on Arrival <img src="../assets/error.png"/></div>
+                    <div class="bridge-rate-right">0.002 MATIC</div>
+                  </div>
+                </div>
+              </div> -->
             </div>
 
             <Footer/>
@@ -412,7 +485,7 @@
 
             <!--        选择token-->
             <div v-show="showSelectToken" class="dialog-selectChain">
-              <div class="dialog-content">
+              <div class="dialog-content dialog-content-Token">
                 <div class="dialog-selectChain-title">
                   <span>Select a token</span>
                   <img @click="showSelectToken=false" src="../assets/cancel.png"/>
@@ -420,6 +493,12 @@
                 <div class="dialog-selectChain-search">
                   <img src="../assets/search.png"/>
                   <input v-model="searchToken" placeholder="Search token by name or address">
+                </div>
+                <div class="dialog-token-bell">
+                  <img src="../assets/dialog/bell.png"/>
+                  <span>
+                    Below is the supported token list from {{chainForm.chainName}} to {{chainTo.chainName}}. More tokens can be found if you select other chains.
+                  </span>
                 </div>
                 <div class="dialog-token">
                   <div v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"
@@ -430,7 +509,7 @@
                           <img :src="item.img"/>
                           <div class="dialog-token-detail-left-text">
                             {{ item.name }}
-                            <span> {{ item.symbol }}</span>
+<!--                            <span> {{ item.symbol }}</span>-->
                           </div>
                         </div>
                         <div v-if="item.amount!=null && item.amount>=0"
@@ -699,10 +778,11 @@
           components: {Footer, Header},
           data() {
             return {
+              showInsuffcientBalance:false,//余额不足提醒
               chooseApprove:-1,//点击按钮是Approve还是ApproveMap
               account:'',//用户地址
-              historyTimerLoading: null,
-              historyLoading: false,
+              historyTimerLoading: [],
+              historyLoading: null,
               setTimeHistoryLoading: false,
 
               statusTimer: false,
@@ -954,56 +1034,6 @@
               //一定要记得返回筛选后的数据
               return arrByZM;
             },
-            // listToken() {
-            //   console.log('Computed listToken',new Date())
-            //   var _this = this;
-            //   //逻辑-->根据input的value值筛选goodsList中的数据
-            //   var inputContent = _this.searchToken.substring(0, 2)
-            //   // //console.log(inputContent)
-            //   if (inputContent !== '0x') {
-            //     var arrByZM = [];//声明一个空数组来存放数据
-            //     let tokenListRes = _this.tokenAllList[_this.chainIdRes]
-            //     if (tokenListRes) {
-            //       for (var i = 0; i < tokenListRes.length; i++) {
-            //         //for循环数据中的每一项（根据name值）
-            //         // console.log('tokenList',tokenListRes)
-            //         if (tokenListRes[i] && tokenListRes[i].name.search(_this.searchToken) != -1) {
-            //           //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            //           arrByZM.push(tokenListRes[i]);
-            //           //向空数组中添加数据
-            //         }
-            //       }
-            //     }
-            //
-            //   } else {
-            //     var arrByZM = [];
-            //     let tokenListRes = _this.tokenAllList[_this.chainIdRes]
-            //     if (tokenListRes) {
-            //       for (var i = 0; i < tokenListRes.length; i++) {
-            //         //for循环数据中的每一项（根据name值）
-            //         if (tokenListRes[i] && tokenListRes[i].address.search(_this.searchToken) != -1) {
-            //           //判断输入框中的值是否可以匹配到数据，如果匹配成功
-            //           arrByZM.push(tokenListRes[i]);
-            //           //向空数组中添加数据
-            //         }
-            //       }
-            //     }
-            //   }
-            //   //逻辑-->升序降序排列 false: 默认从小到大 true：默认从大到小
-            //   //判断，如果要letter不为空，说明要进行排序
-            //   // if(this.letter != ''){
-            //   //   arrByZM.sort(function( a , b){
-            //   //     if(_this.original){
-            //   //       return b[_this.letter] - a[_this.letter];
-            //   //     }else{
-            //   //       return a[_this.letter] - b[_this.letter];
-            //   //     }
-            //   //   });
-            //   // }
-            //   //一定要记得返回筛选后的数据
-            //   // console.log(`token result`,arrByZM)
-            //   return arrByZM;
-            // },
             account_default_address() {
               return this.$store.state.account.default_address
             },
@@ -1016,6 +1046,15 @@
           },
 
           methods: {
+            acitonEmitHeader(data) {
+              this.showTab = data
+              if (  this.showTab ==0) {
+                this.actionOpenTransfer(this.showTab)
+              }
+              else if (  this.showTab ==1) {
+                this.actionHistory(this.showTab=1)
+              }
+            },
 
             getApproveStatus(key, tokenAddress) {
               // console.log('getApproveStatus',{key,tokenAddress});
@@ -1059,11 +1098,28 @@
 
             //输入数值超出时 显示红色
             actionInputFont() {
+
+              if (! this.sendAmount) {
+                return
+              }
+
+              let amount = this.sendAmount.toString().replace(/[^\d.]/g, "")
+              this.sendAmount = amount
+
               let input = document.getElementById('tran-send-bottom-red')
+              let transfer = document.getElementById('tranferBtn')
+
+              console.log('amount',new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)).toFixed())
+
+              //余额不足时 input字体颜色  Transfer按钮颜色  余额不足提醒
               if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
                 input.style.color = '#E44E3A'
+                this.showInsuffcientBalance = true
+                transfer.className='tran-connect-approve'
               } else {
                 input.style.color = 'black'
+                this.showInsuffcientBalance = false
+                transfer.className=''
               }
             },
 
@@ -1479,7 +1535,6 @@
                 if (v.transHash != null && v.transHash != '') {
                   v.actionSubBridge()
                 }
-                v.actionUndoneTransfer()
                 console.log(`hash`, hash)
                 v.dialogTransing = true
                 // v.$toast('Transaction has send please wait result')
@@ -1497,6 +1552,7 @@
               })
               // console.log('rewardReceipt', rewardReceipt);
               this.getAllData()
+              this.actionTimerHistory()
             },
 
             //交易成功后 给后端传数据
@@ -1542,18 +1598,39 @@
             //查询未完成的历史交易
             async actionUndoneTransfer() {
               let v = this
-              console.log('status',v.statusTimer)
-              if (v.statusTimer){
-                clearInterval( v.statusTimer);
-                v.statusTimer = null;
-                v.historyLoading=false
+              let resultTwo;
+              console.log('status',v.historyTimerLoading)
+              console.log( v.historyLoading,"333")
+              // if(v.historyLoading != null && v.historyLoading <= 0){
+              //   console.log("bbb")
+              //   v.historyTimerLoading.forEach((item, index) => {
+              //     clearInterval(item);
+              //   })
+              //   v.historyTimerLoading = [];
+              //   v.historyTimerLoading = 0;
+              //
+              // }
+              //
+            console.log(v.historyTimerLoading, "888")
+              if (v.historyTimerLoading != null && v.historyTimerLoading.length > 0 && v.historyLoading != null && v.historyLoading <= 0) {
+
+                v.historyTimerLoading.forEach((item, index) => {
+                    console.log(item)
+                    clearInterval(item);
+                  })
+                  v.historyTimerLoading = [];
               }
 
+              // if (v.historyTimerLoading){
+              //   clearInterval( v.historyTimerLoading);
+              //   v.historyTimerLoading = null;
+              //   v.historyLoading=false
+              // }
+              // console.log('status',v.historyTimerLoading)
+
               var local_address = await v.action.getAddress()
-              var chainId = await v.action.getChainId()
-              chainId = parseInt(chainId.slice(2), 16)
               var params = {
-                chainId: chainId,
+                chainId: v.chainForm.chainId,
                 address: local_address,
               }
 
@@ -1564,28 +1641,14 @@
               }
 
 
-              if (v.historyLoading && v.historyLoading > 0) {
+            },
 
-                v.historyTimerLoading = setInterval(async () => {
-                  var result = await v.$http.undoneTransfer(params)
-                  if (result.code == 200) {
-                    v.historyLoading = result.data.count
-                    if (v.historyLoading < 1) {
-                      v.actionHistory()
-                      clearInterval(v.historyTimerLoading)
-                      v.historyTimerLoading=null
-                      return
-                    }
-                  }
-                }, 1000)
-              } else {
-                if (v.historyTimerLoading) {
-                  clearInterval(v.historyTimerLoading)
-                  v.historyTimerLoading=null
-                }
-                v.actionHistory()
-              }
-
+            actionTimerHistory() {
+              let timer = setInterval(()=> {
+                this.actionUndoneTransfer()
+              },2000)
+              this.historyTimerLoading.push(timer)
+              console.log(this.historyTimerLoading, "555")
             },
 
 
@@ -1803,7 +1866,6 @@
                 this.chainTo = JSON.parse(JSON.stringify(item));
                 this.destNetwork = item.chain
                 v.showSelectChain = false
-                v.getAllData()
                 this.$router.push({
                   path: '/',
                   query: {
@@ -1812,6 +1874,8 @@
                     destNetwork: v.chainTo.chain
                   }
                 })
+                v.getAllData()
+                v.actionTimerHistory()
                 return
               }
               if (!window.ethereum) {
@@ -1864,6 +1928,7 @@
                     }
                   })
                   v.getAllData()
+                  v.actionTimerHistory()
                   return;
                 }
                 // console.log(' v.chainTo', v.chainTo, v.chainForm)
@@ -1884,6 +1949,7 @@
                   query: {sourceNetwork: item.chain, destNetwork: v.chainTo.chain}
                 })
                 v.getAllData()
+                v.actionTimerHistory()
               })
                   .catch((e) => {
                     v.$router.replace({
@@ -1923,9 +1989,10 @@
             //输入地址填写
             async getInputAddress() {
               let v = this
-              v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
-              this.langToAddress = v.allAddress
-              v.showAddress = false
+              // v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
+              this.langToAddress = v.langToAddress
+              console.log('address',this.langToAddress)
+              // v.showAddress = false
             },
 
             //approve
@@ -2457,7 +2524,6 @@
               await this.actionChainSuccess()
               await this.actionShowToken()
               this.actionStatus()
-              await this.actionUndoneTransfer()
               // await this.actionMapStatus()
             },
           },
@@ -2475,11 +2541,115 @@
           mounted() {
             //local_address+reward_address+token_address
             this.getAllData()
+            this.actionTimerHistory()
           },
         }
         </script>
 
         <style scoped lang="less">
+
+        //rate
+        .bridge-rate {
+            width: 494px;
+            max-width: 494px;
+            border-radius: 10px;
+            border: solid 1px #e44e3a;
+            background-color: rgba(228, 78, 58, 0.05);
+        }
+
+        .bridge-rate-content {
+          padding: 16px 20px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .bridge-rate-content-item {
+          padding-top: 13px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .bridge-rate-left {
+            font-family: PingFangSC;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(0,0,0,0.55);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+          img {
+            margin-left: 5px;
+            width: 16px;
+          }
+        }
+
+        .bridge-rate-right {
+          font-family: PingFangSC;
+          font-size: 12px;
+          font-weight: 500;
+        }
+
+
+
+        .history-lists {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .history-tops {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .history-tops-icon {
+          img {
+            width: 24px;
+          }
+
+        }
+
+        .history-tops-from {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding-left: 6px;
+        }
+
+        .history-tops-from-text {
+          font-family: 'productBold';
+          //width: 103%;
+          font-size: 13px;
+          font-weight: 600;
+          padding-top: 5px;
+        }
+
+        .history-tops-tranfrom {
+          img {
+            width: 18px;
+            margin: 0 13px;
+          }
+        }
+
+        .historys-statu {
+          padding-left: 15px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+        }
+
+        .historys-coin-time {
+          padding-top: 10px !important;
+        }
+
+        .history-top-amounts {
+          margin-left: 0 !important;
+        }
+
 
         .redColor {
           color: #E44E3A;
@@ -2487,6 +2657,58 @@
 
         .loading-icon {
           -webkit-animation: circle 3s infinite linear;
+        }
+
+
+        .header-middle {
+          margin-top: 20px;
+          margin-bottom: 10px;
+          font-size: 14px;
+          color: #333;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          font-family: 'productBold';
+          display: none;
+        }
+
+        .header-middle-trans {
+          cursor: pointer;
+          width: 110px;
+          height: 35px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          font-family: 'productBold';
+          transition: border-color .3s cubic-bezier(.645,.045,.355,1);
+        }
+
+        .header-middle-tran-active {
+          width: 110px;
+          height: 35px;
+          border-radius: 10px;
+          background-color: #0e1012;
+          font-weight: bold;
+          color: white;
+          font-family: 'productBold';
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: border-color .3s,background .3s,padding .3s cubic-bezier(.645,.045,.355,1);
+        }
+
+        .header-middle-his {
+          margin-left: -12px;
+        }
+
+        .header-middle-his-active {
+          margin-left: -7px;
         }
 
         @-webkit-keyframes circle {
@@ -2500,7 +2722,7 @@
 
 
         .bridge {
-          padding-top: 61px;
+          padding-top: 51px;
           padding-bottom: 64px;
           position: relative;
           display: flex;
@@ -2509,9 +2731,28 @@
           background-color: #f8f8f8;
         }
 
+        .bridge-switch {
+          margin-top: -31px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          border-radius: 12px;
+          background-color: rgba(228, 78, 58,0.1);
+          padding: 13px 70px;
+          margin-bottom:20px ;
+          img {
+            width: 24px;
+          }
+          span {
+            font-size: 12px;
+            font-weight: 500;
+            padding-left: 10px;
+          }
+        }
+
         .bridge-content {
-          width: 622px;
-          max-width: 622px;
+          width: 558px;
+          max-width: 558px;
           border-radius: 30px;
           background: white;
           box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
@@ -2575,7 +2816,7 @@
         //tran
 
         .tran-from {
-          padding-top: 41px;
+          font-size: 13px;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -2595,18 +2836,19 @@
         }
 
         .tran-from-btn {
-          border: solid 1px #e44e3a;
-          padding: 7px 16px 6px 11px;
+          padding: 5px 13px 5px 11px;
           margin-left: 9px;
           display: flex;
           flex-direction: row;
           align-items: center;
-          border-radius: 8px;
-          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          background-color: rgba(89, 45, 45, 0.05);
           cursor: pointer;
+          font-size: 12px;
+          font-family: 'productBold';
 
           img {
-            width: 26px;
+            width: 25px;
           }
 
           span {
@@ -2644,11 +2886,11 @@
         }
 
         .tran-send {
-          margin-top: 15px;
+          margin-top: 10px;
           border-radius: 12px;
-          background-color: rgba(0, 0, 0, 0.05);
+          background-color: rgba(89, 45, 45, 0.05);
           //padding: 15px 12px;
-          padding: 30px 30px 25px 30px;
+          padding: 17px 19px 20px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -2666,7 +2908,7 @@
         }
 
         .tran-send-bottom {
-          padding-top: 14px;
+          padding-top: 13px;
           width: 100%;
           display: flex;
           flex-direction: row;
@@ -2674,13 +2916,12 @@
           justify-content: space-between;
 
           span {
-            font-family: 'poppinSemiBold';
+            font-family: 'productBold';
             font-size: 20px;
-            font-weight: 600;
           }
 
           input {
-            font-family: 'poppinSemiBold';
+            font-family: 'productBold';
             height: 30px;
             color: black;
             font-size: 20px;
@@ -2689,24 +2930,26 @@
           }
         }
 
+
+
         .tran-send-btn {
           display: flex;
           flex-direction: row;
           align-items: center;
-          border: solid 1px #e44e3a;
-          padding: 7px 16px 6px 8px;
+          padding: 5px 13px 5px 11px;
           border-radius: 8px;
           cursor: pointer;
           background: white;
-          //box-sizing: border-box;
+          border-radius: 8px;
           span {
-            font-size: 14px;
+            font-size: 12px;
             padding-left: 9px;
             padding-right: 26px;
+            font-family: 'productBold';
           }
 
           img {
-            width: 30px;
+            width: 25px;
           }
         }
 
@@ -2724,19 +2967,19 @@
 
 
         .tran-change {
-          padding-top: 21px;
+          padding-top: 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
 
           img {
             cursor: pointer;
-            width: 30px;
+            width: 32px;
           }
         }
 
         .tran-send-fee {
-          padding-top: 5px;
+          padding-top: 7px;
           width: 100%;
           display: flex;
           flex-direction: row;
@@ -2753,6 +2996,25 @@
           }
         }
 
+        .tran-insuff {
+          padding-top: 22px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: -8px;
+          img {
+            width: 24px;
+          }
+          span {
+            font-weight: bold;
+            padding-left: 10px;
+            font-family: ProductSans;
+            font-size: 14px;
+            color: rgb(228, 78, 58);
+          }
+        }
+
         .tran-connect {
           padding-top: 30px;
 
@@ -2762,7 +3024,7 @@
             height: 55px;
             border-radius: 8px;
             background-color: #e44e3a;
-            font-family: 'poppinsMeduim';
+            font-family: 'productBold';
             font-size: 16px;
             color: white;
           }
@@ -2773,7 +3035,7 @@
           flex-direction: row;
           align-items: center;
           justify-content: center;
-          background: #545050 !important;
+          background: rgba(89, 45, 45,0.4) !important;
 
           img {
             width: 80px;
@@ -2848,6 +3110,47 @@
             margin-left: 9px;
             margin-right: 14px;
             width: 20px;
+          }
+        }
+
+        //cutom
+        .tran-custom {
+          margin-top: 15px;
+          border-radius: 10px;
+          background-color: white;
+          width: 100%;
+          //padding: 10px 21px;
+        }
+        .tran-custom-content  {
+          padding: 10px 21px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+
+        .tran-custom-left {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          span {
+            font-size: 12px;
+            padding-left: 5px;
+          }
+          img {
+            width: 15px;
+            cursor: pointer;
+          }
+        }
+
+        .tran-custom-right {
+          width: 75%;
+          input {
+            text-align: right;
+            text-align: right;
+            width: 100%;
+            font-size: 12px;
           }
         }
 
@@ -2958,18 +3261,21 @@
         }
 
         .dialog-content {
-          max-width: 522px;
-          width: 522px;
-          max-height: 574px;
-          height: 574px;
+          max-width: 558px;
+          width: 558px;
+          max-height: 544px;
           border-radius: 30px;
           background: #FFFFFF;
           box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.05);
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 26px 0 30px 0;
+          padding: 26px 30px 30px 30px;
           box-sizing: border-box;
+        }
+
+        .dialog-content-Token {
+          padding-bottom: 87px;
         }
 
         .dialog-content-approve {
@@ -3021,15 +3327,14 @@
         }
 
         .dialog-selectChain-title {
-          font-family: 'poppinSemiBold';
-          width: 80%;
+          font-family: 'productBold';
+          width: 100%;
           display: flex;
           flex-direction: row;
           align-items: center;
           justify-content: space-between;
-          //font-family: Poppins;
-          font-size: 18px;
-          font-weight: 600;
+          font-size: 20px;
+          font-weight: bold;
 
           span {
             text-align: center;
@@ -3043,15 +3348,15 @@
         }
 
         .dialog-selectChain-search {
-          border-radius: 8px;
-          border: solid 1px rgb(228, 78, 58);
+          border-radius: 15px;
+          border: solid 1px rgba(89, 45, 45,0.5);
           display: flex;
           flex-direction: row;
           align-items: center;
-          width: 90%;
+          width: 100%;
           padding: 9px;
-          margin: 15px 0;
-
+          margin: 15px 0 10px 0;
+          box-sizing: border-box;
           img {
             width: 20px;
             cursor: pointer;
@@ -3073,42 +3378,46 @@
 
         .dialog-selectChain-coin {
           width: 100%;
-          padding-top: 20px;
-          overflow-y: scroll;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
         }
 
         .dialog-Chain-coin {
-          //margin-top: 20px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+          margin-top: 10px;
         }
 
-        .dialog-Chain-coin:hover {
-          width: 100%;
-          background: rgba(0, 0, 0, 0.05);
-        }
 
         .dialog-selectChain-coin-content {
-          width: 90%;
+          width: 244px;
+          height: 50px;
+          box-sizing: border-box;
+          border-radius: 15px;
+          border: solid 1px rgba(0, 0, 0, 0.05);
           display: flex;
           flex-direction: row;
-          align-items: flex-start;
+          align-items: center;
           justify-content: flex-start;
           cursor: pointer;
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
           img {
-            padding-top: 20px;
-            width: 40px;
+            margin-left: 11px;
+            width: 28px;
             margin-right: 9px;
           }
 
           span {
-            width: 100%;
-            padding-top: 29px;
-            padding-bottom: 29px;
+            font-size: 13px;
           }
+        }
+
+        .dialog-selectChain-coin-content:hover {
+          height: 50px;
+          background-color: rgba(89, 45, 45, 0.05);
+          border: 0;
         }
 
 
@@ -3120,43 +3429,34 @@
         }
 
         .dialog-token-content {
+          box-sizing: border-box;
+          margin-top: 10px;
           width: 100%;
+          height: 50px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
           cursor: pointer;
+          border-radius: 15px;
+          border: solid 1px rgba(0, 0, 0, 0.05);
         }
 
         .dialog-token-content:hover {
-          background: rgba(0, 0, 0, 0.05);
-
-          .dialog-token-content-line:nth-child(n+1) {
-            height: 0;
-          }
-
-          .dialog-token-content-line:nth-child( n -1 ) {
-            height: 0;
-          }
+          height: 52px;
+          border: 0;
+          background-color: rgba(89, 45, 45, 0.05);
         }
 
         .dialog-token-contentlist {
           width: 100%;
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           align-items: center;
           justify-content: center;
         }
 
-
-        .dialog-token-content-line {
-          margin-top: 15px;
-          width: 92%;
-          height: 1px;
-          background: rgba(0, 0, 0, 0.1);
-        }
-
         .dialog-token-detail {
-          margin-top: 15px;
           width: 92%;
           display: flex;
           flex-direction: row;
@@ -3167,19 +3467,16 @@
         .dialog-token-detail-left {
           display: flex;
           flex-direction: row;
-          //align-items: center;
-
+          align-items: center;
           img {
-            width: 43px;
-            height: 43px;
+            width: 22px;
           }
         }
 
         .dialog-token-detail-left-text {
-          padding-left: 9px;
-          padding-top: 10px;
-          font-size: 16px;
-
+          padding-left: 10px;
+          font-family: 'productBold';
+          font-size: 13px;
           span {
             font-size: 12px;
             color: rgba(255, 255, 255, 0.3);
@@ -3188,7 +3485,7 @@
 
         .dialog-token-detail-left-right {
           //font-family: Poppins;
-          font-size: 16px;
+          font-size: 13px;
           font-weight: 500;
           display: flex;
           flex-direction: row;
@@ -3198,6 +3495,23 @@
             padding-left: 5px;
             text-align: right;
           }
+        }
+
+        .dialog-token-bell {
+            padding: 15px 12px;
+            border-radius: 15px;
+            background-color: rgba(228, 78, 58, 0.06);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            img {
+              width: 15px;
+            }
+            span {
+              padding-left: 13px;
+              font-family: PingFangSC;
+              font-size: 12px;
+            }
         }
 
 
@@ -3241,13 +3555,14 @@
           flex-direction: column;
           align-items: flex-start;
           justify-content: center;
-          background: rgba(0, 0, 0, 0.05);
+          background: rgba(89, 45, 45, 0.05);
           padding: 9px 47px 14px 20px;
           border-radius: 10px;
 
           span:nth-child(1) {
             color: #e44e3a;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: bold;
             padding-top: 4px;
           }
 
@@ -3260,7 +3575,7 @@
         .dialog-trans-detail-rights {
           display: flex;
           flex-direction: column;
-          background: rgba(0, 0, 0, 0.05);
+          background: rgba(89, 45, 45, 0.05);
           padding: 21px 24px 28px 20px;
           border-radius: 10px;
           width: 75%;
@@ -3319,14 +3634,14 @@
           align-items: center;
 
           img {
-            width: 35px;
+            width: 25px;
           }
 
           span {
             padding-left: 10px;
+            font-family: ProductSans;
             //font-family: Poppins;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
           }
         }
 
@@ -3461,6 +3776,21 @@
           position: relative;
         }
 
+        .history-title {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          font-family: 'productBold';
+          font-size: 20px;
+          font-weight: bold;
+          padding-bottom: 10px;
+          img {
+            width: 22px;
+            margin-left: 9px;
+          }
+        }
+
         .history-h5-bottom {
           padding-top: 8px;
           display: flex;
@@ -3474,32 +3804,12 @@
         }
 
         .history-list {
-          margin-top: 30px;
+          margin-top: 10px;
           cursor: pointer;
           background: rgba(0, 0, 0, 0.05);
-          padding: 20px;
+          padding: 20px 20px 18px 20px;
           border-radius: 12px;
           box-sizing: border-box;
-        }
-
-        .history-ant {
-          //position: absolute;
-          //bottom: 27px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding-top: 123px;
-
-          img {
-            width: 39px;
-          }
-
-          span {
-            padding-top: 3px;
-            opacity: 0.3;
-            //font-family: Poppins;
-            font-size: 12px;
-          }
         }
 
         .history-top {
@@ -3529,7 +3839,7 @@
         }
 
         .history-top-left-two {
-          padding-left: 35px;
+          padding-left: 42px;
         }
 
         .history-top-amount {
@@ -3537,14 +3847,14 @@
           padding-top: 3px;
           border-radius: 4px;
           border: 1px dashed rgba(0,0,0,0.15);
-          width: 88px;
-          height: 28px;
+          width: 80px;
+          height: 25px;
           box-sizing: border-box;
           display: flex;
           flex-direction: row;
           align-items: center;
           justify-content: center;
-          font-family: PingFangSC;
+          font-family: ProductSans;
           font-size: 12px;
           font-weight: 600;
           color: #e44e3a;
@@ -3552,9 +3862,8 @@
 
         .history-top-coin {
           padding-left: 5px;
-          font-family: PingFangSC;
+          font-family: 'productBold';
           font-size: 12px;
-          font-weight: 600;
         }
 
         .history-coin {
@@ -3580,7 +3889,6 @@
 
         .history-coin-time {
           opacity: 0.5;
-          font-family: PingFangSC;
           font-size: 12px;
         }
 
@@ -3594,26 +3902,27 @@
           border: solid 1px rgba(228, 78, 58, 1);
           padding: 8px 10px;
           color: #e44e3a;
-          width: 140px;
+          width: 96px;
+          height: 30px;
           position: relative;
           box-sizing: border-box;
-          font-size: 13px;
           img {
-            width: 8px;
+            width: 7px;
             position: absolute;
             right: 11px;
             margin-left: 8px;
           }
-
           span {
-            padding-left: 21px;
+            font-family: 'productBold';
+            font-size: 12px;
+            padding-left: 11px;
           }
         }
 
         .history-status-success {
           border: solid 1px #4FC320;
           color: #4FC320;
-          width: 110px;
+          width: 96px;
           span {
             padding-left: 0;
           }
@@ -3622,7 +3931,6 @@
         .history-status-cancel {
           border: solid 1px rgba(255, 184, 46, 1);
           color: #ffb82e;
-          //width: 140px;
           span {
             padding-left: 0;
           }
@@ -3647,8 +3955,7 @@
 
         //分页
         .home-page {
-          margin-top: 50px;
-          margin-bottom: 80px;
+          margin-top: 121px;
           position: relative;
           display: flex;
           flex-direction: row;
@@ -3663,13 +3970,12 @@
               //cursor: pointer;
               outline: none;
               border: 0;
-              width: 158px;
-              height: 33px;
-              //background: #2196F3;
-              background: rgba(228, 78, 58, 0.2);
-              border-radius: 20px;
+              width: 221px;
+              height: 50px;
+              border-radius: 10px;
+              background: rgba(89, 45, 45, 0.4);
               font-size: 16px;
-              font-family: PingFangSC-Semibold, PingFang SC;
+              font-family: 'productBold';
               font-weight: 600;
               color: #FFFFFF;
               line-height: 22px;
@@ -3700,10 +4006,10 @@
               cursor: pointer;
               outline: none;
               border: 0;
-              width: 158px;
-              height: 33px;
+              width: 221px;
+              height: 50px;
+              border-radius: 10px;
               background: rgba(228, 78, 58, 1);
-              border-radius: 20px;
             }
           }
         }
@@ -3743,6 +4049,13 @@
 
 
         @media (max-width: 960px) {
+          .bridge {
+            padding-top: 20px;
+          }
+
+          .header-middle {
+            display: flex;
+          }
           .bridge-content {
             width: 70%;
             padding: 30px 10px 30px 10px;
@@ -3847,8 +4160,6 @@
           //dialog
           .dialog-content {
             width: 60%;
-            height: 50%;
-            padding: 30px 0 30px 0;
           }
 
 
@@ -3868,27 +4179,11 @@
             }
           }
 
-          .dialog-selectChain-coin-content {
-            img {
-              width: 35px;
-              padding-top: 18px;
-            }
-
-            span {
-              padding-top: 25px;
-              padding-bottom: 20px;
-            }
-          }
-
-          .dialog-token-detail-left {
-            img {
-              width: 30px;
-              height: 30px;
-            }
-          }
-
-          .dialog-token-detail-left-text {
-            font-size: 14px;
+          .dialog-selectChain-coin {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
           }
 
           .dialog-token-detail-left-right {
@@ -3925,12 +4220,6 @@
           .history-top-left-two {
             //padding-left: 0;
           }
-
-
-          .history-list {
-            padding: 20px 10px;
-          }
-
 
           .history-status {
             width: 125px;
@@ -3973,6 +4262,7 @@
           }
 
           .dialog-trans-detail-left {
+            font-family: ProductSans;
             font-size: 14px;
             width: 26%;
           }
@@ -3983,6 +4273,7 @@
             width: 74%;
 
             span:nth-child(1) {
+              font-weight: bold;
               font-size: 14px;
             }
 
@@ -4086,23 +4377,22 @@
 
         @media (max-width: 780px) {
 
+          .bridge {
+            padding-top: 10px;
+          }
+
           .dialog-content {
             width: 90%;
-            height: 60%;
           }
 
           .bridge-content {
             width: 90%;
-            padding: 30px 10px 30px 10px;
+            padding: 20px 10px 20px 10px;
           }
 
           .dialog-content-trans {
             width: 90%;
             height: 70%;
-          }
-
-          .dialog-token-detail-left-text {
-            font-size: 14px;
           }
 
           .tran-send-bottom {
@@ -4127,8 +4417,12 @@
             padding: 17px 9px 22px 10px;
           }
 
-          .tran-from {
-            padding-top: 30px;
+          .tran-from:nth-child(2) {
+            padding-top: 15px;
+          }
+
+          .home-page {
+            margin-top: 50px;
           }
 
           .tran-send-bottom {

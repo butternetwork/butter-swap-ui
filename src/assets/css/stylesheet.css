@@ -3,74 +3,20 @@
 
 
 @font-face {
-    font-family: 'poppinssemibold';
-    src:  url('../font/poppins-regular-webfont.woff2') format('woff2')
-    /*url('./font/poppins-regular-webfont.woff') format('woff');*/
+    font-family: 'productRegular';
+    src: url('../font/product-sans-regular-2-webfont.woff') format('woff'),
+    url('../font/product-sans-regular-2-webfont.woff2') format('woff2')
 
 }
 
 
 /*粗体*/
 @font-face {
-    font-family: 'poppinBold';
-    src: url('../font/poppins-bold-webfont.woff') format('woff'),
-    url('../font/poppins-bold-webfont.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-/*中粗*/
-@font-face {
-    font-family: 'poppinSemiBold';
-    src: url('../font/poppins-semibold-webfont.woff') format('woff'),
-    url('../font/poppins-semibold-webfont.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-
-
-/*中黑*/
-@font-face {
-    font-family: 'poppinsMeduim';
-    src: url('../font/poppins-medium-webfont.woff2') format('woff2'),
-    url('../font/poppins-medium-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-/*常规*/
-@font-face {
-    font-family: 'poppinsRegular';
-    src: url('../font/poppins-regular-webfont.woff2') format('woff2'),
-    url('../font/poppins-regular-webfont.woff') format('woff');
+    font-family: 'productBold';
+    src: url('../font/product-sans-bold-3-webfont.woff') format('woff'),
+         url('../font/product-sans-bold-3-webfont.woff') format('woff2');
     font-weight: normal;
     font-style: normal;
 }
-
-
-/*细体*/
-@font-face {
-    font-family: 'poppinsLight';
-    src: url('../font/poppins-extralight-webfont.woff2') format('woff2'),
-    url('../font/poppins-extralight-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-
-/*!*细体*!*/
-/*@font-face {*/
-/*    font-family: 'Pingf';*/
-/*    src: url("../assets/font/PingFang.ttc") format("ttc");*/
-/*    font-weight: normal;*/
-/*    font-style: normal;*/
-
-/*}*/
-
-
 
 
