@@ -57,26 +57,26 @@ input {
 }
 ::-webkit-input-placeholder {
   font-size: 20px;
-  font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 600;
   color: #84868B;
   line-height: 28px;
   padding-left: 10px;
+  font-family: 'productRegular';
 }
 ::-moz-placeholder {
   font-size: 16px;
-  font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 600;
   color: #84868B;
   line-height: 28px;
   padding-left: 10px;
+  font-family: 'productRegular';
 } /* ie */
 input:-moz-placeholder {
   font-size: 16px;
-  font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 600;
   color: #84868B;
   line-height: 28px;
   padding-left: 10px;
+  font-family: 'productRegular';
 }
 </style>

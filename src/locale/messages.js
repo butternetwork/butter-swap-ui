@@ -8,6 +8,7 @@ export default {
             "Docs":"Docs",
             "Tutorial":"Tutorial",
             "FAQ":"FAQ",
+            "Contract Support":"Contract Support",
 
         }
     }

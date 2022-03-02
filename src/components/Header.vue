@@ -35,7 +35,7 @@
             <span></span><span></span><span></span>
           </div>
           <div v-show="tabMore" class="header-many-tab">
-            <div class="header-many-tab-item">{{ $t("Docs") }}</div>
+            <div class="header-many-tab-item" @click="goSupport" >{{ $t("Contract Support") }}</div>
             <div class="header-many-tab-item">{{ $t('Tutorial') }}</div>
             <div class="header-many-tab-item">{{ $t('FAQ') }}</div>
           </div>
@@ -79,6 +79,10 @@ export default {
     },
   },
   methods: {
+    goSupport() {
+      window.open('https://73v04g7oykm.typeform.com/to/GFBqlCMJ?typeform-source=admin.typeform.com','blank')
+      this.tabMore=false
+    },
     actionShowMore(show){
       this.tabMore=show;
     },
