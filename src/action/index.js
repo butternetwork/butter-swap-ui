@@ -5,11 +5,15 @@ import config from '../config/configTest'
 export default {
     async getAddress() {
         if (window.ethereum) {
-            let address = await window.ethereum.selectedAddress
-            if (address) {
-                return address
+            try {
+                let address = await window.ethereum.selectedAddress
+                if (address) {
+                    return address
+                }
+            } catch (e) {
             }
         }
+        return null;
     },
     async getSortAddress() {
         if (window.ethereum) {
@@ -23,7 +27,7 @@ export default {
     async scanMetaMaskAccount() {
         //以太坊web3
         const Web3 = require('web3');
-        if (window.web3 && window.ethereum && (window.ethereum.chainId == config.ethId || window.ethereum.chainId == config.ethDefaultId || window.ethereum.chainId == '0x58f8' || window.ethereum.chainId == '58f8' || window.ethereum.chainId == '22776')){
+        if (window.web3 && window.ethereum && (window.ethereum.chainId == config.ethId || window.ethereum.chainId == config.ethDefaultId || window.ethereum.chainId == '0x58f8' || window.ethereum.chainId == '58f8' || window.ethereum.chainId == '22776' || window.ethereum.chainId == config.bscId || window.ethereum.chainId == config.bscDefaultId || window.ethereum.chainId == config.polygonId || window.ethereum.chainId == config.polygonDefaultId  )){
         // if (window.web3 && window.ethereum && (window.ethereum.chainId == '0x3' || window.ethereum.chainId == '3')){
             Vue.prototype.myWeb3 =  new Web3(window.web3.currentProvider);
         }

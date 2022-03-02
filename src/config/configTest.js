@@ -10,4 +10,6 @@ export default
     ethDefaultId:'3',
     bscId:'0x61',
     bscDefaultId:'97',
+    polygonId:'0x13881',
+    polygonDefaultId:'80001'
 }

@@ -7,6 +7,8 @@ export default
         defaultChainTo:'22776',
         ethId:'0x1',
         ethDefaultId:'1',
-        bscId:'0x26',
-        bscDefaultId:'38',
+        bscId:'0x38',
+        bscDefaultId:'56',
+        polygonId:'0x89',
+        polygonDefaultId:'137'
     }
