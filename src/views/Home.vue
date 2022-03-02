@@ -64,9 +64,9 @@
                         <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>
                       </div>
                     </div>
-                    <div class="tran-send-vault">
+                    <div v-show="showFromVault" class="tran-send-vault">
                       <span>Vault:</span>
-                      <span>1111 {{selectToken.symbol}}</span>
+                      <span>{{fromVault}} {{selectToken.name}}</span>
                     </div>
                   </div>
                   <!--                change-->
@@ -98,6 +98,10 @@
                         <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
                       </div>
                     </div>
+                    <div v-show="showToVault" class="tran-send-vault">
+                      <span>Vault:</span>
+                      <span>{{toVault}} {{selectToken.name}}</span>
+                    </div>
                     <!--<div class="tran-custom">
                       <div class="tran-custom-content">
                         <div class="tran-custom-left">
@@ -121,10 +125,10 @@
                          <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
                        </div>
                     </div>
-                   <div class="tran-send-fee">
+                  <!-- <div class="tran-send-fee">
                       <img src="../assets/error.png"/>
                       <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>
-                    </div>
+                    </div> -->
                   </div>
 <!--                  余额不足提醒-->
                   <div v-show="showInsuffcientBalance" class="tran-insuff">
@@ -438,32 +442,32 @@
                   </div>
                 </div>
               </div>
-              <!--<div  class="bridge-rate" v-show="showTab==0">
+              <div  class="bridge-rate" v-show="showFee">
                 <div class="bridge-rate-content">
-                    <div class="bridge-rate-content-item">
+                  <!--  <div class="bridge-rate-content-item">
                       <div class="bridge-rate-left">Bridge Rate:</div>
                       <div class="bridge-rate-right">1 ETH on   <img/>    ≈ 1.0000717639923096 ETH on <img/></div>
-                    </div>
+                    </div> -->
                   <div class="bridge-rate-content-item">
                     <div class="bridge-rate-left">
                       Fee<img src="../assets/error.png"/>
                     </div>
-                    <div class="bridge-rate-right">0.00048004 ETH</div>
+                    <div class="bridge-rate-right">{{ gasFeeVue }} MAP</div>
                   </div>
-                  <div class="bridge-rate-content-item">
+                 <!-- <div class="bridge-rate-content-item">
                     <div class="bridge-rate-left">Minimum Received<img src="../assets/error.png"/></div>
                     <div class="bridge-rate-right">0.098527 ETH</div>
-                  </div>
+                  </div> -->
                   <div class="bridge-rate-content-item">
                     <div class="bridge-rate-left">Estimated Time of Arrival</div>
                     <div class="bridge-rate-right">5-20 minutes</div>
                   </div>
-                  <div class="bridge-rate-content-item">
+                 <!-- <div class="bridge-rate-content-item">
                     <div class="bridge-rate-left">Received Gas Tokens on Arrival <img src="../assets/error.png"/></div>
                     <div class="bridge-rate-right">0.002 MATIC</div>
-                  </div>
+                  </div> -->
                 </div>
-              </div> -->
+              </div>
             </div>
 
             <Footer/>
@@ -793,13 +797,18 @@
         const tokenAbi = require('@/config/token_abi.json');
         const mapAbi = require('@/config/mapData.json');
         import config from '@/config/configTest'
-
+        import Vue from "vue";
 
         export default {
           name: "Home.vue",
           components: {Footer, Header},
           data() {
             return {
+              showFee:false,//显示Fee
+              showFromVault:true,//From 如果代币是ismint 不显示
+              showToVault:true,// From如果代币是ismint 不显示
+              fromVault:0,//fromVault
+              toVault:0,//toVault
               showErrorMessage:false,//显示错误认识弹窗
               errorMessage:'Your gas fee is not enough Your gas fee is not enough',//错误信息
               showInsuffcientBalance:false,//余额不足提醒
@@ -956,6 +965,11 @@
           watch: {
             sendAmount() {
               this.receivedAmount = this.sendAmount
+              if (this.sendAmount>0) {
+                this.showFee=true
+              }else {
+                this.showFee=false
+              }
             },
             //检测到获取了地址
             account_default_address() {
@@ -1085,6 +1099,82 @@
           },
 
           methods: {
+            //获取vault
+            async actionVaultBalance() {
+              let v = this
+              let toTokenMint;
+              let toDecimal;
+              let toAddress;
+              let contract = new v.myWeb3.eth.Contract(tokenAbi, v.selectToken.address)
+
+              // From
+              if (v.selectToken.isMint && v.selectToken.isMint==1) {
+                v.fromVault = 0
+                v.showFromVault=false
+              }
+              else if (v.selectToken.address=='0x0000000000000000000000000000000000000000') {
+                console.log('zhuFrom')
+                console.log('v.chainForm.contract',v.chainForm.contract)
+                let contractFrom = new v.myWeb3.eth.Contract(mapAbi,v.chainForm.contract)
+                let tokenFromAddress = await contractFrom.methods.wToken().call()
+                console.log(tokenFromAddress,'WtokenAddress')
+                let contractZhu = new v.myWeb3.eth.Contract(tokenAbi,tokenFromAddress)
+                let fromVault = await contractZhu.methods.balanceOf(v.chainForm.contract).call();
+
+                // let result = await v.myWeb3.eth.getBalance(v.chainForm.contract)
+                v.fromVault = new Decimal(fromVault).div(Math.pow(10,v.selectToken.decimal)).toFixed(4)
+                v.showFromVault=true
+              }
+              else {
+                console.log('daiFrom')
+                let fromVault = await contract.methods.balanceOf(v.chainForm.contract).call();
+                v.fromVault = new Decimal(fromVault).div(Math.pow(10,v.selectToken.decimal)).toFixed(4)
+                v.showFromVault=true
+              }
+
+              //To
+              for (const item of v.tokenAllList[v.chainTo.chainId]) {
+                if (item.name == v.selectToken.name) {
+                   toTokenMint = item.isMint
+                    toDecimal = item.decimal
+                    toAddress = item.address
+                }
+              }
+
+
+              const Web3 = require('web3');
+
+              let myToWeb3 = new Web3(v.chainTo.rpc);
+
+              let toContract = new myToWeb3.eth.Contract(tokenAbi, toAddress)
+
+              if (toTokenMint==1) {
+                v.toVault = 0
+                v.showToVault=false
+              }
+              else if (toAddress=='0x0000000000000000000000000000000000000000') {
+                console.log('zhuTo')
+                let contractTo = new myToWeb3.eth.Contract(mapAbi,v.chainTo.contract)
+                let tokenToAddress = await contractTo.methods.wToken().call()
+                console.log(tokenToAddress,'WtokenAddress')
+                let toContractZhu = new myToWeb3.eth.Contract(tokenAbi, tokenToAddress)
+                let toVault = await toContractZhu.methods.balanceOf(v.chainTo.contract).call();
+
+                v.toVault = new Decimal(toVault).div(Math.pow(10,toDecimal)).toFixed(4)
+                v.showToVault=true
+              }
+              else {
+                console.log('daiTo')
+                let toVault = await toContract.methods.balanceOf(v.chainTo.contract).call();
+                v.toVault =  new Decimal(toVault).div(Math.pow(10,toDecimal)).toFixed(4)
+                v.showToVault=true
+              }
+
+
+
+            },
+
+            //子传父 Header组件传值
             acitonEmitHeader(data) {
               this.showTab = data
               if (  this.showTab ==0) {
@@ -1146,6 +1236,7 @@
               if (! this.sendAmount) {
                 return
               }
+              this.showFee=false
 
               let amount = this.sendAmount.toString().replace(/[^\d.]/g, "")
               this.sendAmount = amount
@@ -1153,14 +1244,18 @@
               let input = document.getElementById('tran-send-bottom-red')
               let transfer = document.getElementById('tranferBtn')
 
-              console.log('amount',new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)).toFixed())
+              // console.log('amount',new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)).toFixed())
 
               //余额不足时 input字体颜色  Transfer按钮颜色  余额不足提醒
               if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
                 input.style.color = '#E44E3A'
                 this.showInsuffcientBalance = true
                 transfer.className='tran-connect-approve'
+                this.showFee=false
               } else {
+                this.showFee=true
+                console.log('this.sendAmount',this.sendAmount)
+
                 input.style.color = 'black'
                 this.showInsuffcientBalance = false
                 transfer.className=''
@@ -1311,10 +1406,11 @@
             async actionSelectToken(item, index) {
 
               this.selectToken.symbol = item.symbol
-              this.selectToken.name = item.symbol
+              this.selectToken.name = item.name
               this.selectToken.url = item.img
               this.selectToken.address = item.address
               this.selectToken.isMint = item.isMint
+              this.selectToken.decimal = item.decimal
 
               // this.selectToken=item
 
@@ -1327,6 +1423,8 @@
               this.actionApproveOrTransfer()
 
               this.actionStatus()
+
+              this.actionVaultBalance()
 
             },
 
@@ -1659,13 +1757,7 @@
               if (result.code == 200) {
                 v.historyLoading = result.data.count
               }
-
-              console.log('status',v.historyTimerLoading)
-              console.log( v.historyLoading,"333")
-
-              console.log(v.historyTimerLoading, "888")
               if (v.historyTimerLoading != null && v.historyTimerLoading.length > 0 && v.historyLoading != null && v.historyLoading <= 0) {
-                console.log('aaaaaaaaa')
                 v.historyTimerLoading.forEach((item, index) => {
                   console.log(item)
                   clearInterval(item);
@@ -1683,9 +1775,7 @@
               let timer = setInterval(()=> {
                 v.actionUndoneTransfer()
               },2000)
-              console.log('timer',timer)
               v.historyTimerLoading.push(timer)
-              console.log(v.historyTimerLoading, "555")
             },
 
 
@@ -2522,6 +2612,7 @@
                   v.selectToken.address = tokenlist[i].address
                   v.selectToken.url = tokenlist[i].img
                   v.selectToken.isMint = tokenlist[i].isMint
+                  v.selectToken.decimal = tokenlist[i].decimal
                   // v.selectToken = tokenlist[i]
                   v.checkMapApproved(v.statusTimer);
                   flag = true
@@ -2533,6 +2624,7 @@
                 v.selectToken.url = tokenlist[0].img
                 v.selectToken.address = tokenlist[0].address
                 v.selectToken.isMint = tokenlist[0].isMint
+                v.selectToken.decimal = tokenlist[i].decimal
                 let approvedResult = await v.checkMapApproved(v.statusTimer);
                 v.allowance = approvedResult;
               }
@@ -2566,6 +2658,7 @@
               await this.actionGetChain()
               await this.actionChainSuccess()
               await this.actionShowToken()
+              this.actionVaultBalance()
               this.actionStatus()
               // await this.actionMapStatus()
             },
@@ -2598,7 +2691,8 @@
             width: 494px;
             max-width: 494px;
             border-radius: 10px;
-            border: solid 1px #e44e3a;
+            border: 1px solid #e44e3a;
+            border-top: 0;
             background-color: rgba(228, 78, 58, 0.05);
         }
 
@@ -2980,7 +3074,7 @@
 
         .tran-send-vault {
           width: 100%;
-          padding-top: 12px;
+          padding-top: 5px;
           text-align: left;
           font-size: 12px;
           span:nth-child(1) {
