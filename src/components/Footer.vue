@@ -26,14 +26,8 @@
 
       },
       computed: {
-        account_default_address() {
-          return this.$store.state.account.change_chain
-        },
       },
       watch: {
-        //检测到获取了地址
-        account_default_address() {
-        }
       },
     }
     </script>

@@ -20,7 +20,7 @@
       <div class="header-right">
         <div class="header-connect">
           <span class="header-error" v-if="error" @click="actionConnect()">{{ $t('Network Error') }}</span>
-          <div v-else><span class="header-intall"><img :src="chain.icon"/>{{ chain.network }}</span></div>
+          <div v-else><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
         </div>
 
         <div class="header-connect">

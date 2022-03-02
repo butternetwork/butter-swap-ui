@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import Decimal from 'decimal.js';
 import Watcher from './watcher';
 import eventbus from '../eventBus.js'
+import api from '../api/api'
 
 Vue.use(Vuex)
 
@@ -10,36 +11,42 @@ const store = new Vuex.Store({
     state: {
         chains: {
             '0x1': {
+                chainId:'0x1',
                 symbol: 'ETH',
                 name: 'Ethereum',
                 network: 'Ethereum Mainnet',
                 icon: require('../assets/eth-icon.png')
             },
             '0x3': {
+                chainId:'0x3',
                 symbol: 'ETH',
                 name: 'Ethereum',
                 network: 'Ethereum Testnet',
                 icon: require('../assets/eth-icon.png')
             },
             '0x38': {
+                chainId:'0x38',
                 symbol: 'BSC',
                 name: 'BinanceSmartChain',
                 network: 'BinanceSmartChain Mainnet',
                 icon: require('../assets/binance.png')
             },
             '0x61': {
+                chainId:'0x61',
                 symbol: 'BSC',
                 name: 'BinanceSmartChain',
                 network: 'BinanceSmartChain Mainnet',
                 icon: require('../assets/binance.png')
             },
             '0x58f8': {
+                chainId:'0x58f8',
                 symbol: 'MAP',
                 name: 'MAP Protocol',
                 network: 'MAP Mainnet',
                 icon: require('../assets/eth-icon.png')
             },
             '0x13881': {
+                chainId:'0x13881',
                 symbol: 'MATIC',
                 name: 'Polygon',
                 network: 'Polygon Mainnet',
@@ -104,7 +111,8 @@ const store = new Vuex.Store({
                 });
         }
     },
-    modules: {}
+    modules: {
+    }
 });
 const matchChainId = (data) => {
     if (!data) {

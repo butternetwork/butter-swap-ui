@@ -95,6 +95,7 @@ class Watcher{
 
   getProvider(){
     return new Promise((resolve ,reject)=> {
+      console.log('Watcher getProvider')
         if(this.provider){
           resolve(this.provider);
         }else{

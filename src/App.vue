@@ -5,28 +5,15 @@
 </template>
 
 <script>
-    import bus from './bus.js'
     export default {
         name: 'App',
         components: {
-            // Home
         },
         methods: {
-            scanMetaMaskAccount() {
-                let v = this
-                setTimeout(function () {
-                    window.ethereum.enable()
-                    v.action.scanMetaMaskAccount()
-                }, 1000)
-            },
         },
         created() {
-            bus.appvue = this
-            bus.$store = this.$store
         },
         mounted() {
-            this.scanMetaMaskAccount()
-            this.action.listenMetaMask()
         }
     }
 </script>
