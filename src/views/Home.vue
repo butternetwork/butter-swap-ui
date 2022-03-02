@@ -278,10 +278,11 @@
                       History
 <!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
                     </div>
-                    <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
-                         :key="index"
-                         class="history-list history-lists">
-                      <div class="history-tops">
+                    <div style="min-height: 300px">
+                      <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
+                           :key="index"
+                           class="history-list history-lists">
+                        <div class="history-tops">
                           <div class="history-tops-icon">
                             <img :src="item.fromLogo"/>
                           </div>
@@ -297,41 +298,43 @@
                           <div class="history-tops-tranfrom">
                             <img src="../assets/tranform.png"/>
                           </div>
-                      </div>
-                      <div class="history-tops">
-                        <div class="history-tops-icon">
-                          <img :src="item.toLogo"/>
                         </div>
-                        <div class="history-tops-from">
-                          <div class="history-top-left">
-                            <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>
-                            <span class="history-top-coin">{{ item.coin }}</span>
+                        <div class="history-tops">
+                          <div class="history-tops-icon">
+                            <img :src="item.toLogo"/>
                           </div>
-                          <div class="history-tops-from-text">
-                            <span>{{ item.toChainName }}</span>
+                          <div class="history-tops-from">
+                            <div class="history-top-left">
+                              <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>
+                              <span class="history-top-coin">{{ item.coin }}</span>
+                            </div>
+                            <div class="history-tops-from-text">
+                              <span>{{ item.toChainName }}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="historys-statu">
-                        <div v-if="item.state==0" class="history-status history-status-cancel">
-                          <span>Pending</span>
-                          <img src="../assets/arrow-right-yellow.png"/>
+                        <div class="historys-statu">
+                          <div v-if="item.state==0" class="history-status history-status-cancel">
+                            <span>Pending</span>
+                            <img src="../assets/arrow-right-yellow.png"/>
+                          </div>
+                          <div v-else-if="item.state==1" class="history-status history-status-success">
+                            <span>Complete</span>
+                            <img src="../assets/arrow-right-green.png"/>
+                          </div>
+                          <div v-else-if="item.state==998" class="history-status">
+                            <span>Failed</span>
+                            <img src="../assets/arrow-right-red.png"/>
+                          </div>
+                          <div v-else class="history-status history-status-cancel">
+                            <span>Processing</span>
+                            <img src="../assets/arrow-right-yellow.png"/>
+                          </div>
+                          <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>
                         </div>
-                        <div v-else-if="item.state==1" class="history-status history-status-success">
-                          <span>Complete</span>
-                          <img src="../assets/arrow-right-green.png"/>
-                        </div>
-                        <div v-else-if="item.state==998" class="history-status">
-                          <span>Failed</span>
-                          <img src="../assets/arrow-right-red.png"/>
-                        </div>
-                        <div v-else class="history-status history-status-cancel">
-                          <span>Processing</span>
-                          <img src="../assets/arrow-right-yellow.png"/>
-                        </div>
-                        <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>
                       </div>
                     </div>
+
                     <div>
                       <div v-if="historyList && historyList.length>0" class="home-page">
                         <div :class="currentPage==1?'btn-pre':'btn-next'" @click="prePage()" class="">
@@ -571,7 +574,7 @@
                   </div>
                   <!--            status-->
                   <div class="dialog-trans-detail">
-                    <div class="dialog-trans-detail-left">Status</div>
+                    <div class="dialog-trans-detail-left dialog-trans-left-status">Status</div>
                     <div class="dialog-trans-detail-rights dialog-trans-detail-rights-status">
                       <!--                    from-->
                       <div class="dia-trans">
@@ -2674,7 +2677,7 @@
         }
 
         .historys-statu {
-          padding-left: 10px;
+          padding-left: 5px;
           display: flex;
           flex-direction: column;
           align-items: flex-end;
@@ -2763,7 +2766,7 @@
 
         .bridge {
           padding-top: 51px;
-          padding-bottom: 64px;
+          padding-bottom: 34px;
           position: relative;
           display: flex;
           flex-direction: column;
@@ -2793,6 +2796,7 @@
         .bridge-content {
           width: 558px;
           max-width: 558px;
+          min-height: 552px;
           border-radius: 30px;
           background: white;
           box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
@@ -3324,9 +3328,8 @@
           flex-direction: column;
           align-items: center;
           padding: 20px 0 !important;
-
           img {
-            width: 30%;
+            width: 20%;
           }
         }
 
@@ -3367,7 +3370,7 @@
 
         .dialog-selectChain-title {
           font-family: 'productBold';
-          width: 100%;
+          width: 85%;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -3464,7 +3467,6 @@
         .dialog-token {
           width: 100%;
           height: 80%;
-          overflow-x: scroll;;
           margin-top: 5px;
         }
 
@@ -3579,10 +3581,13 @@
         }
 
         .dialog-trans-detail-left {
-          //font-family: Poppins;
+          font-family: 'productBold';
           font-size: 16px;
-          font-weight: 600;
           width: 20%;
+        }
+
+        .dialog-trans-left-status {
+          padding-top: 20px;
         }
 
         .dialog-trans-detail-right {
@@ -3654,7 +3659,7 @@
         }
 
         .dia-trans-three {
-          margin-top: 30px;
+          margin-top: 8px;
         }
 
         .dia-trans-top {
@@ -3688,7 +3693,7 @@
         .dia-trans-bottom {
           width: 100%;
           //padding-left: 10px;
-          padding-top: 10px;
+          padding-top: 5px;
           display: flex;
           flex-direction: row;
           align-items: flex-start;
@@ -4032,8 +4037,7 @@
 
         //分页
         .home-page {
-          margin-top: 121px;
-          position: relative;
+          margin-top: 131px;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -4042,7 +4046,6 @@
           .btn-pre {
             margin-right: 20px;
             margin-left: 20px;
-
             button {
               //cursor: pointer;
               outline: none;
@@ -4340,7 +4343,6 @@
           }
 
           .dialog-trans-detail-left {
-            font-family: ProductSans;
             font-size: 14px;
             width: 26%;
           }
@@ -4427,11 +4429,6 @@
             width: 60%;
             height: 80%;
           }
-
-          .dia-trans-three {
-            margin-top: 20px;
-          }
-
 
           .home-page {
             .btn-pre {

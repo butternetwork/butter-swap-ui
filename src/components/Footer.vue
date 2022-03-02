@@ -47,8 +47,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 0;
-      border-top: 1px solid rgba(0,0,0,0.1);
+      padding: 15px 0;
+      //border-top: 1px solid rgba(0,0,0,0.1);
     }
 
     .footer-content {
@@ -57,7 +57,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      //font-family: Poppins;
       font-size: 12px;
       span {
         padding-top: 11px;
@@ -73,14 +72,14 @@
     }
 
     .footer-icon {
-      width: 10%;
+      width: 8%;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
       img {
         cursor: pointer;
-        width: 30px;
+        width: 24px;
       }
     }
 

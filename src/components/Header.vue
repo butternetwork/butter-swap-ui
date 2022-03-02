@@ -1,5 +1,5 @@
       <template>
-          <div class="header">
+          <div @click="tabMore=false" class="header">
               <div class="header-container">
                 <div class="header-left">
                   <div @click="goMap()" class="header-logo">
@@ -38,14 +38,14 @@
                       <span v-else  class="header-intall">Install Metamask</span>
                     </div>
                   </div>
-                  <div class="header-many">
-                    <div @click="tabMore=!tabMore" class="header-many-icon">
+                  <div  class="header-many">
+                    <div @click.stop="tabMore=!tabMore" class="header-many-icon">
                       <span></span>
                       <span></span>
                       <span></span>
                     </div>
                     <div v-show="tabMore" class="header-many-tab">
-                      <div class="header-many-tab-item">Docs</div>
+                      <div @click="goSupport()" class="header-many-tab-item">Contract Support</div>
                       <div class="header-many-tab-item">Tutorial</div>
                       <div class="header-many-tab-item">FAQ</div>
                     </div>
@@ -105,6 +105,11 @@
 
               },
               methods: {
+                //跳转支持
+                goSupport() {
+                  window.open('https://73v04g7oykm.typeform.com/to/GFBqlCMJ?typeform-source=admin.typeform.com','blank')
+                  this.tabMore=false
+                },
                 actionShowTab(tab) {
                   this.$emit("listenTab",tab)
                 },
@@ -308,7 +313,6 @@
       .header-many-tab-item {
         cursor: pointer;
           text-align: center;
-        font-family: PingFangSC;
         font-size: 12px;
         font-weight: 600;
         height: 35px;
@@ -399,7 +403,6 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        font-family: PingFangSC;
         font-size: 13px;
         font-weight: 500;
         img {
