@@ -953,7 +953,7 @@
               clearInterval(this.setTimeHistory);
               this.setTimeHistory = null;
               clearInterval(this.historyTimerLoading)
-              this.historyTimerLoading = null
+              this.historyTimerLoading.length=0
               clearInterval(this.statusTimer)
               this.statusTimer = null
               this.getAllData()
@@ -1013,7 +1013,7 @@
               clearInterval(this.setTimeHistory);
               this.setTimeHistory = null;
               clearInterval(this.historyTimerLoading)
-              this.historyTimerLoading = null
+              this.historyTimerLoading.length=0
               clearInterval(this.statusTimer)
               this.statusTimer = null
               this.getAllData()
@@ -1672,17 +1672,18 @@
                 v.historyLoading = result.data.count
               }
 
-
-
-
             },
 
+
+            //调取历史loading 定时器
             actionTimerHistory() {
+              let v = this
               let timer = setInterval(()=> {
-                this.actionUndoneTransfer()
+                v.actionUndoneTransfer()
               },2000)
-              this.historyTimerLoading.push(timer)
-              console.log(this.historyTimerLoading, "555")
+              console.log('timer',timer)
+              v.historyTimerLoading.push(timer)
+              console.log(v.historyTimerLoading, "555")
             },
 
 
@@ -2572,7 +2573,7 @@
             clearInterval(this.setTimeHistory);
             this.setTimeHistory = null;
             clearInterval(this.historyTimerLoading)
-            this.historyTimerLoading = null
+            this.historyTimerLoading.length=0
             clearInterval(this.statusTimer)
             this.statusTimer = null
 
@@ -2581,6 +2582,8 @@
           mounted() {
             //local_address+reward_address+token_address
             this.getAllData()
+            clearInterval(this.historyTimerLoading)
+            this.historyTimerLoading.length = 0
             this.actionTimerHistory()
           },
         }
