@@ -5,7 +5,10 @@
 
             <div class="header-middle">
               <div @click="actionOpenTransfer(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">Transfer funds</div>
-              <div @click="actionHistory(showTab=1)" :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">History</div>
+              <div @click="actionHistory(showTab=1)" :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">
+                History
+                <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/cycle.png"/>
+              </div>
             </div>
 
 
@@ -949,14 +952,13 @@
             },
             //检测到获取了地址
             account_default_address() {
-              // console.log('change address')
+              console.log('change address')
               clearInterval(this.setTimeHistory);
               this.setTimeHistory = null;
-              clearInterval(this.historyTimerLoading)
-              this.historyTimerLoading.length=0
               clearInterval(this.statusTimer)
               this.statusTimer = null
               this.getAllData()
+              this.actionTimerHistory()
             },
             // account_change_chain() {
             //   clearInterval(this.setTimeHistory);
@@ -1012,11 +1014,10 @@
             '$store.state.account.change_chain'(data) {
               clearInterval(this.setTimeHistory);
               this.setTimeHistory = null;
-              clearInterval(this.historyTimerLoading)
-              this.historyTimerLoading.length=0
               clearInterval(this.statusTimer)
               this.statusTimer = null
               this.getAllData()
+              this.actionTimerHistory()
               this.$emit('ChainChanged', data);
             },
             dialogApproving(newValue) {
@@ -1639,26 +1640,6 @@
             //查询未完成的历史交易
             async actionUndoneTransfer() {
               let v = this
-              let resultTwo;
-              console.log('status',v.historyTimerLoading)
-              console.log( v.historyLoading,"333")
-
-            console.log(v.historyTimerLoading, "888")
-              if (v.historyTimerLoading != null && v.historyTimerLoading.length > 0 && v.historyLoading != null && v.historyLoading <= 0) {
-                console.log('aaaaaaaaa')
-                v.historyTimerLoading.forEach((item, index) => {
-                    console.log(item)
-                    clearInterval(item);
-                  })
-                  v.historyTimerLoading = [];
-              }
-
-              // if (v.historyTimerLoading){
-              //   clearInterval( v.historyTimerLoading);
-              //   v.historyTimerLoading = null;
-              //   v.historyLoading=false
-              // }
-              // console.log('status',v.historyTimerLoading)
 
               var local_address = await v.action.getAddress()
               var params = {
@@ -1670,6 +1651,20 @@
               // console.log('History',result)
               if (result.code == 200) {
                 v.historyLoading = result.data.count
+              }
+
+              console.log('status',v.historyTimerLoading)
+              console.log( v.historyLoading,"333")
+
+              console.log(v.historyTimerLoading, "888")
+              if (v.historyTimerLoading != null && v.historyTimerLoading.length > 0 && v.historyLoading != null && v.historyLoading <= 0) {
+                console.log('aaaaaaaaa')
+                v.historyTimerLoading.forEach((item, index) => {
+                  console.log(item)
+                  clearInterval(item);
+                })
+                v.historyTimerLoading = [];
+                v.actionHistory()
               }
 
             },
@@ -1910,7 +1905,6 @@
                   }
                 })
                 v.getAllData()
-                v.actionTimerHistory()
                 return
               }
               if (!window.ethereum) {
@@ -1948,7 +1942,7 @@
                 if (chain != id) {
                   return
                 }
-                // console.log('change success',id,chain)
+                //如果点击的是交换双链按钮
                 if (v.changeChain) {
                   let temp = v.chainTo;
                   v.chainTo = v.chainForm;
@@ -1963,7 +1957,7 @@
                     }
                   })
                   v.getAllData()
-                  v.actionTimerHistory()
+                  // v.actionTimerHistory()
                   return;
                 }
                 // console.log(' v.chainTo', v.chainTo, v.chainForm)
@@ -1971,6 +1965,7 @@
                 if (v.selectChain !== 0) {
                   return
                 }
+                //正常切换From链
 
                 v.selectToken.address = null
                 v.sourcePath = item.chain
@@ -1984,7 +1979,7 @@
                   query: {sourceNetwork: item.chain, destNetwork: v.chainTo.chain}
                 })
                 v.getAllData()
-                v.actionTimerHistory()
+                // v.actionTimerHistory()
               })
                   .catch((e) => {
                     v.$router.replace({
@@ -2699,6 +2694,8 @@
         }
 
         .loading-icon {
+          width: 15px;
+          margin-left: 3px;
           -webkit-animation: circle 3s infinite linear;
         }
 
