@@ -64,6 +64,10 @@
                         <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>
                       </div>
                     </div>
+                    <div class="tran-send-vault">
+                      <span>Vault:</span>
+                      <span>1111 {{selectToken.symbol}}</span>
+                    </div>
                   </div>
                   <!--                change-->
                   <div class="tran-change">
@@ -2971,6 +2975,20 @@
             font-size: 20px;
             font-weight: 600;
             background: rgba(0, 0, 0, 0);
+          }
+        }
+
+        .tran-send-vault {
+          width: 100%;
+          padding-top: 12px;
+          text-align: left;
+          font-size: 12px;
+          span:nth-child(1) {
+            opacity: 0.5;
+          }
+          span:nth-child(2) {
+            padding-left: 5px;
+           color: rgba(89, 45, 45,0.4)
           }
         }
 
