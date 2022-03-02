@@ -1,772 +1,780 @@
+<!--        <template>-->
+<!--          <div class="home">-->
+
+<!--            <Header @listenTab="acitonEmitHeader" :loadingHistory="historyLoading"/>-->
+
+<!--            <div class="header-middle">-->
+<!--              <div @click="actionOpenTransfer(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">Transfer funds</div>-->
+<!--              <div @click="actionHistory(showTab=1)" :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">History</div>-->
+<!--            </div>-->
+
+
+<!--            <div class="bridge">-->
+<!--              <div class="bridge-switch" v-show="!chainSuccess">-->
+<!--                <img src="../assets/warn-two.png"/>-->
+<!--                <span>You must switch <span style="color:#e44e3a;padding-left: 0">{{chainForm.chainName}}</span>  to begin the transfer</span>-->
+<!--              </div>-->
+<!--              <div class="bridge-content">-->
+<!--               &lt;!&ndash; <div class="bridge-title">-->
+<!--                  <div class="tran">-->
+<!--                    <div @click="actionOpenTransfer(showTab=0)" class="tran-title"><span>Transfer funds</span></div>-->
+<!--                    <div :class="showTab==0?'tran-title-line':'tran-title-line-black'" class=""></div>-->
+<!--                  </div>-->
+<!--                   <div class="tran">-->
+<!--                       <div @click="showTab=2" class="tran-title"><span>Transfer Nft</span></div-->
+<!--                          <div :class="showTab==2?'tran-title-line':'tran-title-line-black'" class=""></div>-->
+<!--                    </div>-->
+<!--                  <div class="tran">-->
+<!--                    <div @click="actionHistory(showTab=1)" class="tran-title">-->
+<!--                      <span>History</span>-->
+<!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
+<!--                    </div>-->
+<!--                    <div :class="showTab==1?'tran-title-line':'tran-title-line-black'" class=""></div>-->
+<!--                  </div>-->
+<!--                </div> &ndash;&gt;-->
+<!--                &lt;!&ndash;              tranfer&ndash;&gt;-->
+<!--                <div v-show="showTab==0">-->
+<!--                  &lt;!&ndash;                tran-from&ndash;&gt;-->
+<!--                  <div class="tran-from">-->
+<!--                    <div class="tran-from-left">-->
+<!--                      <span>From</span>-->
+<!--                      <div @click="actionChain(0)" class="tran-from-btn">-->
+<!--                        &lt;!&ndash;                  <div class="tran-from-btn">&ndash;&gt;-->
+<!--                        <img :src="chainForm.chainImg"/>-->
+<!--                        <span>{{ chainForm.chainName }}</span>-->
+<!--                        <img src="../assets/arrow-bottom-black.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="tran-from-right">Source Chain</div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;                send&ndash;&gt;-->
+<!--                  <div class="tran-send">-->
+<!--                    <div class="tran-send-top">-->
+<!--                      <span>Sending Amount:</span>-->
+<!--                      <span @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>-->
+<!--                    </div>-->
+<!--                    <div class="tran-send-bottom">-->
+<!--                      <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" placeholder="0.0"/>-->
+<!--                      <div @click="actionOpenToken()" class="tran-send-btn">-->
+<!--                        <img :src="selectToken.url"/>-->
+<!--                        <span>{{ selectToken.name }}</span>-->
+<!--                        <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;                change&ndash;&gt;-->
+<!--                  <div class="tran-change">-->
+<!--                    <img @click="actionChangeChain()" src="../assets/change.png"/>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;                tran-to&ndash;&gt;-->
+<!--                  <div class="tran-from tran-to">-->
+<!--                    <div class="tran-from-left">-->
+<!--                      <span>To  </span>-->
+<!--                      <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">-->
+<!--                        &lt;!&ndash;                  <div style="margin-left: 28px" class="tran-from-btn">&ndash;&gt;-->
+<!--                        <img :src="chainTo.chainImg"/>-->
+<!--                        <span>{{ chainTo.chainName }}</span>-->
+<!--                        <img src="../assets/arrow-bottom-black.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="tran-from-right">Destination Chain</div>-->
+<!--                  </div>-->
+<!--                  <div class="tran-send">-->
+<!--                    <div class="tran-send-top">-->
+<!--                      <span>Received Amount:</span>-->
+<!--                      <span>Received Address:</span>-->
+<!--                    </div>-->
+<!--                    <div id="tran-send-amount" class="tran-send-bottom">-->
+<!--                      <span>{{ receivedAmount }}</span>-->
+<!--                     <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">-->
+<!--                        <span class="tran-send-btn-address">{{ sortAddress }}</span>-->
+<!--                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash;<div class="tran-custom">-->
+<!--                      <div class="tran-custom-content">-->
+<!--                        <div class="tran-custom-left">-->
+<!--                          <img v-if="!showAddress" @click.stop="showAddress=true" src="../assets/frame.png"/>-->
+<!--                          <img v-else @click.stop="showAddress=false" src="../assets/frame-red.png"/>-->
+<!--                          <span>Custom</span>-->
+<!--                        </div>-->
+<!--                        <div class="tran-custom-right">-->
+<!--                          <input :disabled="showAddress?false:'disabled'" v-model="langToAddress">-->
+<!--                        </div>-->
+<!--                      </div>-->
+
+<!--                    </div> &ndash;&gt;-->
+<!--                    <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">-->
+<!--                       <div class="tran-send-address-left">-->
+<!--                         <span>Received Address:</span>-->
+<!--                         <img src="../assets/address.png"/>-->
+<!--                       </div>-->
+<!--                      <div class="tran-send-address-input">-->
+<!--                         <input v-model="allAddress" placeholder="Please enter the address"/>-->
+<!--                         <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>-->
+<!--                       </div>-->
+<!--                    </div>-->
+<!--                   <div class="tran-send-fee">-->
+<!--                      <img src="../assets/error.png"/>-->
+<!--                      <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--&lt;!&ndash;                  余额不足提醒&ndash;&gt;-->
+<!--                  <div v-show="showInsuffcientBalance" class="tran-insuff">-->
+<!--                    <img src="../assets/warn-two.png"/>-->
+<!--                    <span>Insufficient balance</span>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;                connect&ndash;&gt;-->
+<!--                  <div class="tran-connect">-->
+<!--                    <button v-if="!allowance && !approveHash && allowanceMap"-->
+<!--                            :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionApprove()">Approve-->
+<!--                    </button>-->
+<!--                    <button v-if="!allowance &&  approveHash" class="tran-connect-approve">-->
+<!--                      Approving... <img src="../assets/loading.gif"/>-->
+<!--                    </button>-->
+<!--                    <button v-if="!allowanceMap && !approveMapHash" :class="chainSuccess==false ? 'tran-connect-approve' :''"-->
+<!--                            @click="actionMapApprove()">Approve MAP-->
+<!--                    </button>-->
+<!--                    <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">-->
+<!--                      Approving... <img src="../assets/loading.gif"/>-->
+<!--                    </button>-->
+<!--                    <button v-if="allowance && !transferBtn && allowanceMap"-->
+<!--                            :class="chainSuccess==false ? 'tran-connect-approve' :''" id="tranferBtn" @click="actionTrans()">Transfer-->
+<!--                    </button>-->
+<!--                    <button v-if="allowance && transferBtn" class="tran-connect-approve">-->
+<!--                      Transfering... <img src="../assets/loading.gif"/>-->
+<!--                    </button>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash;                            nft&ndash;&gt;-->
+<!--                <div v-show="showTab==2">-->
+<!--                  &lt;!&ndash;                tran-from&ndash;&gt;-->
+<!--                  <div class="tran-from">-->
+<!--                    <div class="tran-from-left">-->
+<!--                      <span>From</span>-->
+<!--                      <div @click="actionChain(0)" class="tran-from-btn">-->
+<!--                        &lt;!&ndash;                  <div class="tran-from-btn">&ndash;&gt;-->
+<!--                        <img :src="chainForm.chainImg"/>-->
+<!--                        <span>{{ chainForm.chainName }}</span>-->
+<!--                        <img src="../assets/arrow-bottom-red.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="tran-from-right">Source Chain</div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;          send nft&ndash;&gt;-->
+<!--                  <div class="nft-send">-->
+<!--                    <div class="nft-send-top">-->
+<!--                      <span>Sending NFT :</span>-->
+<!--                      <span>2 NFTs</span>-->
+<!--                    </div>-->
+<!--                    &lt;!&ndash;                  card&ndash;&gt;-->
+<!--                    <div class="nft-card">-->
+<!--                      <div class="nft-card-left">-->
+<!--                        <img src="../assets/nft/card.png"/>-->
+<!--                      </div>-->
+<!--                      <div class="nft-card-right">-->
+<!--                        <div class="nft-card-line"></div>-->
+<!--                        <div class="nft-card-title">Non-Fungible Baby (NFB)</div>-->
+<!--                        <div class="nft-card-icon">-->
+<!--                          <div class="nft-card-copy">-->
+<!--                            <img src="../assets/nft/copy.png"/>-->
+<!--                          </div>-->
+<!--                          <div class="nft-card-copy">-->
+<!--                            <img src="../assets/nft/forward.png"/>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="nft-send-text">-->
+<!--                          Huge thanks to our 1st-month supporters,loneliness fades away with you accompany by.-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash;                  choose&ndash;&gt;-->
+<!--                    <div @click="dialogNft=true" class="tran-from-btn tran-from-btn-nft">-->
+<!--                      <div class="tran-from-nft-img">-->
+<!--                        <img :src="selectNFT.img"/>-->
+<!--                        <span>{{ selectNFT.name }}</span>-->
+<!--                        <span>{{ selectNFT.id }}</span>-->
+<!--                      </div>-->
+
+<!--                      <img src="../assets/arrow-bottom-red.png"/>-->
+<!--                    </div>-->
+
+<!--                  </div>-->
+
+
+<!--                  &lt;!&ndash;                change&ndash;&gt;-->
+<!--                  <div class="tran-change">-->
+<!--                    <img @click="actionChangeChain()" src="../assets/change.png"/>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;                tran-to&ndash;&gt;-->
+<!--                  <div class="tran-from tran-to">-->
+<!--                    <div class="tran-from-left">-->
+<!--                      <span>To  </span>-->
+<!--                      <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">-->
+<!--                        &lt;!&ndash;                  <div style="margin-left: 28px" class="tran-from-btn">&ndash;&gt;-->
+<!--                        <img :src="chainTo.chainImg"/>-->
+<!--                        <span>{{ chainTo.chainName }}</span>-->
+<!--                        <img src="../assets/arrow-bottom-red.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="tran-from-right">Destination Chain</div>-->
+<!--                  </div>-->
+<!--                  <div class="tran-send">-->
+<!--                    <div class="tran-send-top">-->
+<!--                      <span>Received Amount:</span>-->
+<!--                      <span>Received Address:</span>-->
+<!--                    </div>-->
+<!--                    <div class="tran-send-bottom">-->
+<!--                      <span>{{ receivedAmount }}</span>-->
+<!--                      &lt;!&ndash;                  <span>{{ receivedAmount }}</span>&ndash;&gt;-->
+<!--                      <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">-->
+<!--                        <span class="tran-send-btn-address">{{ sortAddress }}</span>-->
+<!--                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-black.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">-->
+<!--                      <div class="tran-send-address-left">-->
+<!--                        <span>Received Address:</span>-->
+<!--                        <img src="../assets/address.png"/>-->
+<!--                      </div>-->
+<!--                      <div class="tran-send-address-input">-->
+<!--                        <input v-model="allAddress" placeholder="Please enter the address"/>-->
+<!--                        <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>-->
+<!--                        <img v-else src="../assets/success-gray.png"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="tran-send-fee">-->
+<!--                      <img src="../assets/error.png"/>-->
+<!--                      <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;                connect&ndash;&gt;-->
+<!--                  <div class="tran-connect">-->
+<!--                    <button v-if="!allowance && !approveHash && allowanceMap" @click="actionApprove()">Approve</button>-->
+<!--                    <button v-if="!allowance &&  approveHash" class="tran-connect-approve">-->
+<!--                      Approving... <img src="../assets/loading.gif"/>-->
+<!--                    </button>-->
+<!--                    <button v-if="!allowanceMap && !approveMapHash" @click="actionMapApprove()">Approve MAP</button>-->
+<!--                    <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">-->
+<!--                      Approving... <img src="../assets/loading.gif"/>-->
+<!--                    </button>-->
+<!--                    <button v-if="allowance && !transferBtn && allowanceMap" @click="actionTrans()">Transfer</button>-->
+<!--                    <button v-if="allowance && transferBtn" class="tran-connect-approve">-->
+<!--                      Transfering... <img src="../assets/loading.gif"/>-->
+<!--                    </button>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash;                history&ndash;&gt;-->
+<!--                <div v-show="showTab==1" class="">-->
+<!--&lt;!&ndash;                  pc&ndash;&gt;-->
+<!--                  <div class="history">-->
+<!--                    <div class="history-title">-->
+<!--                      History-->
+<!--&lt;!&ndash;                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>&ndash;&gt;-->
+<!--                    </div>-->
+<!--                    <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"-->
+<!--                         :key="index"-->
+<!--                         class="history-list history-lists">-->
+<!--                      <div class="history-tops">-->
+<!--                          <div class="history-tops-icon">-->
+<!--                            <img :src="item.fromLogo"/>-->
+<!--                          </div>-->
+<!--                          <div class="history-tops-from">-->
+<!--                            <div class="history-top-left">-->
+<!--                              <span class="history-top-amount history-top-amounts">{{ item.amount }}</span>-->
+<!--                              <span class="history-top-coin">{{ item.coin }}</span>-->
+<!--                            </div>-->
+<!--                            <div class="history-tops-from-text">-->
+<!--                              <span>{{ item.fromChainName }}</span>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                          <div class="history-tops-tranfrom">-->
+<!--                            <img src="../assets/tranform.png"/>-->
+<!--                          </div>-->
+<!--                      </div>-->
+<!--                      <div class="history-tops">-->
+<!--                        <div class="history-tops-icon">-->
+<!--                          <img :src="item.toLogo"/>-->
+<!--                        </div>-->
+<!--                        <div class="history-tops-from">-->
+<!--                          <div class="history-top-left">-->
+<!--                            <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>-->
+<!--                            <span class="history-top-coin">{{ item.coin }}</span>-->
+<!--                          </div>-->
+<!--                          <div class="history-tops-from-text">-->
+<!--                            <span>{{ item.toChainName }}</span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="historys-statu">-->
+<!--                        <div v-if="item.state==0" class="history-status history-status-cancel">-->
+<!--                          <span>Pending</span>-->
+<!--                          <img src="../assets/arrow-right-yellow.png"/>-->
+<!--                        </div>-->
+<!--                        <div v-else-if="item.state==1" class="history-status history-status-success">-->
+<!--                          <span>Complete</span>-->
+<!--                          <img src="../assets/arrow-right-green.png"/>-->
+<!--                        </div>-->
+<!--                        <div v-else-if="item.state==998" class="history-status">-->
+<!--                          <span>Failed</span>-->
+<!--                          <img src="../assets/arrow-right-red.png"/>-->
+<!--                        </div>-->
+<!--                        <div v-else class="history-status history-status-cancel">-->
+<!--                          <span>Processing</span>-->
+<!--                          <img src="../assets/arrow-right-yellow.png"/>-->
+<!--                        </div>-->
+<!--                        <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                      <div v-if="historyList && historyList.length>0" class="home-page">-->
+<!--                        <div :class="currentPage==1?'btn-pre':'btn-next'" @click="prePage()" class="">-->
+<!--                          <button>Previous</button>-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                          <span style="color:#E44E3A ">{{ currentPage }}</span>/{{ pageNum }}-->
+<!--                        </div>-->
+<!--                        <div :class="currentPage==pageNum?'btn-pre':'btn-next'" @click="nextPage()" class="">-->
+<!--                          <button>Next</button>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div v-else class="home-page-not">-->
+<!--                        No data-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="history-ant">-->
+<!--                      &lt;!&ndash;              <img src="../assets/ant.png"/>&ndash;&gt;-->
+<!--                      &lt;!&ndash;              <span>In the end</span>&ndash;&gt;-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--&lt;!&ndash;                  h5&ndash;&gt;-->
+<!--                  <div class="history-h5">-->
+<!--                    <div class="history-title">-->
+<!--                      History-->
+<!--&lt;!&ndash;                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>&ndash;&gt;-->
+<!--                    </div>-->
+<!--                    <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"-->
+<!--                         :key="index"-->
+<!--                         class="">-->
+<!--                      <div class="history-list">-->
+<!--                        <div class="history-top">-->
+<!--                          <div class="history-top-show">-->
+<!--                            <div class="history-top-left">-->
+<!--                              <span class="history-top-amount">{{ item.amount }}</span>-->
+<!--                              <span class="history-top-coin">{{ item.coin }}</span>-->
+<!--                            </div>-->
+<!--                            <div class="history-top-left history-top-left-two">-->
+<!--                              <span class="history-top-amount">{{ item.inAmount }}</span>-->
+<!--                              <span class="history-top-coin">{{ item.coin }}</span>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="history-bottom">-->
+<!--                          <div class="history-coin">-->
+<!--                            <img :src="item.fromLogo"/> <span>{{ item.fromChainName }}</span>-->
+<!--                            <img src="../assets/tranform.png"/>-->
+<!--                            <img :src="item.toLogo"/> <span>{{ item.toChainName }}</span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--&lt;!&ndash;                          h5time&ndash;&gt;-->
+<!--                        <div class="history-h5-bottom">-->
+<!--                          <div>-->
+<!--                            <span class="history-coin-time">{{ item.nowTime }}</span>-->
+<!--                          </div>-->
+<!--                          <div>-->
+<!--                            <div v-if="item.state==0" class="history-status history-status-cancel">-->
+<!--                              <span>Pending</span>-->
+<!--                              <img src="../assets/arrow-right-yellow.png"/>-->
+<!--                            </div>-->
+<!--                            <div v-else-if="item.state==1" class="history-status history-status-success">-->
+<!--                              <span>Complete</span>-->
+<!--                              <img src="../assets/arrow-right-green.png"/>-->
+<!--                            </div>-->
+<!--                            <div v-else-if="item.state==998" class="history-status">-->
+<!--                              <span>Failed</span>-->
+<!--                              <img src="../assets/arrow-right-red.png"/>-->
+<!--                            </div>-->
+<!--                            <div v-else class="history-status history-status-cancel">-->
+<!--                              <span>Processing</span>-->
+<!--                              <img src="../assets/arrow-right-yellow.png"/>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                      <div v-if="historyList && historyList.length>0" class="home-page">-->
+<!--                        <div :class="currentPage==1?'btn-pre':'btn-next'" @click="prePage()" class="">-->
+<!--                          <button>Previous</button>-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                          <span style="color:#E44E3A ">{{ currentPage }}</span>/{{ pageNum }}-->
+<!--                        </div>-->
+<!--                        <div :class="currentPage==pageNum?'btn-pre':'btn-next'" @click="nextPage()" class="">-->
+<!--                          <button>Next</button>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div v-else class="home-page-not">-->
+<!--                        No data-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="history-ant">-->
+<!--                      &lt;!&ndash;              <img src="../assets/ant.png"/>&ndash;&gt;-->
+<!--                      &lt;!&ndash;              <span>In the end</span>&ndash;&gt;-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              &lt;!&ndash;<div  class="bridge-rate" v-show="showTab==0">-->
+<!--                <div class="bridge-rate-content">-->
+<!--                    <div class="bridge-rate-content-item">-->
+<!--                      <div class="bridge-rate-left">Bridge Rate:</div>-->
+<!--                      <div class="bridge-rate-right">1 ETH on   <img/>    ≈ 1.0000717639923096 ETH on <img/></div>-->
+<!--                    </div>-->
+<!--                  <div class="bridge-rate-content-item">-->
+<!--                    <div class="bridge-rate-left">-->
+<!--                      Fee<img src="../assets/error.png"/>-->
+<!--                    </div>-->
+<!--                    <div class="bridge-rate-right">0.00048004 ETH</div>-->
+<!--                  </div>-->
+<!--                  <div class="bridge-rate-content-item">-->
+<!--                    <div class="bridge-rate-left">Minimum Received<img src="../assets/error.png"/></div>-->
+<!--                    <div class="bridge-rate-right">0.098527 ETH</div>-->
+<!--                  </div>-->
+<!--                  <div class="bridge-rate-content-item">-->
+<!--                    <div class="bridge-rate-left">Estimated Time of Arrival</div>-->
+<!--                    <div class="bridge-rate-right">5-20 minutes</div>-->
+<!--                  </div>-->
+<!--                  <div class="bridge-rate-content-item">-->
+<!--                    <div class="bridge-rate-left">Received Gas Tokens on Arrival <img src="../assets/error.png"/></div>-->
+<!--                    <div class="bridge-rate-right">0.002 MATIC</div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div> &ndash;&gt;-->
+<!--            </div>-->
+
+<!--            <Footer/>-->
+
+<!--            &lt;!&ndash;        选择链&ndash;&gt;-->
+<!--            <div v-show="showSelectChain" class="dialog-selectChain">-->
+<!--              <div class="dialog-content">-->
+<!--                <div class="dialog-selectChain-title">-->
+<!--                  <span v-if="selectChain==0">Select Source Chain</span>-->
+<!--                  <span v-else>Select Destination Chain</span>-->
+<!--                  <img @click="showSelectChain=false" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <div class="dialog-selectChain-search">-->
+<!--                  <img src="../assets/search.png"/>-->
+<!--                  <input v-model="searchVal" placeholder="Search chain by name or chain ID">-->
+<!--                </div>-->
+<!--                <div class="dialog-selectChain-coin">-->
+<!--                  <div v-for="(item,index) in listChain" :key="index" @click="handleLink(item,index)" class="dialog-Chain-coin">-->
+<!--                    <div class="dialog-selectChain-coin-content">-->
+<!--                      <img :src="item.chainImg"/>-->
+<!--                      <span>{{ item.chainName }}</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash;        选择token&ndash;&gt;-->
+<!--            <div v-show="showSelectToken" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-Token">-->
+<!--                <div class="dialog-selectChain-title">-->
+<!--                  <span>Select a token</span>-->
+<!--                  <img @click="showSelectToken=false" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <div class="dialog-selectChain-search">-->
+<!--                  <img src="../assets/search.png"/>-->
+<!--                  <input v-model="searchToken" placeholder="Search token by name or address">-->
+<!--                </div>-->
+<!--                <div class="dialog-token-bell">-->
+<!--                  <img src="../assets/dialog/bell.png"/>-->
+<!--                  <span>-->
+<!--                    Below is the supported token list from {{chainForm.chainName}} to {{chainTo.chainName}}. More tokens can be found if you select other chains.-->
+<!--                  </span>-->
+<!--                </div>-->
+<!--                <div class="dialog-token">-->
+<!--                  <div v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"-->
+<!--                       class="dialog-token-content">-->
+<!--                    <div class="dialog-token-contentlist">-->
+<!--                      <div class="dialog-token-detail">-->
+<!--                        <div class="dialog-token-detail-left">-->
+<!--                          <img :src="item.img"/>-->
+<!--                          <div class="dialog-token-detail-left-text">-->
+<!--                            {{ item.name }}-->
+<!--&lt;!&ndash;                            <span> {{ item.symbol }}</span>&ndash;&gt;-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div v-if="item.amount!=null && item.amount>=0"-->
+<!--                             class="dialog-token-detail-left-right">{{ item.amount }}-->
+<!--                          <span>{{ item.symbol }}</span>-->
+<!--                        </div>-->
+<!--                        <div v-else class="dialog-token-loading">-->
+<!--                          <img style="width:30px" src="../assets/loading2.gif"/>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="dialog-token-content-line"></div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash;        交易详情&ndash;&gt;-->
+<!--            <div v-show="showTranDetail" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-trans">-->
+<!--                <div class="dialog-selectChain-title">-->
+<!--                  <span>Transaction Detail</span>-->
+<!--                  <img @click="closeHistoryList()" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <div class="dialog-trans-detail-line"></div>-->
+<!--                <div class="dialog-content-trans-detail">-->
+<!--                  &lt;!&ndash;            sending&ndash;&gt;-->
+<!--                  <div class="dialog-trans-detail">-->
+<!--                    <div class="dialog-trans-detail-left">Sending</div>-->
+<!--                    <div class="dialog-trans-detail-right">-->
+<!--                      <span>{{ historyDetailList.sending }} {{ historyDetailList.coin }}</span>-->
+<!--                      <span>{{ historyDetailList.from }}</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;            receiving&ndash;&gt;-->
+<!--                  <div class="dialog-trans-detail">-->
+<!--                    <div class="dialog-trans-detail-left">Receiving</div>-->
+<!--                    <div class="dialog-trans-detail-right">-->
+<!--                            <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{-->
+<!--                                historyDetailList.coin-->
+<!--                              }}</span>-->
+<!--                      <span v-else>Processing</span>-->
+<!--                      <span>{{ historyDetailList.to }}</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;            fee&ndash;&gt;-->
+<!--                  <div class="dialog-trans-detail">-->
+<!--                    <div class="dialog-trans-detail-left">Fee</div>-->
+<!--                    <div class="dialog-trans-detail-right">-->
+<!--                                  <span v-if="historyDetailList.receiving"-->
+<!--                                        class="dialog-trans-detail-fee">{{-->
+<!--                                      historyDetailList.sending - historyDetailList.receiving-->
+<!--                                    }}  {{-->
+<!--                                      historyDetailList.coin-->
+<!--                                    }}</span>-->
+<!--                      <span v-else>Processing</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  &lt;!&ndash;            status&ndash;&gt;-->
+<!--                  <div class="dialog-trans-detail">-->
+<!--                    <div class="dialog-trans-detail-left">Status</div>-->
+<!--                    <div class="dialog-trans-detail-rights dialog-trans-detail-rights-status">-->
+<!--                      &lt;!&ndash;                    from&ndash;&gt;-->
+<!--                      <div class="dia-trans">-->
+<!--                        <div class="dia-trans-top">-->
+<!--                          <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>-->
+<!--                          <img v-else src="../assets/dialog/success-write.png"/>-->
+<!--                          <div class="dia-trans-top-icon">-->
+<!--                            <img :src="fromLogo"/>-->
+<!--                            <span>{{ historyDetailList.fromChainName }}</span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="dia-trans-bottom dia-trans-bottoms">-->
+<!--                          <div>-->
+<!--                            <img v-if="historyDetailList.confirmHeight==6" class="dia-trans-bottom-arrow"-->
+<!--                                 src="../assets/dialog/line-red.png"/>-->
+<!--                            <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>-->
+<!--                          </div>-->
+<!--                          <div class="dia-trans-bottom-progress">-->
+<!--                                        <span @click="goEth()">{{ historyDetailList.confirmHeight }}/6 confirmed <img-->
+<!--                                            src="../assets/dialog/send.png"/> </span>-->
+<!--                            <div class="dia-transStatus-content-bottom">-->
+<!--                              <div class="dia-transStatus-content-bottom-bg"-->
+<!--                                   :style="{width:historyDetailList.confirmHeight/6*100+'%'}"></div>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      &lt;!&ndash;                    relayer&ndash;&gt;-->
+<!--                      <div v-show="historyDetailList.fromChainId!=22776 && historyDetailList.toChainId!=22776"-->
+<!--                           class="dia-trans dia-trans-two">-->
+<!--                        <div class="dia-trans-top">-->
+<!--                          <div>-->
+<!--                            <img v-if="historyDetailList.relayerConfirmHeight>0" src="../assets/dialog/success-red.png"/>-->
+<!--                            <img v-else src="../assets/dialog/success-write.png"/>-->
+<!--                          </div>-->
+<!--                          <div class="dia-trans-top-icon">-->
+<!--                            <img src="../assets/token/map.png"/>-->
+<!--                            <span>MAP Protocol</span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="dia-trans-bottom dia-trans-bottoms">-->
+<!--                          <div>-->
+<!--                            <img v-if="historyDetailList.relayerConfirmHeight==6" class="dia-trans-bottom-arrow"-->
+<!--                                 src="../assets/dialog/line-red.png"/>-->
+<!--                            <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>-->
+<!--                          </div>-->
+<!--                          <div class="dia-trans-bottom-progress">-->
+<!--                                  <span @click="goMap()">{{ historyDetailList.relayerConfirmHeight }}/6 confirmed <img-->
+<!--                                      style="width: 12px" src="../assets/dialog/send.png"/> </span>-->
+<!--                            <div class="dia-transStatus-content-bottom">-->
+<!--                              <div class="dia-transStatus-content-bottom-bg"-->
+<!--                                   :style="{width:historyDetailList.relayerConfirmHeight/6*100+'%'}"></div>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      &lt;!&ndash;                    to&ndash;&gt;-->
+<!--                      <div class="dia-trans dia-trans-two">-->
+<!--                        <div class="dia-trans-top">-->
+<!--                          <div>-->
+<!--                            <img v-if="historyDetailList.transferInHeight>0" src="../assets/dialog/success-red.png"/>-->
+<!--                            <img v-else src="../assets/dialog/success-write.png"/>-->
+<!--                          </div>-->
+<!--                          <div class="dia-trans-top-icon">-->
+<!--                            <img :src="toLogo"/>-->
+<!--                            <span>{{ historyDetailList.toChainName }}</span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="dia-trans-bottom dia-trans-bottoms">-->
+<!--                          <div>-->
+<!--                            <img v-if="historyDetailList.transferInHeight==6" class="dia-trans-bottom-arrow"-->
+<!--                                 src="../assets/dialog/line-red.png"/>-->
+<!--                            <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>-->
+<!--                          </div>-->
+<!--                          <div class="dia-trans-bottom-progress">-->
+<!--                                        <span @click="goToScan()">{{ historyDetailList.transferInHeight }}/6 confirmed <img-->
+<!--                                            style="width: 12px"-->
+<!--                                            src="../assets/dialog/send.png"/> </span>-->
+<!--                            <div class="dia-transStatus-content-bottom">-->
+<!--                              <div class="dia-transStatus-content-bottom-bg"-->
+<!--                                   :style="{width:historyDetailList.transferInHeight/6*100+'%'}"></div>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      &lt;!&ndash;   <div class="dia-trans dia-trans-two">-->
+<!--                                       <div class="dia-trans-top">-->
+<!--                                         <img src="../assets/dialog/success-write.png"/>-->
+<!--                                         <div class="dia-trans-top-icon">-->
+<!--                                           <img src="../assets/polygon.png"/>-->
+<!--                                           <span>Polygon (Matic)</span>-->
+<!--                                         </div>-->
+<!--                                       </div>-->
+<!--                                       <div class="dia-trans-bottom">-->
+<!--                                         <img src="../assets/dialog/line-write.png"/>-->
+<!--                                         <div class="dia-trans-bottom-progress">-->
+<!--                                           <span>0/12 confirmed</span>-->
+<!--                                           <div class="dia-transStatus-content-bottom">-->
+<!--                                             <div class="dia-transStatus-content-bottom-bg" :style="{width:'0'+'%'}"></div>-->
+<!--                                           </div>-->
+<!--                                         </div>-->
+<!--                                       </div>-->
+<!--                                     </div> &ndash;&gt;-->
+<!--                      <div class="dia-trans dia-trans-three">-->
+<!--                        <div class="dia-trans-top">-->
+<!--                          <img v-if="historyDetailList.confirmHeight==6 && historyDetailList.transferInHeight==6"-->
+<!--                               src="../assets/dialog/success-red.png"/>-->
+<!--                          <img v-else src="../assets/dialog/success-write.png"/>-->
+<!--                          <div class="dia-trans-top-icon">-->
+<!--                            <span>Complete</span>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash;          approve弹窗&ndash;&gt;-->
+<!--            <div v-show="dialogApproving" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-approve">-->
+<!--                <div class="dialog-approve-title">-->
+<!--                  <img @click="dialogApproving=false" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <img class="loading-icon" src="../assets/dialog/loading.png"/>-->
+<!--                <div class="dialog-content-approve-text">Approving...</div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash;          Map approve弹窗&ndash;&gt;-->
+<!--           &lt;!&ndash; <div v-show="dialogApproving" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-approve">-->
+<!--                <div class="dialog-approve-title">-->
+<!--                  <img @click="dialogApproving=false" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <img class="loading-icon" src="../assets/dialog/loading.png"/>-->
+<!--                <div class="dialog-content-approve-text">Approving...</div>-->
+<!--              </div>-->
+<!--            </div> &ndash;&gt;-->
+
+<!--            &lt;!&ndash;          transing弹窗&ndash;&gt;-->
+<!--            <div v-show="dialogTransing" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-approve">-->
+<!--                <div class="dialog-approve-title">-->
+<!--                  <img v-show="transferBtn" @click="dialogTransing=false" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <img class="loading-icon" src="../assets/dialog/loading.png"/>-->
+<!--                <div class="dialog-content-approve-text">Transfering...</div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash;          nft弹窗&ndash;&gt;-->
+<!--            <div v-show="dialogNft" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-nft">-->
+<!--                <div class="dialog-selectChain-title">-->
+<!--                  <span>Select NFT</span>-->
+<!--                  <img @click="dialogNft=false" src="../assets/cancel.png"/>-->
+<!--                </div>-->
+<!--                <div class="dialog-selectChain-search">-->
+<!--                  <img src="../assets/search.png"/>-->
+<!--                  <input v-model="searchToken" placeholder="Token address / Token ID / Token Name">-->
+<!--                </div>-->
+<!--                <div v-for="(item,index) in  nftList" :key="index" class="dialog-nft">-->
+<!--                  <div class="dialog-nft-item">-->
+<!--                    <div class="dialog-nft-left">-->
+<!--                      <img :src="item.img"/>-->
+<!--                      <div class="dialog-nft-name">-->
+<!--                        <span>{{ item.name }}</span>-->
+<!--                        <span>#{{ item.id }}</span>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="dialog-nft-name">-->
+<!--                      <span>{{ item.name }} ( {{ item.symbol }} )</span>-->
+<!--                      <span>{{ item.address }}</span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+
+<!--                  <div class="dialog-nft-line"></div>-->
+<!--                </div>-->
+
+<!--              </div>-->
+<!--            </div>-->
+
+
+<!--&lt;!&ndash;            提示错误弹窗&ndash;&gt;-->
+<!--            <div v-show="showErrorMessage" class="dialog-selectChain">-->
+<!--              <div class="dialog-content dialog-content-warn">-->
+<!--                <div @click="closeErrorMessage(showErrorMessage=false)" class="dialog-warn-close">-->
+<!--                  <img src="../assets/dialog/close-two.png"/>-->
+<!--                </div>-->
+<!--                <div class="dialog-warn-icon">-->
+<!--                  <img src="../assets/dialog/warn-two.png"/>-->
+<!--                </div>-->
+<!--                <span>{{errorMessage}}</span>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--          </div>-->
+<!--        </template>-->
+
         <template>
           <div class="home">
 
             <Header @listenTab="acitonEmitHeader" :loadingHistory="historyLoading"/>
-
-            <div class="header-middle">
-              <div @click="actionOpenTransfer(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">Transfer funds</div>
-              <div @click="actionHistory(showTab=1)" :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">History</div>
-            </div>
-
-
-            <div class="bridge">
-              <div class="bridge-switch" v-show="!chainSuccess">
-                <img src="../assets/warn-two.png"/>
-                <span>You must switch <span style="color:#e44e3a;padding-left: 0">{{chainForm.chainName}}</span>  to begin the transfer</span>
-              </div>
-              <div class="bridge-content">
-               <!-- <div class="bridge-title">
-                  <div class="tran">
-                    <div @click="actionOpenTransfer(showTab=0)" class="tran-title"><span>Transfer funds</span></div>
-                    <div :class="showTab==0?'tran-title-line':'tran-title-line-black'" class=""></div>
-                  </div>
-                   <div class="tran">
-                       <div @click="showTab=2" class="tran-title"><span>Transfer Nft</span></div
-                          <div :class="showTab==2?'tran-title-line':'tran-title-line-black'" class=""></div>
-                    </div>
-                  <div class="tran">
-                    <div @click="actionHistory(showTab=1)" class="tran-title">
-                      <span>History</span>
-                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>
-                    </div>
-                    <div :class="showTab==1?'tran-title-line':'tran-title-line-black'" class=""></div>
-                  </div>
-                </div> -->
-                <!--              tranfer-->
-                <div v-show="showTab==0">
-                  <!--                tran-from-->
-                  <div class="tran-from">
-                    <div class="tran-from-left">
-                      <span>From</span>
-                      <div @click="actionChain(0)" class="tran-from-btn">
-                        <!--                  <div class="tran-from-btn">-->
-                        <img :src="chainForm.chainImg"/>
-                        <span>{{ chainForm.chainName }}</span>
-                        <img src="../assets/arrow-bottom-black.png"/>
-                      </div>
-                    </div>
-                    <div class="tran-from-right">Source Chain</div>
-                  </div>
-                  <!--                send-->
-                  <div class="tran-send">
-                    <div class="tran-send-top">
-                      <span>Sending Amount:</span>
-                      <span @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
-                    </div>
-                    <div class="tran-send-bottom">
-                      <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" placeholder="0.0"/>
-                      <div @click="actionOpenToken()" class="tran-send-btn">
-                        <img :src="selectToken.url"/>
-                        <span>{{ selectToken.name }}</span>
-                        <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>
-                      </div>
-                    </div>
-                  </div>
-                  <!--                change-->
-                  <div class="tran-change">
-                    <img @click="actionChangeChain()" src="../assets/change.png"/>
-                  </div>
-                  <!--                tran-to-->
-                  <div class="tran-from tran-to">
-                    <div class="tran-from-left">
-                      <span>To  </span>
-                      <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
-                        <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
-                        <img :src="chainTo.chainImg"/>
-                        <span>{{ chainTo.chainName }}</span>
-                        <img src="../assets/arrow-bottom-black.png"/>
-                      </div>
-                    </div>
-                    <div class="tran-from-right">Destination Chain</div>
-                  </div>
-                  <div class="tran-send">
-                    <div class="tran-send-top">
-                      <span>Received Amount:</span>
-                      <span>Received Address:</span>
-                    </div>
-                    <div id="tran-send-amount" class="tran-send-bottom">
-                      <span>{{ receivedAmount }}</span>
-                     <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
-                        <span class="tran-send-btn-address">{{ sortAddress }}</span>
-                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
-                      </div>
-                    </div>
-                    <!--<div class="tran-custom">
-                      <div class="tran-custom-content">
-                        <div class="tran-custom-left">
-                          <img v-if="!showAddress" @click.stop="showAddress=true" src="../assets/frame.png"/>
-                          <img v-else @click.stop="showAddress=false" src="../assets/frame-red.png"/>
-                          <span>Custom</span>
-                        </div>
-                        <div class="tran-custom-right">
-                          <input :disabled="showAddress?false:'disabled'" v-model="langToAddress">
-                        </div>
-                      </div>
-
-                    </div> -->
-                    <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
-                       <div class="tran-send-address-left">
-                         <span>Received Address:</span>
-                         <img src="../assets/address.png"/>
-                       </div>
-                      <div class="tran-send-address-input">
-                         <input v-model="allAddress" placeholder="Please enter the address"/>
-                         <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
-                       </div>
-                    </div>
-                   <div class="tran-send-fee">
-                      <img src="../assets/error.png"/>
-                      <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>
-                    </div>
-                  </div>
-<!--                  余额不足提醒-->
-                  <div v-show="showInsuffcientBalance" class="tran-insuff">
-                    <img src="../assets/warn-two.png"/>
-                    <span>Insufficient balance</span>
-                  </div>
-                  <!--                connect-->
-                  <div class="tran-connect">
-                    <button v-if="!allowance && !approveHash && allowanceMap"
-                            :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionApprove()">Approve
-                    </button>
-                    <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
-                      Approving... <img src="../assets/loading.gif"/>
-                    </button>
-                    <button v-if="!allowanceMap && !approveMapHash" :class="chainSuccess==false ? 'tran-connect-approve' :''"
-                            @click="actionMapApprove()">Approve MAP
-                    </button>
-                    <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">
-                      Approving... <img src="../assets/loading.gif"/>
-                    </button>
-                    <button v-if="allowance && !transferBtn && allowanceMap"
-                            :class="chainSuccess==false ? 'tran-connect-approve' :''" id="tranferBtn" @click="actionTrans()">Transfer
-                    </button>
-                    <button v-if="allowance && transferBtn" class="tran-connect-approve">
-                      Transfering... <img src="../assets/loading.gif"/>
-                    </button>
-                  </div>
-                </div>
-
-                <!--                            nft-->
-                <div v-show="showTab==2">
-                  <!--                tran-from-->
-                  <div class="tran-from">
-                    <div class="tran-from-left">
-                      <span>From</span>
-                      <div @click="actionChain(0)" class="tran-from-btn">
-                        <!--                  <div class="tran-from-btn">-->
-                        <img :src="chainForm.chainImg"/>
-                        <span>{{ chainForm.chainName }}</span>
-                        <img src="../assets/arrow-bottom-red.png"/>
-                      </div>
-                    </div>
-                    <div class="tran-from-right">Source Chain</div>
-                  </div>
-                  <!--          send nft-->
-                  <div class="nft-send">
-                    <div class="nft-send-top">
-                      <span>Sending NFT :</span>
-                      <span>2 NFTs</span>
-                    </div>
-                    <!--                  card-->
-                    <div class="nft-card">
-                      <div class="nft-card-left">
-                        <img src="../assets/nft/card.png"/>
-                      </div>
-                      <div class="nft-card-right">
-                        <div class="nft-card-line"></div>
-                        <div class="nft-card-title">Non-Fungible Baby (NFB)</div>
-                        <div class="nft-card-icon">
-                          <div class="nft-card-copy">
-                            <img src="../assets/nft/copy.png"/>
-                          </div>
-                          <div class="nft-card-copy">
-                            <img src="../assets/nft/forward.png"/>
-                          </div>
-                        </div>
-                        <div class="nft-send-text">
-                          Huge thanks to our 1st-month supporters,loneliness fades away with you accompany by.
-                        </div>
-                      </div>
-                    </div>
-
-                    <!--                  choose-->
-                    <div @click="dialogNft=true" class="tran-from-btn tran-from-btn-nft">
-                      <div class="tran-from-nft-img">
-                        <img :src="selectNFT.img"/>
-                        <span>{{ selectNFT.name }}</span>
-                        <span>{{ selectNFT.id }}</span>
-                      </div>
-
-                      <img src="../assets/arrow-bottom-red.png"/>
-                    </div>
-
-                  </div>
-
-
-                  <!--                change-->
-                  <div class="tran-change">
-                    <img @click="actionChangeChain()" src="../assets/change.png"/>
-                  </div>
-                  <!--                tran-to-->
-                  <div class="tran-from tran-to">
-                    <div class="tran-from-left">
-                      <span>To  </span>
-                      <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
-                        <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
-                        <img :src="chainTo.chainImg"/>
-                        <span>{{ chainTo.chainName }}</span>
-                        <img src="../assets/arrow-bottom-red.png"/>
-                      </div>
-                    </div>
-                    <div class="tran-from-right">Destination Chain</div>
-                  </div>
-                  <div class="tran-send">
-                    <div class="tran-send-top">
-                      <span>Received Amount:</span>
-                      <span>Received Address:</span>
-                    </div>
-                    <div class="tran-send-bottom">
-                      <span>{{ receivedAmount }}</span>
-                      <!--                  <span>{{ receivedAmount }}</span>-->
-                      <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
-                        <span class="tran-send-btn-address">{{ sortAddress }}</span>
-                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-black.png"/>
-                      </div>
-                    </div>
-                    <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
-                      <div class="tran-send-address-left">
-                        <span>Received Address:</span>
-                        <img src="../assets/address.png"/>
-                      </div>
-                      <div class="tran-send-address-input">
-                        <input v-model="allAddress" placeholder="Please enter the address"/>
-                        <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>
-                        <img v-else src="../assets/success-gray.png"/>
-                      </div>
-                    </div>
-                    <div class="tran-send-fee">
-                      <img src="../assets/error.png"/>
-                      <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>
-                    </div>
-                  </div>
-                  <!--                connect-->
-                  <div class="tran-connect">
-                    <button v-if="!allowance && !approveHash && allowanceMap" @click="actionApprove()">Approve</button>
-                    <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
-                      Approving... <img src="../assets/loading.gif"/>
-                    </button>
-                    <button v-if="!allowanceMap && !approveMapHash" @click="actionMapApprove()">Approve MAP</button>
-                    <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">
-                      Approving... <img src="../assets/loading.gif"/>
-                    </button>
-                    <button v-if="allowance && !transferBtn && allowanceMap" @click="actionTrans()">Transfer</button>
-                    <button v-if="allowance && transferBtn" class="tran-connect-approve">
-                      Transfering... <img src="../assets/loading.gif"/>
-                    </button>
-                  </div>
-                </div>
-
-                <!--                history-->
-                <div v-show="showTab==1" class="">
-<!--                  pc-->
-                  <div class="history">
-                    <div class="history-title">
-                      History
-<!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
-                    </div>
-                    <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
-                         :key="index"
-                         class="history-list history-lists">
-                      <div class="history-tops">
-                          <div class="history-tops-icon">
-                            <img :src="item.fromLogo"/>
-                          </div>
-                          <div class="history-tops-from">
-                            <div class="history-top-left">
-                              <span class="history-top-amount history-top-amounts">{{ item.amount }}</span>
-                              <span class="history-top-coin">{{ item.coin }}</span>
-                            </div>
-                            <div class="history-tops-from-text">
-                              <span>{{ item.fromChainName }}</span>
-                            </div>
-                          </div>
-                          <div class="history-tops-tranfrom">
-                            <img src="../assets/tranform.png"/>
-                          </div>
-                      </div>
-                      <div class="history-tops">
-                        <div class="history-tops-icon">
-                          <img :src="item.toLogo"/>
-                        </div>
-                        <div class="history-tops-from">
-                          <div class="history-top-left">
-                            <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>
-                            <span class="history-top-coin">{{ item.coin }}</span>
-                          </div>
-                          <div class="history-tops-from-text">
-                            <span>{{ item.toChainName }}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="historys-statu">
-                        <div v-if="item.state==0" class="history-status history-status-cancel">
-                          <span>Pending</span>
-                          <img src="../assets/arrow-right-yellow.png"/>
-                        </div>
-                        <div v-else-if="item.state==1" class="history-status history-status-success">
-                          <span>Complete</span>
-                          <img src="../assets/arrow-right-green.png"/>
-                        </div>
-                        <div v-else-if="item.state==998" class="history-status">
-                          <span>Failed</span>
-                          <img src="../assets/arrow-right-red.png"/>
-                        </div>
-                        <div v-else class="history-status history-status-cancel">
-                          <span>Processing</span>
-                          <img src="../assets/arrow-right-yellow.png"/>
-                        </div>
-                        <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div v-if="historyList && historyList.length>0" class="home-page">
-                        <div :class="currentPage==1?'btn-pre':'btn-next'" @click="prePage()" class="">
-                          <button>Previous</button>
-                        </div>
-                        <div>
-                          <span style="color:#E44E3A ">{{ currentPage }}</span>/{{ pageNum }}
-                        </div>
-                        <div :class="currentPage==pageNum?'btn-pre':'btn-next'" @click="nextPage()" class="">
-                          <button>Next</button>
-                        </div>
-                      </div>
-                      <div v-else class="home-page-not">
-                        No data
-                      </div>
-                    </div>
-                    <div class="history-ant">
-                      <!--              <img src="../assets/ant.png"/>-->
-                      <!--              <span>In the end</span>-->
-                    </div>
-                  </div>
-<!--                  h5-->
-                  <div class="history-h5">
-                    <div class="history-title">
-                      History
-<!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
-                    </div>
-                    <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
-                         :key="index"
-                         class="">
-                      <div class="history-list">
-                        <div class="history-top">
-                          <div class="history-top-show">
-                            <div class="history-top-left">
-                              <span class="history-top-amount">{{ item.amount }}</span>
-                              <span class="history-top-coin">{{ item.coin }}</span>
-                            </div>
-                            <div class="history-top-left history-top-left-two">
-                              <span class="history-top-amount">{{ item.inAmount }}</span>
-                              <span class="history-top-coin">{{ item.coin }}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="history-bottom">
-                          <div class="history-coin">
-                            <img :src="item.fromLogo"/> <span>{{ item.fromChainName }}</span>
-                            <img src="../assets/tranform.png"/>
-                            <img :src="item.toLogo"/> <span>{{ item.toChainName }}</span>
-                          </div>
-                        </div>
-                      </div>
-<!--                          h5time-->
-                        <div class="history-h5-bottom">
-                          <div>
-                            <span class="history-coin-time">{{ item.nowTime }}</span>
-                          </div>
-                          <div>
-                            <div v-if="item.state==0" class="history-status history-status-cancel">
-                              <span>Pending</span>
-                              <img src="../assets/arrow-right-yellow.png"/>
-                            </div>
-                            <div v-else-if="item.state==1" class="history-status history-status-success">
-                              <span>Complete</span>
-                              <img src="../assets/arrow-right-green.png"/>
-                            </div>
-                            <div v-else-if="item.state==998" class="history-status">
-                              <span>Failed</span>
-                              <img src="../assets/arrow-right-red.png"/>
-                            </div>
-                            <div v-else class="history-status history-status-cancel">
-                              <span>Processing</span>
-                              <img src="../assets/arrow-right-yellow.png"/>
-                            </div>
-                          </div>
-                        </div>
-                    </div>
-                    <div>
-                      <div v-if="historyList && historyList.length>0" class="home-page">
-                        <div :class="currentPage==1?'btn-pre':'btn-next'" @click="prePage()" class="">
-                          <button>Previous</button>
-                        </div>
-                        <div>
-                          <span style="color:#E44E3A ">{{ currentPage }}</span>/{{ pageNum }}
-                        </div>
-                        <div :class="currentPage==pageNum?'btn-pre':'btn-next'" @click="nextPage()" class="">
-                          <button>Next</button>
-                        </div>
-                      </div>
-                      <div v-else class="home-page-not">
-                        No data
-                      </div>
-                    </div>
-                    <div class="history-ant">
-                      <!--              <img src="../assets/ant.png"/>-->
-                      <!--              <span>In the end</span>-->
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!--<div  class="bridge-rate" v-show="showTab==0">
-                <div class="bridge-rate-content">
-                    <div class="bridge-rate-content-item">
-                      <div class="bridge-rate-left">Bridge Rate:</div>
-                      <div class="bridge-rate-right">1 ETH on   <img/>    ≈ 1.0000717639923096 ETH on <img/></div>
-                    </div>
-                  <div class="bridge-rate-content-item">
-                    <div class="bridge-rate-left">
-                      Fee<img src="../assets/error.png"/>
-                    </div>
-                    <div class="bridge-rate-right">0.00048004 ETH</div>
-                  </div>
-                  <div class="bridge-rate-content-item">
-                    <div class="bridge-rate-left">Minimum Received<img src="../assets/error.png"/></div>
-                    <div class="bridge-rate-right">0.098527 ETH</div>
-                  </div>
-                  <div class="bridge-rate-content-item">
-                    <div class="bridge-rate-left">Estimated Time of Arrival</div>
-                    <div class="bridge-rate-right">5-20 minutes</div>
-                  </div>
-                  <div class="bridge-rate-content-item">
-                    <div class="bridge-rate-left">Received Gas Tokens on Arrival <img src="../assets/error.png"/></div>
-                    <div class="bridge-rate-right">0.002 MATIC</div>
-                  </div>
-                </div>
-              </div> -->
-            </div>
-
-            <Footer/>
-
-            <!--        选择链-->
-            <div v-show="showSelectChain" class="dialog-selectChain">
-              <div class="dialog-content">
-                <div class="dialog-selectChain-title">
-                  <span v-if="selectChain==0">Select Source Chain</span>
-                  <span v-else>Select Destination Chain</span>
-                  <img @click="showSelectChain=false" src="../assets/cancel.png"/>
-                </div>
-                <div class="dialog-selectChain-search">
-                  <img src="../assets/search.png"/>
-                  <input v-model="searchVal" placeholder="Search chain by name or chain ID">
-                </div>
-                <div class="dialog-selectChain-coin">
-                  <div v-for="(item,index) in listChain" :key="index" @click="handleLink(item,index)" class="dialog-Chain-coin">
-                    <div class="dialog-selectChain-coin-content">
-                      <img :src="item.chainImg"/>
-                      <span>{{ item.chainName }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!--        选择token-->
-            <div v-show="showSelectToken" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-Token">
-                <div class="dialog-selectChain-title">
-                  <span>Select a token</span>
-                  <img @click="showSelectToken=false" src="../assets/cancel.png"/>
-                </div>
-                <div class="dialog-selectChain-search">
-                  <img src="../assets/search.png"/>
-                  <input v-model="searchToken" placeholder="Search token by name or address">
-                </div>
-                <div class="dialog-token-bell">
-                  <img src="../assets/dialog/bell.png"/>
-                  <span>
-                    Below is the supported token list from {{chainForm.chainName}} to {{chainTo.chainName}}. More tokens can be found if you select other chains.
-                  </span>
-                </div>
-                <div class="dialog-token">
-                  <div v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"
-                       class="dialog-token-content">
-                    <div class="dialog-token-contentlist">
-                      <div class="dialog-token-detail">
-                        <div class="dialog-token-detail-left">
-                          <img :src="item.img"/>
-                          <div class="dialog-token-detail-left-text">
-                            {{ item.name }}
-<!--                            <span> {{ item.symbol }}</span>-->
-                          </div>
-                        </div>
-                        <div v-if="item.amount!=null && item.amount>=0"
-                             class="dialog-token-detail-left-right">{{ item.amount }}
-                          <span>{{ item.symbol }}</span>
-                        </div>
-                        <div v-else class="dialog-token-loading">
-                          <img style="width:30px" src="../assets/loading2.gif"/>
-                        </div>
-                      </div>
-                      <div class="dialog-token-content-line"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!--        交易详情-->
-            <div v-show="showTranDetail" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-trans">
-                <div class="dialog-selectChain-title">
-                  <span>Transaction Detail</span>
-                  <img @click="closeHistoryList()" src="../assets/cancel.png"/>
-                </div>
-                <div class="dialog-trans-detail-line"></div>
-                <div class="dialog-content-trans-detail">
-                  <!--            sending-->
-                  <div class="dialog-trans-detail">
-                    <div class="dialog-trans-detail-left">Sending</div>
-                    <div class="dialog-trans-detail-right">
-                      <span>{{ historyDetailList.sending }} {{ historyDetailList.coin }}</span>
-                      <span>{{ historyDetailList.from }}</span>
-                    </div>
-                  </div>
-                  <!--            receiving-->
-                  <div class="dialog-trans-detail">
-                    <div class="dialog-trans-detail-left">Receiving</div>
-                    <div class="dialog-trans-detail-right">
-                            <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{
-                                historyDetailList.coin
-                              }}</span>
-                      <span v-else>Processing</span>
-                      <span>{{ historyDetailList.to }}</span>
-                    </div>
-                  </div>
-                  <!--            fee-->
-                  <div class="dialog-trans-detail">
-                    <div class="dialog-trans-detail-left">Fee</div>
-                    <div class="dialog-trans-detail-right">
-                                  <span v-if="historyDetailList.receiving"
-                                        class="dialog-trans-detail-fee">{{
-                                      historyDetailList.sending - historyDetailList.receiving
-                                    }}  {{
-                                      historyDetailList.coin
-                                    }}</span>
-                      <span v-else>Processing</span>
-                    </div>
-                  </div>
-                  <!--            status-->
-                  <div class="dialog-trans-detail">
-                    <div class="dialog-trans-detail-left">Status</div>
-                    <div class="dialog-trans-detail-rights dialog-trans-detail-rights-status">
-                      <!--                    from-->
-                      <div class="dia-trans">
-                        <div class="dia-trans-top">
-                          <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>
-                          <img v-else src="../assets/dialog/success-write.png"/>
-                          <div class="dia-trans-top-icon">
-                            <img :src="fromLogo"/>
-                            <span>{{ historyDetailList.fromChainName }}</span>
-                          </div>
-                        </div>
-                        <div class="dia-trans-bottom dia-trans-bottoms">
-                          <div>
-                            <img v-if="historyDetailList.confirmHeight==6" class="dia-trans-bottom-arrow"
-                                 src="../assets/dialog/line-red.png"/>
-                            <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
-                          </div>
-                          <div class="dia-trans-bottom-progress">
-                                        <span @click="goEth()">{{ historyDetailList.confirmHeight }}/6 confirmed <img
-                                            src="../assets/dialog/send.png"/> </span>
-                            <div class="dia-transStatus-content-bottom">
-                              <div class="dia-transStatus-content-bottom-bg"
-                                   :style="{width:historyDetailList.confirmHeight/6*100+'%'}"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!--                    relayer-->
-                      <div v-show="historyDetailList.fromChainId!=22776 && historyDetailList.toChainId!=22776"
-                           class="dia-trans dia-trans-two">
-                        <div class="dia-trans-top">
-                          <div>
-                            <img v-if="historyDetailList.relayerConfirmHeight>0" src="../assets/dialog/success-red.png"/>
-                            <img v-else src="../assets/dialog/success-write.png"/>
-                          </div>
-                          <div class="dia-trans-top-icon">
-                            <img src="../assets/token/map.png"/>
-                            <span>MAP Protocol</span>
-                          </div>
-                        </div>
-                        <div class="dia-trans-bottom dia-trans-bottoms">
-                          <div>
-                            <img v-if="historyDetailList.relayerConfirmHeight==6" class="dia-trans-bottom-arrow"
-                                 src="../assets/dialog/line-red.png"/>
-                            <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
-                          </div>
-                          <div class="dia-trans-bottom-progress">
-                                  <span @click="goMap()">{{ historyDetailList.relayerConfirmHeight }}/6 confirmed <img
-                                      style="width: 12px" src="../assets/dialog/send.png"/> </span>
-                            <div class="dia-transStatus-content-bottom">
-                              <div class="dia-transStatus-content-bottom-bg"
-                                   :style="{width:historyDetailList.relayerConfirmHeight/6*100+'%'}"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!--                    to-->
-                      <div class="dia-trans dia-trans-two">
-                        <div class="dia-trans-top">
-                          <div>
-                            <img v-if="historyDetailList.transferInHeight>0" src="../assets/dialog/success-red.png"/>
-                            <img v-else src="../assets/dialog/success-write.png"/>
-                          </div>
-                          <div class="dia-trans-top-icon">
-                            <img :src="toLogo"/>
-                            <span>{{ historyDetailList.toChainName }}</span>
-                          </div>
-                        </div>
-                        <div class="dia-trans-bottom dia-trans-bottoms">
-                          <div>
-                            <img v-if="historyDetailList.transferInHeight==6" class="dia-trans-bottom-arrow"
-                                 src="../assets/dialog/line-red.png"/>
-                            <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
-                          </div>
-                          <div class="dia-trans-bottom-progress">
-                                        <span @click="goToScan()">{{ historyDetailList.transferInHeight }}/6 confirmed <img
-                                            style="width: 12px"
-                                            src="../assets/dialog/send.png"/> </span>
-                            <div class="dia-transStatus-content-bottom">
-                              <div class="dia-transStatus-content-bottom-bg"
-                                   :style="{width:historyDetailList.transferInHeight/6*100+'%'}"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!--   <div class="dia-trans dia-trans-two">
-                                       <div class="dia-trans-top">
-                                         <img src="../assets/dialog/success-write.png"/>
-                                         <div class="dia-trans-top-icon">
-                                           <img src="../assets/polygon.png"/>
-                                           <span>Polygon (Matic)</span>
-                                         </div>
-                                       </div>
-                                       <div class="dia-trans-bottom">
-                                         <img src="../assets/dialog/line-write.png"/>
-                                         <div class="dia-trans-bottom-progress">
-                                           <span>0/12 confirmed</span>
-                                           <div class="dia-transStatus-content-bottom">
-                                             <div class="dia-transStatus-content-bottom-bg" :style="{width:'0'+'%'}"></div>
-                                           </div>
-                                         </div>
-                                       </div>
-                                     </div> -->
-                      <div class="dia-trans dia-trans-three">
-                        <div class="dia-trans-top">
-                          <img v-if="historyDetailList.confirmHeight==6 && historyDetailList.transferInHeight==6"
-                               src="../assets/dialog/success-red.png"/>
-                          <img v-else src="../assets/dialog/success-write.png"/>
-                          <div class="dia-trans-top-icon">
-                            <span>Complete</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!--          approve弹窗-->
-            <div v-show="dialogApproving" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-approve">
-                <div class="dialog-approve-title">
-                  <img @click="dialogApproving=false" src="../assets/cancel.png"/>
-                </div>
-                <img class="loading-icon" src="../assets/dialog/loading.png"/>
-                <div class="dialog-content-approve-text">Approving...</div>
-              </div>
-            </div>
-
-            <!--          Map approve弹窗-->
-           <!-- <div v-show="dialogApproving" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-approve">
-                <div class="dialog-approve-title">
-                  <img @click="dialogApproving=false" src="../assets/cancel.png"/>
-                </div>
-                <img class="loading-icon" src="../assets/dialog/loading.png"/>
-                <div class="dialog-content-approve-text">Approving...</div>
-              </div>
-            </div> -->
-
-            <!--          transing弹窗-->
-            <div v-show="dialogTransing" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-approve">
-                <div class="dialog-approve-title">
-                  <img v-show="transferBtn" @click="dialogTransing=false" src="../assets/cancel.png"/>
-                </div>
-                <img class="loading-icon" src="../assets/dialog/loading.png"/>
-                <div class="dialog-content-approve-text">Transfering...</div>
-              </div>
-            </div>
-
-            <!--          nft弹窗-->
-            <div v-show="dialogNft" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-nft">
-                <div class="dialog-selectChain-title">
-                  <span>Select NFT</span>
-                  <img @click="dialogNft=false" src="../assets/cancel.png"/>
-                </div>
-                <div class="dialog-selectChain-search">
-                  <img src="../assets/search.png"/>
-                  <input v-model="searchToken" placeholder="Token address / Token ID / Token Name">
-                </div>
-                <div v-for="(item,index) in  nftList" :key="index" class="dialog-nft">
-                  <div class="dialog-nft-item">
-                    <div class="dialog-nft-left">
-                      <img :src="item.img"/>
-                      <div class="dialog-nft-name">
-                        <span>{{ item.name }}</span>
-                        <span>#{{ item.id }}</span>
-                      </div>
-                    </div>
-                    <div class="dialog-nft-name">
-                      <span>{{ item.name }} ( {{ item.symbol }} )</span>
-                      <span>{{ item.address }}</span>
-                    </div>
-                  </div>
-
-                  <div class="dialog-nft-line"></div>
-                </div>
-
-              </div>
-            </div>
-
-
-<!--            提示错误弹窗-->
-            <div v-show="showErrorMessage" class="dialog-selectChain">
-              <div class="dialog-content dialog-content-warn">
-                <div @click="closeErrorMessage(showErrorMessage=false)" class="dialog-warn-close">
-                  <img src="../assets/dialog/close-two.png"/>
-                </div>
-                <div class="dialog-warn-icon">
-                  <img src="../assets/dialog/warn-two.png"/>
-                </div>
-                <span>{{errorMessage}}</span>
-              </div>
-            </div>
 
           </div>
         </template>
@@ -1638,6 +1646,7 @@
 
             //查询未完成的历史交易
             async actionUndoneTransfer() {
+              return;
               let v = this
               let resultTwo;
               console.log('status',v.historyTimerLoading)
