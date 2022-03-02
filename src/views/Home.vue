@@ -1,7 +1,7 @@
         <template>
           <div class="home">
 
-            <Header @listenTab="acitonEmitHeader"/>
+            <Header @listenTab="acitonEmitHeader" :loadingHistory="historyLoading"/>
 
             <div class="header-middle">
               <div @click="actionOpenTransfer(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">Transfer funds</div>
@@ -84,15 +84,14 @@
                       <span>Received Amount:</span>
                       <span>Received Address:</span>
                     </div>
-                    <div class="tran-send-bottom">
+                    <div id="tran-send-amount" class="tran-send-bottom">
                       <span>{{ receivedAmount }}</span>
-                      <!--                  <span>{{ receivedAmount }}</span>-->
-                     <!-- <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
+                     <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                         <span class="tran-send-btn-address">{{ sortAddress }}</span>
-                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-red.png"/>
-                      </div>-->
+                        <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
+                      </div>
                     </div>
-                    <div class="tran-custom">
+                    <!--<div class="tran-custom">
                       <div class="tran-custom-content">
                         <div class="tran-custom-left">
                           <img v-if="!showAddress" @click.stop="showAddress=true" src="../assets/frame.png"/>
@@ -104,18 +103,17 @@
                         </div>
                       </div>
 
-                    </div>
-                    <!--  <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
+                    </div> -->
+                    <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
                        <div class="tran-send-address-left">
                          <span>Received Address:</span>
                          <img src="../assets/address.png"/>
                        </div>
                       <div class="tran-send-address-input">
                          <input v-model="allAddress" placeholder="Please enter the address"/>
-                         <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>
-                         <img v-else src="../assets/success-gray.png"/>
+                         <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
                        </div>
-                    </div>-->
+                    </div>
                    <div class="tran-send-fee">
                       <img src="../assets/error.png"/>
                       <span style="padding-top: 3px">Cross-chain transaction fee:{{ gasFeeVue }} MAP</span>
@@ -275,7 +273,7 @@
                   <div class="history">
                     <div class="history-title">
                       History
-                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>
+<!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
                     </div>
                     <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
                          :key="index"
@@ -356,7 +354,7 @@
                   <div class="history-h5">
                     <div class="history-title">
                       History
-                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>
+<!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
                     </div>
                     <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
                          :key="index"
@@ -756,6 +754,20 @@
               </div>
             </div>
 
+
+<!--            提示错误弹窗-->
+            <div v-show="showErrorMessage" class="dialog-selectChain">
+              <div class="dialog-content dialog-content-warn">
+                <div @click="closeErrorMessage(showErrorMessage=false)" class="dialog-warn-close">
+                  <img src="../assets/dialog/close-two.png"/>
+                </div>
+                <div class="dialog-warn-icon">
+                  <img src="../assets/dialog/warn-two.png"/>
+                </div>
+                <span>{{errorMessage}}</span>
+              </div>
+            </div>
+
           </div>
         </template>
 
@@ -778,6 +790,8 @@
           components: {Footer, Header},
           data() {
             return {
+              showErrorMessage:false,//显示错误认识弹窗
+              errorMessage:'Your gas fee is not enough Your gas fee is not enough',//错误信息
               showInsuffcientBalance:false,//余额不足提醒
               chooseApprove:-1,//点击按钮是Approve还是ApproveMap
               account:'',//用户地址
@@ -936,11 +950,23 @@
             //检测到获取了地址
             account_default_address() {
               // console.log('change address')
+              clearInterval(this.setTimeHistory);
+              this.setTimeHistory = null;
+              clearInterval(this.historyTimerLoading)
+              this.historyTimerLoading = null
+              clearInterval(this.statusTimer)
+              this.statusTimer = null
               this.getAllData()
             },
-            account_change_chain() {
-              this.getAllData()
-            },
+            // account_change_chain() {
+            //   clearInterval(this.setTimeHistory);
+            //   this.setTimeHistory = null;
+            //   clearInterval(this.historyTimerLoading)
+            //   this.historyTimerLoading = null
+            //   clearInterval(this.statusTimer)
+            //   this.statusTimer = null
+            //   this.getAllData()
+            // },
             searchToken(newV, oldV) {
               // console.log('searchToken',newV)
               // if (newV.length<2){
@@ -984,7 +1010,12 @@
               console.log(_this.selectTokens)
             },
             '$store.state.account.change_chain'(data) {
-              console.log("account", data)
+              clearInterval(this.setTimeHistory);
+              this.setTimeHistory = null;
+              clearInterval(this.historyTimerLoading)
+              this.historyTimerLoading = null
+              clearInterval(this.statusTimer)
+              this.statusTimer = null
               this.getAllData()
               this.$emit('ChainChanged', data);
             },
@@ -1088,6 +1119,11 @@
               }
               approving[tokenAddress] = status;
               localStorage.setItem(key, JSON.stringify(approving));
+            },
+
+            //关闭提示错误的弹窗
+            closeErrorMessage() {
+              this.errorMessage=''
             },
 
             //获取最大值
@@ -1373,6 +1409,10 @@
                 return
               }
 
+              if (this.showInsuffcientBalance) {
+                return
+              }
+
 
               let v = this
 
@@ -1517,9 +1557,10 @@
                 var gas = await v.myWeb3.eth.estimateGas(transParams)
               } catch (e) {
                 // let result = e.message.substring(e.message.indexOf("{"))
-                error = e.message
-                console.log('error', e.message)
-                this.$toast(e.message)
+                // error = JSON.parse(result).message
+                v.showErrorMessage = true
+                v.errorMessage = e.message
+                // this.$toast(error)
               }
               //console.log('gas', gas)
               if (error) {
@@ -1601,19 +1642,10 @@
               let resultTwo;
               console.log('status',v.historyTimerLoading)
               console.log( v.historyLoading,"333")
-              // if(v.historyLoading != null && v.historyLoading <= 0){
-              //   console.log("bbb")
-              //   v.historyTimerLoading.forEach((item, index) => {
-              //     clearInterval(item);
-              //   })
-              //   v.historyTimerLoading = [];
-              //   v.historyTimerLoading = 0;
-              //
-              // }
-              //
+
             console.log(v.historyTimerLoading, "888")
               if (v.historyTimerLoading != null && v.historyTimerLoading.length > 0 && v.historyLoading != null && v.historyLoading <= 0) {
-
+                console.log('aaaaaaaaa')
                 v.historyTimerLoading.forEach((item, index) => {
                     console.log(item)
                     clearInterval(item);
@@ -1639,6 +1671,8 @@
               if (result.code == 200) {
                 v.historyLoading = result.data.count
               }
+
+
 
 
             },
@@ -1984,15 +2018,20 @@
             //显示地址
             async actionShowAddress() {
               this.showAddress = true
+              this.allAddress = this.langToAddress
+              let addressCss = document.getElementById('tran-send-amount')
+              addressCss.style.display='none'
             },
 
             //输入地址填写
             async getInputAddress() {
               let v = this
-              // v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
-              this.langToAddress = v.langToAddress
+              v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
+              this.langToAddress = v.allAddress
               console.log('address',this.langToAddress)
-              // v.showAddress = false
+              v.showAddress = false
+              let addressCss = document.getElementById('tran-send-amount')
+              addressCss.style.display='flex'
             },
 
             //approve
@@ -2037,9 +2076,11 @@
                     data: approveData
                   })
                 } catch (e) {
-                  error = e.message
-                  console.log('error', e.message)
-                  this.$toast(e.message)
+                  // let result = e.message.substring(e.message.indexOf("{"))
+                  // error = JSON.parse(result).message
+                  // this.$toast(error)
+                  v.showErrorMessage = true
+                  v.errorMessage = e.message
                 }
                 if (error) {
                   resolve(false);
@@ -2129,9 +2170,8 @@
                   // let result = e.message.substring(e.message.indexOf("{"))
                   // error = JSON.parse(result).message
                   // this.$toast(error)
-                  error = e.message
-                  console.log('error', e.message)
-                  this.$toast(e.message)
+                  v.showErrorMessage = true
+                  v.errorMessage = e.message
                 }
                 if (error) {
                   resolve(false);
@@ -2636,7 +2676,7 @@
         }
 
         .historys-statu {
-          padding-left: 15px;
+          padding-left: 10px;
           display: flex;
           flex-direction: column;
           align-items: flex-end;
@@ -2962,7 +3002,7 @@
         }
 
         .tran-send-arrow-icon {
-          width: 12px !important
+          width: 15px !important
         }
 
 
@@ -3057,8 +3097,8 @@
           color: white;
           border-radius: 8px 0 0 8px;
           background: #E44E3A;
-          padding: 12px 14px 11px 10px;
-          width: 22%;
+          width: 124px;
+          height: 35px;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -3076,10 +3116,9 @@
 
         .tran-send-address-input {
           width: 73%;
-          height: 43px;
+          height: 35px;
           box-sizing: border-box;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid #E44E3A;
+          background: white;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -3092,7 +3131,7 @@
             font-size: 14px;
             padding-left: 13px;
             color: black;
-            background: rgba(255, 255, 255, 0);
+            background: white;
           }
 
           ::-webkit-input-placeholder {
@@ -3109,7 +3148,7 @@
             cursor: pointer;
             margin-left: 9px;
             margin-right: 14px;
-            width: 20px;
+            width: 15px;
           }
         }
 
@@ -3270,7 +3309,7 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 26px 30px 30px 30px;
+          padding: 26px 30px 116px 30px;
           box-sizing: border-box;
         }
 
@@ -3379,19 +3418,20 @@
         .dialog-selectChain-coin {
           width: 100%;
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
           flex-wrap: wrap;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
         }
 
         .dialog-Chain-coin {
+          width: 100%;
           margin-top: 10px;
         }
 
 
         .dialog-selectChain-coin-content {
-          width: 244px;
+          width: 100%;
           height: 50px;
           box-sizing: border-box;
           border-radius: 15px;
@@ -3443,7 +3483,7 @@
         }
 
         .dialog-token-content:hover {
-          height: 52px;
+          height: 50px;
           border: 0;
           background-color: rgba(89, 45, 45, 0.05);
         }
@@ -3711,6 +3751,8 @@
           max-height: 428px;
         }
 
+
+
         .dialog-nft {
           width: 100%;
           box-sizing: border-box;
@@ -3767,6 +3809,41 @@
           width: 80%;
           background: #000000;
           opacity: 0.1;
+        }
+
+        //dialog warn
+
+        .dialog-content-warn {
+          width: 255px;
+          max-width: 255px;
+          padding: 11px 11px 40px 11px;
+          border-radius: 20px;
+          span {
+            text-align: center;
+            width: 80%;
+            font-size: 14px;
+            font-family: 'productBold';
+            padding-top: 18px;
+            word-wrap: break-word;
+          }
+        }
+
+        .dialog-warn-close {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          img {
+            cursor: pointer;
+            width: 14px;
+          }
+        }
+
+        .dialog-warn-icon {
+          padding-top: 7px;
+          img {
+            width: 32px;
+          }
         }
 
 
@@ -4160,6 +4237,7 @@
           //dialog
           .dialog-content {
             width: 60%;
+            padding-bottom: 50px;
           }
 
 
@@ -4445,7 +4523,6 @@
 
           .tran-send-address-left {
             width: 10%;
-            padding: 5px 10px 6px 10px;
 
             span {
               display: none;
@@ -4466,7 +4543,6 @@
 
           .tran-send-address-input {
             width: 90%;
-            height: 29px;
           }
 
           .history {

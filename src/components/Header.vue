@@ -11,7 +11,7 @@
                   <div @click="actionShowTab(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">Transfer funds</div>
                   <div @click="actionShowTab(showTab=1)" :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">
                     History
-<!--                    <img v-show="loadingHistory && loadingHistory>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
+                    <img v-show="loadingHistory && loadingHistory>0" class="loading-icon" src="../assets/cycle.png"/>
                   </div>
                 </div>
                 <div  @click="goMap()" class="header-logo-h5">
@@ -302,6 +302,7 @@
         border-radius: 7px;
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         padding: 17px 0;
+        background: white;
       }
 
       .header-many-tab-item {
