@@ -16,9 +16,9 @@ watcher.getProvider().then(async provider=>{
   Vue.prototype.$web3 = await watcher.bindClient();
   Vue.prototype.$provider = provider;
 }).catch(e=>{})
-// Vue.prototype.$client = (chainId)=>{
-//   return asyncChainClient(chainId);
-// };
+Vue.prototype.$client = (chainId)=>{
+  return asyncChainClient(chainId);
+};
 Vue.prototype.$http = api;
 Vue.prototype.$event = eventbus;
 Vue.prototype.$watcher = watcher;
@@ -40,54 +40,57 @@ Vue.prototype.$formatAddress =(address,length=4)=>{
   return address;
 }
 
-// async function asyncChainClient(chainId){
-//   let chainClientCheckTimer=null;
-//   let limitCount = 5;
-//   return new Promise(async resolve=>{
-//     chainId = new Decimal(chainId).toHex();
-//     if (CLIENT_CACHE[chainId]){
-//       resolve(CLIENT_CACHE[chainId]);
-//     }
-//     if (!chainClientCheckTimer){
-//       chainClientCheckTimer = setInterval(()=>{
-//         if (CLIENT_CACHE[chainId] || limitCount===0){
-//           clearInterval(chainClientCheckTimer);
-//           chainClientCheckTimer=null;
-//           resolve(CLIENT_CACHE[chainId]);
-//         }
-//         limitCount--;
-//       },1000);
-//     }
-//
-//   });
-//
-// }
-// async function asyncChainList(){
-//   api.chainList().then(result => {
-//     if (result.code === 200) {
-//       let chainList = result.data.list;
-//       console.log(result.data.list);
-//       /*
-//       chain: "MAP"
-//       chainId: 22776
-//       chainImg: "https://files.maplabs.io/bridge/map.png"
-//       chainName: "MAP Makalu"
-//       contract: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c"
-//       gasLimit: "600000"
-//       id: 1
-//       rpc: "https://poc2-rpc.maplabs.io/"
-//       scanUrl: "https://makalu.mapscan.io/"
-//        */
-//       if (chainList &&chainList.length>0){
-//         for (const item of chainList) {
-//           let chainId = new Decimal(item.chainId).toHex();
-//           CLIENT_CACHE[chainId] = new Web3(new Web3.providers.HttpProvider(item.rpc));
-//         }
-//       }
-//     }
-//   }).catch(err => {});
-// }
-// asyncChainList();
+async function asyncChainClient(chainId){
+  let chainClientCheckTimer=null;
+  let limitCount = 5;
+  return new Promise(async resolve=>{
+    chainId = new Decimal(chainId).toHex();
+    if (CLIENT_CACHE[chainId]){
+      resolve(CLIENT_CACHE[chainId]);
+    }
+    if (!chainClientCheckTimer){
+      chainClientCheckTimer = setInterval(async ()=>{
+        if (CLIENT_CACHE[chainId] || limitCount===0){
+          clearInterval(chainClientCheckTimer);
+          chainClientCheckTimer=null;
+          if (CLIENT_CACHE[chainId]){
+            resolve(CLIENT_CACHE[chainId]);
+          }else{
+            let client = await watcher.bindClient();
+            resolve(client);
+          }
+        }
+        limitCount--;
+      },1000);
+    }
+  });
+}
+async function asyncChainList(){
+  api.chainList().then(result => {
+    if (result.code === 200) {
+      let chainList = result.data.list;
+      console.log(result.data.list);
+      /*
+      chain: "MAP"
+      chainId: 22776
+      chainImg: "https://files.maplabs.io/bridge/map.png"
+      chainName: "MAP Makalu"
+      contract: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c"
+      gasLimit: "600000"
+      id: 1
+      rpc: "https://poc2-rpc.maplabs.io/"
+      scanUrl: "https://makalu.mapscan.io/"
+       */
+      if (chainList &&chainList.length>0){
+        for (const item of chainList) {
+          let chainId = new Decimal(item.chainId).toHex();
+          CLIENT_CACHE[chainId] = new Web3(new Web3.providers.HttpProvider(item.rpc));
+        }
+      }
+    }
+  }).catch(err => {});
+}
+asyncChainList();
 
 Vue.config.productionTip = false
 import toastRegistry from './vendor/toast/index'
