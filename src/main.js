@@ -6,9 +6,7 @@ import store,{watcher} from './store'
 import api from './api/api'
 import eventbus from './eventBus.js'
 import './assets/css/stylesheet.css'
-import * as vClickOutside from 'v-click-outside-x';
 import Decimal from 'decimal.js';
-Vue.use(vClickOutside);
 
 const CLIENT_CACHE={}
 const Web3 = require('web3');
