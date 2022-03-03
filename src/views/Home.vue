@@ -1586,7 +1586,7 @@ export default {
       //
       v.allowance = true
       v.transferBtn = true
-      const rewardReceipt = await web3.eth.sendTransaction(transParams).on('transactionHash', function (hash) {
+      const rewardReceipt = await this.$web3.eth.sendTransaction(transParams).on('transactionHash', function (hash) {
         v.transHash = hash
         v.transferBtn = true
         if (v.transHash != null && v.transHash != '') {
