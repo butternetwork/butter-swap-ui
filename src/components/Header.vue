@@ -19,7 +19,7 @@
 
       <div class="header-right">
         <div id="header-chain-content"  class="header-connect">
-          <span class="header-error" v-if="error" @click="actionConnect()">{{ $t('Network Error') }}</span>
+          <span class="header-error" v-if="error" @click="actionNetwork()">{{ $t('Network Error') }}</span>
           <div v-else><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
         </div>
 
@@ -27,11 +27,11 @@
           <div v-if="exitConntet"  @mouseover="showLogOut=true" @mouseleave="showLogOut=false" class="header-connect-content" id="connect-btn">
             <span @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-if="address" class="header-intall header-intalls">
             <img src="../assets/ant-icon.png"/>{{ $formatAddress(address) }}<span class="header-address-round"></span></span>
-            <span v-else @click="actionConnect()" class="header-intall" >{{ $t('Install Metamask') }}</span>
+            <span v-else @click="actionConnect()" class="header-intall" >>Connect Wallet</span>
             <span id="logoutBtn" @click.prevent.stop="actionLogOut()" @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-show="showLogOut" class="header-intall header-intalls header-logout">Logout</span>
           </div>
           <div v-else class="header-connect-content">
-            <span @click="actionConnect()"  class="header-intall  header-intall-error">Connect Wallet</span>
+            <span @click="actionConnectI()"  class="header-intall  header-intall-error">Connect Wallet</span>
           </div>
         </div>
 
@@ -103,7 +103,7 @@ export default {
       this.exitConntet =  false
     },
     //intall
-    async actionConnect() {
+    async actionConnectI() {
       this.$store.dispatch('connect')
       this.$emit("exit",true)
       localStorage.setItem('exit',true)
@@ -145,10 +145,30 @@ export default {
     actionShowTab(tab) {
       this.$emit("listenTab", tab)
     },
-    // actionConnect() {
-    //   let chainId = this.$store.getters.accountId;
-    //   this.$store.dispatch('connect');
-    // },
+    actionConnect() {
+      // let chainId = this.$store.getters.accountId;
+      this.$store.dispatch('connect');
+    },
+    actionNetwork() {
+      var v=this
+      window.ethereum &&
+      window.ethereum
+          .request({
+            method: 'wallet_switchEthereumChain',
+            params: [
+              {
+                chainId: '0x1'
+              },
+            ],
+          })
+          .then(() => {
+            v.error=false
+            this.$router.go(0);
+          })
+          .catch((e) => {
+            console.log(e)
+          })
+    },
     goMap() {
       window.open('https://www.maplabs.io/', '_blank')
     },

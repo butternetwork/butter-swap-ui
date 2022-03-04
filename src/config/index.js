@@ -1,7 +1,7 @@
 let config = require('./base.js');
 
 if(process.env.NODE_ENV==='development'){
-	let test = require('./config.test.js');
+	let test = require('./config.pro.js');
 	config = Object.assign(config,test);
 }
 if(process.env.NODE_ENV==='production'){

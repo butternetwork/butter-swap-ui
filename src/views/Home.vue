@@ -818,11 +818,7 @@ export default {
       //   "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
       // },//Token所有列表
       tokenAllList:{
-        "1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
-        "56":[{"id":13,"tokenId":"MAP","address":"0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f","name":"MAP Protocol","chainId":56,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":15,"tokenId":"ETH","address":"0x2170Ed0880ac9A755fd29B2688956BD959F933F8","name":"ETH","chainId":56,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":18,"tokenId":"USDC","address":"0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d","name":"USD Coin","chainId":56,"isMint":0,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":20,"tokenId":"BUSD","address":"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56","name":"Binance-Peg BUSD","chainId":56,"isMint":0,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"}],
-        "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":19,"tokenId":"BUSD","address":"0x35bF4004C3Fc9f509259d4942da6bae3669e1Db1","name":"Mapped Binance USD","chainId":22776,"isMint":1,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"}],
-        "137":[{"id":14,"tokenId":"MAP","address":"0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a","name":"MAP Protocol","chainId":137,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":16,"tokenId":"ETH","address":"0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619","name":"ETH","chainId":137,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":17,"tokenId":"USDC","address":"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174","name":"USD Coin","chainId":137,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"}]
-      },
+        "1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],"56":[{"id":13,"tokenId":"MAP","address":"0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f","name":"MAP Protocol","chainId":56,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":15,"tokenId":"ETH","address":"0x2170Ed0880ac9A755fd29B2688956BD959F933F8","name":"ETH","chainId":56,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":18,"tokenId":"USDC","address":"0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d","name":"USD Coin","chainId":56,"isMint":0,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":20,"tokenId":"BUSD","address":"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56","name":"Binance-Peg BUSD","chainId":56,"isMint":0,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"}],"22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":19,"tokenId":"BUSD","address":"0x35bF4004C3Fc9f509259d4942da6bae3669e1Db1","name":"Mapped Binance USD","chainId":22776,"isMint":1,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"}],"137":[{"id":14,"tokenId":"MAP","address":"0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a","name":"MAP Protocol","chainId":137,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":16,"tokenId":"ETH","address":"0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619","name":"ETH","chainId":137,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":17,"tokenId":"USDC","address":"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174","name":"USD Coin","chainId":137,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"}]},
       // tokenAllList: {
       //   "80001": [{
       //     "id": 16,
@@ -1282,12 +1278,16 @@ export default {
 
     getApproveStatus(key, tokenAddress) {
       let approving = localStorage.getItem(key);
+      console.log("approving :", approving);
       if (approving) {
+        console.log("approving jinru:", approving);
         if (typeof approving === 'string') {
           approving = JSON.parse(approving);
         }
         approving = approving[tokenAddress];
+        console.log("approving = approving[tokenAddress];", approving)
         if (approving == false) {
+          console.log("approving = approving[tokenAddress] jinru")
           return 'done';
         }
         if (approving) {
@@ -1296,6 +1296,7 @@ export default {
       }
       return 'none';
     },
+
     setApproveStatus(key, tokenAddress, status) {
       let approving = localStorage.getItem(key);
       if (approving) {
@@ -1390,8 +1391,10 @@ export default {
       //创建合约
       let web3 = await this.$client(this.chainIdHex);
       let contract = new web3.eth.Contract(mapAbi, this.chainFrom.contract)
+      console.log(this.chainTo.chainId, this.chainFrom.contract)
       let gas = await contract.methods.chainGasFee(this.chainTo.chainId).call();
       this.gasFee = gas
+      console.log(' this.gasFee', this.gasFee)
       try {
         this.gasFeeVue = new Decimal(gas).div(new Decimal(Math.pow(10, 18)))
       } catch (e) {
@@ -1481,7 +1484,6 @@ export default {
       this.actionStatus()
 
       this.actionVaultBalance()
-
 
       this.actionInputFont()
 
@@ -1966,16 +1968,16 @@ export default {
 
     //切换链
     async handleLink(item) {
-      console.log('handleLink===>>>',item)
+      // console.log('handleLink===>>>',item)
       //To 选择
       if (this.selectChain === 1) {
-        console.log('handleLink===>>> 01')
+        // console.log('handleLink===>>> 01')
         if (item.chain === this.chainFrom.chain) {
           console.log('handleLink===>>> 02')
           this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
           return;
         }
-        console.log('handleLink===>>> 03')
+        // console.log('handleLink===>>> 03')
         this.chainTo = JSON.parse(JSON.stringify(item));
         this.destNetwork = item.chain
         this.showSelectChain = false
@@ -1988,7 +1990,10 @@ export default {
             ts: Date.now(),
           }
         })
-        this.getAllData()
+        // this.getAllData()
+        this.actionGasFee()
+        this.actionStatus()
+        this.actionInputFont()
         return
       }
       this.$watcher.getProvider().then(provider => {
@@ -2124,7 +2129,8 @@ export default {
           v.checkApproveToken = token
           v.chainSuccess = true
           localStorage.setItem('approve', 1);
-          this.setApproveStatus(this.account + reward_address, token_address, 'doing');
+          console.log("approv 1 :", v.account)
+          this.setApproveStatus(v.account + reward_address, token_address, 'doing');
           //server order
         }).on('receipt', (receipt) => {
           //receipt
@@ -2132,14 +2138,15 @@ export default {
           // console.log('receipt',receipt)
           v.dialogApproving = false
           v.allowance = true;
-          this.setApproveStatus(this.account + reward_address, token_address, false);
+          console.log("approv 2", v.account)
+          this.setApproveStatus(v.account + reward_address, token_address, false);
           let timer = setInterval(() => {
             v.checkApproved(timer)
           }, 1000);
           resolve(true);
         }).on('error', (receipt) => {
           //receipt
-          localStorage.removeItem(this.account + reward_address)
+          localStorage.removeItem(v.account + reward_address)
           v.approveHash = false;
           v.dialogApproving = false
           //console.log(receipt)
@@ -2211,21 +2218,23 @@ export default {
           v.dialogApproving = true
           v.approveMapHash = hash;
           localStorage.setItem('approve', 2);
-          v.setApproveStatus(this.account + reward_address, token_address, 'doing');
+          console.log("approv 3", v.account)
+          v.setApproveStatus(v.account + reward_address, token_address, 'doing');
         }).on('receipt', (receipt) => {
           //receipt
           //console.log(receipt)
           v.dialogApproving = false
           v.allowanceMap = true
           v.approveMapHash = false;
-          v.setApproveStatus(this.account + reward_address, token_address, false);
+          console.log("approv 4", v.account)
+          v.setApproveStatus(v.account + reward_address, token_address, false);
           let timer = setInterval(() => {
             v.checkMapApproved(timer)
           }, 1000);
           resolve(true);
         }).on('error', (receipt) => {
           //receipt
-          localStorage.removeItem(this.account + reward_address)
+          localStorage.removeItem(v.account + reward_address)
           v.approveMapHash = false;
           v.dialogApproving = false
           //console.log(receipt)
@@ -2243,11 +2252,12 @@ export default {
         clearInterval(v.statusTimer);
         v.statusTimer = null;
       }
-      let approving = this.getApproveStatus(`${this.account}${v.chainFrom.contract}`, v.selectToken.address);
+      let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, v.selectToken.address);
       if (approving == 'done') {
         //关闭弹窗
         v.dialogApproving = false;
         v.dialogApproving = false;
+        v.checkMapApproved()
         return;
       }
       let timer
@@ -2281,6 +2291,10 @@ export default {
         return
       }
 
+      if (!v.account) {
+        return
+      }
+
       let token = v.selectToken.symbol
       let tokenAddress = ''
 
@@ -2290,7 +2304,7 @@ export default {
           return
         }
       })
-      let approving = this.getApproveStatus(`${this.account}${v.chainFrom.contract}`, tokenAddress)
+      let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress)
       // v.dialogApproving = false;
       console.log('change', approving)
       if (approving === 'done') {
@@ -2300,12 +2314,12 @@ export default {
         v.approveHash = '';
         v.checkApproveToken = ''
         v.dialogApproving = false;
-        v.dialogApproving = false;
-        v.dialogApproving = false;
+
         if (timer) {
           clearInterval(timer);
         }
-        this.setApproveStatus(`${this.account}${v.chainFrom.contract}`, tokenAddress, false);
+        console.log("approv 5", v.account)
+        this.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
         return;
       } else if (approving === 'doing') {
         v.allowance = false
@@ -2317,7 +2331,8 @@ export default {
       // console.log('dialog========', v.dialogApproving)
 
       let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
-      contract.methods.allowance(this.account, v.chainFrom.contract).call((error, result) => {
+      contract.methods.allowance(v.account, v.chainFrom.contract).call((error, result) => {
+        console.log('result',result)
         if (result && result != 0) {
           v.allowance = true;
           //清空检测事件
@@ -2327,7 +2342,8 @@ export default {
             clearInterval(timer);
           }
           v.dialogApproving = false;
-          this.setApproveStatus(`${this.account}${v.chainFrom.contract}`, tokenAddress, false);
+          console.log("approv 6", v.account)
+          v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
         } else {
           v.allowance = false;
           // v.approveHash = false;
@@ -2345,6 +2361,9 @@ export default {
       if (!this.$web3) {
         return
       }
+      if (!v.account) {
+        return
+      }
 
       var tokenAddress = ''
       let token = v.selectToken.symbol
@@ -2357,7 +2376,7 @@ export default {
         }
       })
 
-      let approving = this.getApproveStatus(`${this.account}${v.chainFrom.contract}`, tokenAddress)
+      let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress)
       // v.dialogApproving = false;
       console.log('approving', approving)
 
@@ -2386,8 +2405,9 @@ export default {
             if (timer) {
               clearInterval(timer);
             }
-            v.setApproveStatus(`${this.account}${v.chainFrom.contract}`, tokenAddress, false);
-            return;
+            console.log("approv 7", v.account)
+            v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
+            // return;
           } else if (approving === 'doing') {
             v.allowanceMap = false
             v.approveMapHash = true
@@ -2398,8 +2418,8 @@ export default {
           }
 
           let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
-
-          contract.methods.allowance(this.account, v.chainFrom.contract).call(function (error, result) {
+          console.log("approv account", v.account)
+          contract.methods.allowance(v.account, v.chainFrom.contract).call(function (error, result) {
             if (result && result != 0) {
               v.allowanceMap = true
               v.approveMapHash = true
@@ -2407,7 +2427,8 @@ export default {
                 clearInterval(timer);
               }
               v.dialogApproving = false;
-              v.setApproveStatus(`${this.account}${v.chainFrom.contract}`, tokenAddress, false);
+              console.log("approv 8", v.account)
+              v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
               v.checkApproved(v.statusTimer)
             } else {
               v.allowanceMap = false
@@ -2540,6 +2561,7 @@ export default {
       await this.actionChainSuccess()
       await this.actionShowToken()
       await this.actionVaultBalance()
+      this.actionGasFee()
       this.actionStatus()
       this.actionInputFont()
       this.isLoadingAllData=false;

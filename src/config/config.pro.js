@@ -16,11 +16,15 @@ export default {
         chainHex: '0x1',
     },
     bsc: {
-        chainId: '38',
-        chainHex: '0x26',
+        chainId: '56',
+        chainHex: '0x38',
     },
     map: {
         chainId: '22776',
         chainHex: '0x58f8',
+    },
+    polygon:{
+        chainId: '137',
+        chainHex: '0x89',
     }
 }
