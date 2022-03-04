@@ -55,7 +55,7 @@ class Watcher{
   }
 
   onAccountsChanged=(data)=>{
-    console.log('Watcher onAccountsChanged',data)
+    // console.log('Watcher onAccountsChanged',data)
     if(data!=null){
       data = JSON.parse(JSON.stringify(data))
       this.accounts = data;
@@ -67,7 +67,7 @@ class Watcher{
     }
   }
   onChainChanged=(data)=>{
-    console.log('Watcher onChainChanged',data)
+    // console.log('Watcher onChainChanged',data)
     if(data!==this.chainId){
       this.chainId = data;
       for (const listener of this.listeners['chainChanged']) {
@@ -77,7 +77,7 @@ class Watcher{
   }
 
   onProviderReady=()=>{
-    console.log('Watcher onProviderReady *v*!')
+    // console.log('Watcher onProviderReady *v*!')
     for (const listener of this.listeners['providerReady']) {
       listener(this.provider);
     }
@@ -95,7 +95,7 @@ class Watcher{
 
   getProvider(){
     return new Promise((resolve ,reject)=> {
-      console.log('Watcher getProvider')
+      // console.log('Watcher getProvider')
         if(this.provider){
           resolve(this.provider);
         }else{

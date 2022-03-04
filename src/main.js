@@ -67,7 +67,7 @@ async function asyncChainList(){
   api.chainList().then(result => {
     if (result.code === 200) {
       let chainList = result.data.list;
-      console.log(result.data.list);
+      // console.log(result.data.list);
       /*
       chain: "MAP"
       chainId: 22776

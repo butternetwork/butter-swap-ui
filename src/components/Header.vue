@@ -165,10 +165,10 @@ export default {
         this.error = true;
       }
       let address = await this.$store.getters.getAddress;
-      console.log('matchChain',{chainId,chain:chains[chainId],address})
+      // console.log('matchChain',{chainId,chain:chains[chainId],address})
       if (address && address.length>0){
         this.chain=chain;
-        console.log('this.chain',this.chain)
+        // console.log('this.chain',this.chain)
       }
 
     },

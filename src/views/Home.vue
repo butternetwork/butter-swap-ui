@@ -43,7 +43,7 @@
               <span @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
             </div>
             <div class="tran-send-bottom">
-              <input id="tran-send-bottom-red"  @input="actionInputFont()" v-model="sendAmount" placeholder="0.0"/>
+              <input id="tran-send-bottom-red"  @input="actionInputFont()" v-model="sendAmount" maxlength="20" placeholder="0.0"/>
               <div @click="actionOpenToken()" class="tran-send-btn">
                 <img :src="selectToken.url"/>
                 <span>{{ selectToken.symbol }}</span>
@@ -1203,7 +1203,7 @@ export default {
       let toDecimal;
       let toAddress;
       let contract = new v.myWeb3.eth.Contract(tokenAbi, v.selectToken.address)
-      console.log("actionVaultBalance chainFrom", v.chainFrom)
+      // console.log("actionVaultBalance chainFrom", v.chainFrom)
       // From
       if (v.selectToken.isMint && v.selectToken.isMint==1) {
         // console.log('mint')
@@ -1211,20 +1211,20 @@ export default {
         v.showFromVault=false
       }
       else if (v.selectToken.address=='0x0000000000000000000000000000000000000000') {
-        console.log('zhuFrom',v.chainFrom)
+        // console.log('zhuFrom',v.chainFrom)
         let contractFrom = new v.myWeb3.eth.Contract(mapAbi,v.chainFrom.contract)
-        console.log('contractFrom',contractFrom)
+        // console.log('contractFrom',contractFrom)
         let tokenFromAddress = await contractFrom.methods.wToken().call()
-        console.log(tokenFromAddress,'tokenFromAddress')
+        // console.log(tokenFromAddress,'tokenFromAddress')
         let contractZhu = new v.myWeb3.eth.Contract(tokenAbi,tokenFromAddress)
         let fromVault = await contractZhu.methods.balanceOf(v.chainFrom.contract).call();
-        console.log('fromVault',fromVault)
+        // console.log('fromVault',fromVault)
 
         v.fromVault = new Decimal(fromVault).div(Math.pow(10,v.selectToken.decimal)).toFixed(4)
         v.showFromVault=true
       }
       else {
-        console.log('daiFrom')
+        // console.log('daiFrom')
         let fromVault = await contract.methods.balanceOf(v.chainFrom.contract).call();
         v.fromVault = new Decimal(fromVault).div(Math.pow(10,v.selectToken.decimal)).toFixed(4)
         v.showFromVault=true
@@ -1610,7 +1610,7 @@ export default {
 
       var valueFee;
 
-      console.log(TokenAddress, 'TokenAddress')
+      // console.log(TokenAddress, 'TokenAddress')
 
       if (TokenAddress == '0x0000000000000000000000000000000000000000') {
         reward_stakeData = reward_contract.methods.transferOutNative(this.account, v.sendAllAmount.toFixed(), chainId).encodeABI()
@@ -1658,8 +1658,8 @@ export default {
         }
 
       }
-      console.log('reward_stakeData', reward_stakeData)
-      console.log('transParams', transParams)
+      // console.log('reward_stakeData', reward_stakeData)
+      // console.log('transParams', transParams)
 
 
       if (parseInt(v.chainFrom.chainId) == 22776) {
