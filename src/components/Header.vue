@@ -18,30 +18,37 @@
       </div>
 
       <div class="header-right">
-        <div class="header-connect">
+        <div id="header-chain-content"  class="header-connect">
           <span class="header-error" v-if="error" @click="actionConnect()">{{ $t('Network Error') }}</span>
           <div v-else><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
         </div>
 
         <div class="header-connect">
-          <div>
-            <span v-if="address" class="header-intall header-intalls">
+          <div v-if="exitConntet"  @mouseover="showLogOut=true" @mouseleave="showLogOut=false" class="header-connect-content" id="connect-btn">
+            <span @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-if="address" class="header-intall header-intalls">
             <img src="../assets/ant-icon.png"/>{{ $formatAddress(address) }}<span class="header-address-round"></span></span>
-            <span v-else class="header-intall">{{ $t('Install Metamask') }}</span>
+            <span v-else @click="actionConnect()" class="header-intall" >{{ $t('Install Metamask') }}</span>
+            <span id="logoutBtn" @click.prevent.stop="actionLogOut()" @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-show="showLogOut" class="header-intall header-intalls header-logout">Logout</span>
+          </div>
+          <div v-else class="header-connect-content">
+            <span @click="actionConnect()"  class="header-intall  header-intall-error">Connect Wallet</span>
           </div>
         </div>
-        <div class="header-many">
-          <div @click="tabMore=!tabMore" class="header-many-icon">
-            <span></span><span></span><span></span>
+
+        <div  class="header-many" @mouseover="tabMore=true" @mouseleave="tabMore=false" @click.prevent.stop="actionShowMore()" >
+          <div  @mouseover="tabMore=true" @mouseleave="tabMore=false"   class="header-many-icon">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
-          <div v-show="tabMore" class="header-many-tab">
-            <div class="header-many-tab-item" @click="goSupport" >{{ $t("Contract Support") }}</div>
-            <div class="header-many-tab-item">{{ $t('Tutorial') }}</div>
-            <div class="header-many-tab-item">{{ $t('FAQ') }}</div>
+          <div  @mouseover="tabMore=true" @mouseleave="tabMore=false" v-show="tabMore" class="header-many-tab">
+            <div @click="goSupport()" class="header-many-tab-item">Contract Support</div>
+            <div @click="goTutorial()" class="header-many-tab-item">Tutorial</div>
           </div>
         </div>
       </div>
     </div>
+    <div class="header-line"></div>
   </div>
 </template>
 
@@ -51,7 +58,8 @@ export default {
   name: "Header",
   props: [
     'num',
-    'loadingHistory'
+    'loadingHistory',
+    'exit'
   ],
   data() {
     return {
@@ -60,6 +68,8 @@ export default {
       tabIndex: 0,
       error: true,
       chain: null,
+      exitConntet:false,
+      showLogOut:false,//显示退出
     }
   },
   computed: {
@@ -79,6 +89,52 @@ export default {
     },
   },
   methods: {
+
+    actionLogOut() {
+      this.$store.commit("setAddress","");
+      this.showLogOut = false
+      this.$emit("exit",false)
+      localStorage.setItem('exit',false)
+
+      let chain= document.getElementById('header-chain-content')
+      chain.style.visibility='hidden'
+
+
+      this.exitConntet =  false
+    },
+    //intall
+    async actionConnect() {
+      this.$store.dispatch('connect')
+      this.$emit("exit",true)
+      localStorage.setItem('exit',true)
+
+      let chain= document.getElementById('header-chain-content')
+      chain.style.visibility='visible'
+      this.exitConntet =  true
+    },
+
+    //判断当前是否是断开情况
+    async actionLoaclExit() {
+      let exit = localStorage.getItem('exit')
+      let chain= document.getElementById('header-chain-content')
+      if (JSON.parse(exit) == false) {
+        chain.style.visibility='hidden'
+        this.showLogOut = false
+        this.$store.commit("setAddress","");
+        this.exitConntet =  false
+      }
+      else  {
+        this.$store.dispatch('connect')
+        chain.style.visibility='visible'
+        this.exitConntet =  true
+      }
+
+    },
+
+    //教程
+    goTutorial() {
+      window.open('https://medium.com/marcopolo-protocol/map-protocol-cross-chain-bridge-tutorial-d3527952aac5?source=social.tw','blank')
+    },
     goSupport() {
       window.open('https://73v04g7oykm.typeform.com/to/GFBqlCMJ?typeform-source=admin.typeform.com','blank')
       this.tabMore=false
@@ -89,10 +145,10 @@ export default {
     actionShowTab(tab) {
       this.$emit("listenTab", tab)
     },
-    actionConnect() {
-      let chainId = this.$store.getters.accountId;
-      this.$store.dispatch('connect');
-    },
+    // actionConnect() {
+    //   let chainId = this.$store.getters.accountId;
+    //   this.$store.dispatch('connect');
+    // },
     goMap() {
       window.open('https://www.maplabs.io/', '_blank')
     },
@@ -112,6 +168,7 @@ export default {
       console.log('matchChain',{chainId,chain:chains[chainId],address})
       if (address && address.length>0){
         this.chain=chain;
+        console.log('this.chain',this.chain)
       }
 
     },
@@ -119,12 +176,13 @@ export default {
       this.$watcher.getProvider().then((provider) => {
         this.matchChain();
       }).catch(err => {
-        v.error = true
+        this.error = true
       })
     }
   },
   mounted() {
     this.requestData();
+    this.actionLoaclExit()
   }
 }
 </script>
@@ -152,7 +210,7 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  transition: border-color .3s cubic-bezier(.645, .045, .355, 1);
+  transition: border-color .3s cubic-bezier(.645,.045,.355,1);
 }
 
 .header-middle-tran-active {
@@ -167,7 +225,7 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border-color .3s, background .3s, padding .3s cubic-bezier(.645, .045, .355, 1);
+  transition: border-color .3s,background .3s,padding .3s cubic-bezier(.645,.045,.355,1);
 }
 
 .header-middle-his {
@@ -179,8 +237,11 @@ export default {
 }
 
 
+
+
 //更多
 .header-many {
+  width: 40px;
   margin-left: 10px;
   display: flex;
   flex-direction: column;
@@ -199,24 +260,21 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
   span {
     width: 4px;
     height: 4px;
     background: #000;
     border-radius: 50%;
   }
-
   span:nth-child(2) {
     margin: 0 3px;
   }
 }
 
 .header-many-tab {
-  position: absolute;
   z-index: 9;
-  top: 60px;
   width: 130px;
+  margin-top: 5px;
   border-radius: 7px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   padding: 17px 0;
@@ -226,13 +284,11 @@ export default {
 .header-many-tab-item {
   cursor: pointer;
   text-align: center;
-  font-family: PingFangSC;
   font-size: 12px;
   font-weight: 600;
   height: 35px;
   line-height: 35px;
 }
-
 .header-many-tab-item:hover {
   margin: 0 5px;
   background: rgba(228, 80, 60, 0.1);
@@ -241,17 +297,18 @@ export default {
 }
 
 
+
 .header {
   position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  height: 81px;
 }
 
 .header-container {
-  padding: 20px 30px;
+  padding:20px 30px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -260,7 +317,6 @@ export default {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-
   img {
     width: 170px;
   }
@@ -277,17 +333,17 @@ export default {
 }
 
 .header-line {
-  margin-left: 49px;
-  width: 1px;
-  height: 40px;
-  opacity: 0.1;
-  background-color: #fff;
+  width: 100%;
+  border-bottom:1px solid rgba(0, 0, 0,0.05);
+  z-index: 8;
+  position: absolute;
+  top: 81px;
 }
 
 .header-right {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .header-connect {
@@ -297,6 +353,17 @@ export default {
   cursor: pointer;
   margin-left: 10px;
 }
+
+.header-connect-content {
+  position: relative;
+}
+
+.header-logout {
+  margin-top: 5px;
+  position: relative;
+  z-index: 9;
+}
+
 
 .header-error {
   width: 186px;
@@ -310,7 +377,7 @@ export default {
 }
 
 .header-intall {
-  width: 186px;
+  width: 162px;
   height: 40px;
   border-radius: 7px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
@@ -318,15 +385,26 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-family: PingFangSC;
   font-size: 13px;
   font-weight: 500;
-
+  background: white;
   img {
     margin-right: 9px;
     margin-left: 4px;
     width: 25px;
+    border: solid 1px rgb(0, 0, 0);
+    border-radius: 50%;
   }
+}
+
+.header-intall-error {
+  background-color: rgb(228, 78, 58);
+  color: white;
+}
+
+.header-intalls:hover {
+  background-color: black;
+  color: white;
 }
 
 .header-address-round {
@@ -369,8 +447,8 @@ export default {
   }
 
   .header-container {
-    width: 95%;
-    align-items: center;
+    width: 100%;
+    align-items: flex-start;
     justify-content: flex-start;
     padding: 10px 0;
   }
@@ -382,8 +460,7 @@ export default {
   }
 
   .header-line {
-    margin-left: 10px;
-    height: 30px;
+    top: 60px;
   }
 
 
@@ -402,6 +479,11 @@ export default {
     text-align: center;
   }
 
+  .header-left {
+    display: flex;
+    height: 40px;
+  }
+
 
   .header-intall {
     width: 80px;
@@ -409,7 +491,6 @@ export default {
     font-size: 12px;
     line-height: 12px;
     text-align: center;
-
     img {
       display: none;
       width: 20px;
@@ -420,14 +501,16 @@ export default {
   .header-intalls {
     width: 120px;
   }
-
   .header-many {
-    height: 35px;
+
+  }
+
+  .header-many-tab {
+    padding: 10px 0;
   }
 
   .tab-two {
     padding-left: 15px;
   }
 }
-
 </style>

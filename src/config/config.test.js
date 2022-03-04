@@ -1,5 +1,5 @@
 export default {
-    baseUrl: 'https://bridge-api.maplabs.io/',// 生产接口请求地址
+    baseUrl: 'http://39.99.244.11:8202',// 生产接口请求地址
     // baseUrl: 'http://39.99.244.11:8201/',// 生产接口请求地址
 
     //切换测试网    需要修改  action/index.js   main.js   header home

@@ -88,6 +88,8 @@ const store = new Vuex.Store({
                         params: []
                     })
                         .then(result => {
+                            // console.log("eth_requestAccounts",result)
+                            matchAddress(result);
 
                         })
                         .catch(err => {
