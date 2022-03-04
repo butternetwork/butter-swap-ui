@@ -1278,16 +1278,12 @@ export default {
 
     getApproveStatus(key, tokenAddress) {
       let approving = localStorage.getItem(key);
-      console.log("approving :", approving);
       if (approving) {
-        console.log("approving jinru:", approving);
         if (typeof approving === 'string') {
           approving = JSON.parse(approving);
         }
         approving = approving[tokenAddress];
-        console.log("approving = approving[tokenAddress];", approving)
         if (approving == false) {
-          console.log("approving = approving[tokenAddress] jinru")
           return 'done';
         }
         if (approving) {
@@ -1394,7 +1390,6 @@ export default {
       console.log(this.chainTo.chainId, this.chainFrom.contract)
       let gas = await contract.methods.chainGasFee(this.chainTo.chainId).call();
       this.gasFee = gas
-      console.log(' this.gasFee', this.gasFee)
       try {
         this.gasFeeVue = new Decimal(gas).div(new Decimal(Math.pow(10, 18)))
       } catch (e) {
@@ -1841,7 +1836,7 @@ export default {
               newObject.inAmount = 'Processing'
             }
             //时间
-            newObject.nowTime = moment.utc(item.updatedAt).local().format("yyyy-MM-DD HH:mm:ss")
+            newObject.nowTime = moment.utc(item.updatedAt).local().format("yyyy/MM/DD HH:mm:ss")
             break;
           }
 
@@ -1997,7 +1992,6 @@ export default {
         return
       }
       this.$watcher.getProvider().then(provider => {
-        console.log('handleLink===>>> 04')
         let chainId = new Decimal(item.chainId).toHex();
         let method = 'wallet_switchEthereumChain';
         let params = {chainId}
@@ -2008,9 +2002,9 @@ export default {
           params.rpcUrls = [item.rpc];
           params.chainName = chain.name;
         }
-        console.log('handleLink===>>> 05',params)
         provider.request({method, params: [params]})
         this.showSelectChain = false;
+        this.getAllData()
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
         console.log('handleLink===>>> 06', error)
@@ -2427,7 +2421,7 @@ export default {
                 clearInterval(timer);
               }
               v.dialogApproving = false;
-              console.log("approv 8", v.account)
+              // console.log("approv 8", v.account)
               v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
               v.checkApproved(v.statusTimer)
             } else {
@@ -2514,6 +2508,9 @@ export default {
       this.tokenList = this.tokenAllList[this.chainIdNumber];
       let selectToken = null;
       let flag = false;
+      if (!this.tokenList) {
+        return
+      }
       for (let i = 0; i < this.tokenList.length; i++) {
         if (this.tokenList[i].symbol === 'MAP') {
           selectToken = JSON.parse(JSON.stringify(this.tokenList[i]))
