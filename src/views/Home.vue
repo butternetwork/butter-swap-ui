@@ -757,7 +757,7 @@ import moment from "moment";
 
 const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
-import config from '@/config/configTest'
+import config from '@/config/base'
 
 
 export default {
@@ -1387,7 +1387,7 @@ export default {
       //创建合约
       let web3 = await this.$client(this.chainIdHex);
       let contract = new web3.eth.Contract(mapAbi, this.chainFrom.contract)
-      console.log(this.chainTo.chainId, this.chainFrom.contract)
+      // console.log(this.chainTo.chainId, this.chainFrom.contract)
       let gas = await contract.methods.chainGasFee(this.chainTo.chainId).call();
       this.gasFee = gas
       try {
@@ -1809,6 +1809,9 @@ export default {
         }
         let fromChainId = item.fromChainid
         let toChainId = item.toChainid
+        let fromDecimal
+        let toDecimal
+        let fromSymobl
 
         for (const chain of this.chainList) {
           if (fromChainId == chain.chainId) {
@@ -1821,26 +1824,45 @@ export default {
           }
         }
         let tokens = this.tokenAllList[fromChainId]
+        let tokenTo = this.tokenAllList[toChainId]
+
+
         for (let i = 0; i < tokens.length; i++) {
           let token = tokens[i];
           if (token.address.toLowerCase() === item.tokenAddress.toLowerCase()) {
             newObject.coin = token.symbol
+            fromSymobl = token.symbol
             newObject.coinImg = token.img
-            let decimal = token.decimal
-            //余额
-            newObject.amount = new Decimal(item.amount).div(Math.pow(10, decimal)).toFixed()
-            //转到对应链的余额
-            if (item.inAmount) {
-              newObject.inAmount = new Decimal(item.inAmount).div(Math.pow(10, decimal)).toFixed()
-            } else {
-              newObject.inAmount = 'Processing'
-            }
+            fromDecimal = token.decimal
             //时间
             newObject.nowTime = moment.utc(item.updatedAt).local().format("yyyy/MM/DD HH:mm:ss")
             break;
           }
 
         }
+
+        for (let i = 0; i < tokenTo.length; i++) {
+          let token = tokens[i];
+          if (fromSymobl === token.symbol) {
+            toDecimal= token.decimal
+            // console.log(token.decimal)
+          }
+        }
+
+        //余额
+        newObject.amount = new Decimal(item.amount).div(Math.pow(10, fromDecimal)).toFixed()
+
+        //转到对应链的余额
+        if (item.inAmount) {
+          newObject.inAmount = new Decimal(item.inAmount).div(Math.pow(10,toDecimal)).toFixed()
+        } else {
+          newObject.inAmount = 'Processing'
+        }
+
+
+
+
+
         Object.assign(item, newObject)
         items.push(Object.assign(item, newObject));
       }
@@ -1965,14 +1987,13 @@ export default {
     async handleLink(item) {
       // console.log('handleLink===>>>',item)
       //To 选择
+      let v = this
       if (this.selectChain === 1) {
         // console.log('handleLink===>>> 01')
         if (item.chain === this.chainFrom.chain) {
-          console.log('handleLink===>>> 02')
           this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
           return;
         }
-        // console.log('handleLink===>>> 03')
         this.chainTo = JSON.parse(JSON.stringify(item));
         this.destNetwork = item.chain
         this.showSelectChain = false
@@ -1991,8 +2012,10 @@ export default {
         this.actionInputFont()
         return
       }
+
       this.$watcher.getProvider().then(provider => {
         let chainId = new Decimal(item.chainId).toHex();
+        console.log('chainId',chainId)
         let method = 'wallet_switchEthereumChain';
         let params = {chainId}
         let chains = this.$store.getters.getChains;
@@ -2003,11 +2026,12 @@ export default {
           params.chainName = chain.name;
         }
         provider.request({method, params: [params]})
+        v.requestData()
         this.showSelectChain = false;
-        this.getAllData()
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
-        console.log('handleLink===>>> 06', error)
+        v.requestData()
+
       });
     },
 
@@ -2545,7 +2569,7 @@ export default {
       if (!address) {
         window.ethereum.enable()
         this.isLoadingAllData=false;
-        // window.local.reload();
+        this.$router.push('home')
         return;
       }
       this.account = address;
