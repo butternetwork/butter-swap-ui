@@ -1392,15 +1392,17 @@ export default {
       }
 
       //To
+      // console.log(' v.selectToken.name', v.selectToken.symbol)
       for (const item of v.tokenAllList[v.chainTo.chainId]) {
-        if (item.name == v.selectToken.name) {
+        if (item.symbol == v.selectToken.symbol) {
+          console.log(item.symbol,v.selectToken.symbol)
           toTokenMint = item.isMint
           toDecimal = item.decimal
           toAddress = item.address
         }
       }
 
-
+      // console.log('toTokenMint',toTokenMint)
       const Web3 = require('web3');
 
       let myToWeb3 = new Web3(v.chainTo.rpc);
@@ -2184,40 +2186,8 @@ export default {
           params.rpcUrls = [item.rpc];
           params.chainName = chain.name;
         }
-        provider.request({method, params: [params]})
-        //   .then(async result =>{
-        // let chainId = await this.$store.getters.getChainId;
-        //
-        // console.log('change',chainId,provider.chainId)
-        //
-        // if (this.selectChain === 0 && this.changeChain) {
-        //   this.$router.push({
-        //     path: '/',
-        //     query: {
-        //       sourceNetwork: this.chainTo.chain,
-        //       destNetwork: this.chainFrom.chain,
-        //       ts: Date.now(),
-        //     }
-        //   })
-        // }else {
-        //   this.$router.push({
-        //     path: '/',
-        //     query: {
-        //       sourceNetwork: this.$route.query.sourceNetwork,
-        //       destNetwork: this.chainTo.chain,
-        //       ts: Date.now(),
-        //     }
-        //   })
-        // }
-        // this.showSelectChain = false;
-        // this.changeChain=false
-        // }).catch(error => {
-        //   console.log('error')
-        //   // v.$router.replace({
-        //   //   path: '/',
-        //   //   query: {sourceNetwork: v.$route.query.sourceNetwork, destNetwork: v.$route.query.destNetwork}
-        //   // })
-        // })
+        provider.request({method, params: [params]});
+        this.showSelectChain=false;
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
         v.requestData()
