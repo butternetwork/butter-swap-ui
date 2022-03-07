@@ -150,24 +150,7 @@ export default {
       this.$store.dispatch('connect');
     },
     actionNetwork() {
-      var v=this
-      window.ethereum &&
-      window.ethereum
-          .request({
-            method: 'wallet_switchEthereumChain',
-            params: [
-              {
-                chainId: '0x1'
-              },
-            ],
-          })
-          .then(() => {
-            v.error=false
-            this.$router.go(0);
-          })
-          .catch((e) => {
-            console.log(e)
-          })
+      this.$store.dispatch('switchChain','0x1');
     },
     goMap() {
       window.open('https://www.maplabs.io/', '_blank')

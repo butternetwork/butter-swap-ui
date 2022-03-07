@@ -1068,6 +1068,7 @@ export default {
       this.requestData();
     },
     chainId(newVal) {
+      console.log('Home Watch chainId',newVal)
       this.requestData();
     },
     searchToken(newV, oldV) {
@@ -2560,9 +2561,11 @@ export default {
     },
 
     async getAllData() {
-      if (this.isLoadingAllData){
-        return;
-      }
+      // if (this.isLoadingAllData){
+      //   console.log('Home getAllData 01')
+      //   // window.location.reload();
+      //   return;
+      // }
       this.isLoadingAllData=true;
       this.sendAmount = ''
       let address = await this.$store.getters.getAddress;
