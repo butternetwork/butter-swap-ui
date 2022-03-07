@@ -2019,7 +2019,7 @@ export default {
 
       this.$watcher.getProvider().then(provider => {
         let chainId = new Decimal(item.chainId).toHex();
-        console.log('chainId',chainId)
+        // console.log('chainId',chainId)
         let method = 'wallet_switchEthereumChain';
         let params = {chainId}
         let chains = this.$store.getters.getChains;
@@ -2029,7 +2029,11 @@ export default {
           params.rpcUrls = [item.rpc];
           params.chainName = chain.name;
         }
-        provider.request({method, params: [params]}).then(result =>{
+        provider.request({method, params: [params]}).then(async result =>{
+          let chainId = await this.$store.getters.getChainId;
+
+          console.log('change',chainId,provider.chainId)
+
           if (this.selectChain === 0 && this.changeChain) {
             this.$router.push({
               path: '/',
@@ -2052,7 +2056,11 @@ export default {
           this.showSelectChain = false;
           this.changeChain=false
         }).catch(error => {
-
+          console.log('error')
+          // v.$router.replace({
+          //   path: '/',
+          //   query: {sourceNetwork: v.$route.query.sourceNetwork, destNetwork: v.$route.query.destNetwork}
+          // })
         })
 
 
@@ -2418,7 +2426,7 @@ export default {
 
       let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress)
       // v.dialogApproving = false;
-      console.log('approving', approving)
+      // console.log('approving', approving)
 
       if (parseInt(v.chainFrom.chainId) != 22776) {
 
@@ -2457,7 +2465,7 @@ export default {
           }
 
           let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
-          console.log("approv account", v.account)
+          // console.log("approv account", v.account)
           contract.methods.allowance(v.account, v.chainFrom.contract).call(function (error, result) {
             if (result && result != 0) {
               v.allowanceMap = true
