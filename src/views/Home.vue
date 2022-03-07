@@ -2026,7 +2026,7 @@ export default {
           params.chainName = chain.name;
         }
         provider.request({method, params: [params]})
-        v.requestData()
+        // v.requestData()
         this.showSelectChain = false;
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
