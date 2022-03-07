@@ -29,7 +29,11 @@ Vue.prototype.$copy=(data)=>{
   oInput.remove();
 }
 Vue.prototype.$copyObject=(data)=>{
-  return JSON.parse(JSON.stringify(data));
+  try {
+    return JSON.parse(JSON.stringify(data));
+  } catch (e) {
+    return [];
+  }
 }
 Vue.prototype.$formatAddress =(address,length=4)=>{
   if (address && address.length > length*2) {

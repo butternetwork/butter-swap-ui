@@ -1199,6 +1199,9 @@ export default {
       let toTokenMint;
       let toDecimal;
       let toAddress;
+      if (v.selectToken.address==null){
+        return;
+      }
       let contract = new v.myWeb3.eth.Contract(tokenAbi, v.selectToken.address)
       // console.log("actionVaultBalance chainFrom", v.chainFrom)
       // From
