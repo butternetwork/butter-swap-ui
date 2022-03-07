@@ -1231,15 +1231,17 @@ export default {
       }
 
       //To
+      // console.log(' v.selectToken.name', v.selectToken.symbol)
       for (const item of v.tokenAllList[v.chainTo.chainId]) {
-        if (item.name == v.selectToken.name) {
+        if (item.symbol == v.selectToken.symbol) {
+          console.log(item.symbol,v.selectToken.symbol)
           toTokenMint = item.isMint
           toDecimal = item.decimal
           toAddress = item.address
         }
       }
 
-
+      // console.log('toTokenMint',toTokenMint)
       const Web3 = require('web3');
 
       let myToWeb3 = new Web3(v.chainTo.rpc);
@@ -2038,8 +2040,8 @@ export default {
             this.$router.push({
               path: '/',
               query: {
-                sourceNetwork: this.chainTo.chain,
-                destNetwork: this.chainFrom.chain,
+                sourceNetwork: v.chainFrom.chain,
+                destNetwork:  v.chainTo.chain,
                 ts: Date.now(),
               }
             })
