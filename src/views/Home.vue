@@ -27,7 +27,7 @@
           <div class="tran-from">
             <div class="tran-from-left">
               <span>From</span>
-              <div @click="actionChain(0)" class="tran-from-btn">
+              <div @click="actionChain(2)" class="tran-from-btn">
                 <!--                  <div class="tran-from-btn">-->
                 <img :src="chainFrom.chainImg"/>
                 <span>{{ chainFrom.chainName }}</span>
@@ -43,7 +43,8 @@
               <span @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
             </div>
             <div class="tran-send-bottom">
-              <input id="tran-send-bottom-red"  @input="actionInputFont()" v-model="sendAmount" maxlength="20" placeholder="0.0"/>
+              <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
+                     placeholder="0.0"/>
               <div @click="actionOpenToken()" class="tran-send-btn">
                 <img :src="selectToken.url"/>
                 <span>{{ selectToken.symbol }}</span>
@@ -52,7 +53,7 @@
             </div>
             <div v-show="showFromVault" class="tran-send-vault">
               <span>Vault:</span>
-              <span>{{fromVault}} {{selectToken.symbol}}</span>
+              <span>{{ fromVault }} {{ selectToken.symbol }}</span>
             </div>
           </div>
           <!--                change-->
@@ -86,7 +87,7 @@
             </div>
             <div v-show="showToVault" class="tran-send-vault">
               <span>Vault:</span>
-              <span>{{toVault}} {{selectToken.symbol}}</span>
+              <span>{{ toVault }} {{ selectToken.symbol }}</span>
             </div>
             <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
               <div class="tran-send-address-left">
@@ -408,7 +409,7 @@
           </div>
         </div>
       </div>
-      <div  class="bridge-rate" v-show="showFee">
+      <div class="bridge-rate" v-show="showFee">
         <div class="bridge-rate-content">
           <!--  <div class="bridge-rate-content-item">
               <div class="bridge-rate-left">Bridge Rate:</div>
@@ -426,7 +427,7 @@
           </div>
         </div>
       </div>
-<!--      //退出蒙层-->
+      <!--      //退出蒙层-->
       <div v-show="showExit" class="bridge-content-contCover"></div>
     </div>
 
@@ -765,13 +766,13 @@ export default {
   components: {Footer, Header},
   data() {
     return {
-      showExit:false,//退出
-      showFee:false,//显示Fee
-      showFromVault:true,//From 如果代币是ismint 不显示
-      showToVault:true,// From如果代币是ismint 不显示
-      fromVault:0,//fromVault
-      toVault:0,//toVault
-      isLoadingAllData:false,
+      showExit: false,//退出
+      showFee: false,//显示Fee
+      showFromVault: true,//From 如果代币是ismint 不显示
+      showToVault: true,// From如果代币是ismint 不显示
+      fromVault: 0,//fromVault
+      toVault: 0,//toVault
+      isLoadingAllData: false,
       showErrorMessage: false,//显示错误认识弹窗
       errorMessage: 'Your gas fee is not enough Your gas fee is not enough',//错误信息
       showInsuffcientBalance: false,//余额不足提醒
@@ -817,8 +818,172 @@ export default {
       //   "1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":0,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],
       //   "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
       // },//Token所有列表
-      tokenAllList:{
-        "1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}],"56":[{"id":13,"tokenId":"MAP","address":"0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f","name":"MAP Protocol","chainId":56,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":15,"tokenId":"ETH","address":"0x2170Ed0880ac9A755fd29B2688956BD959F933F8","name":"ETH","chainId":56,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":18,"tokenId":"USDC","address":"0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d","name":"USD Coin","chainId":56,"isMint":0,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":20,"tokenId":"BUSD","address":"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56","name":"Binance-Peg BUSD","chainId":56,"isMint":0,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"}],"22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":19,"tokenId":"BUSD","address":"0x35bF4004C3Fc9f509259d4942da6bae3669e1Db1","name":"Mapped Binance USD","chainId":22776,"isMint":1,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"}],"137":[{"id":14,"tokenId":"MAP","address":"0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a","name":"MAP Protocol","chainId":137,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":16,"tokenId":"ETH","address":"0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619","name":"ETH","chainId":137,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":17,"tokenId":"USDC","address":"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174","name":"USD Coin","chainId":137,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"}]},
+      tokenAllList: {
+        "1": [{
+          "id": 2,
+          "tokenId": "IDV",
+          "address": "0x92ec47df1aa167806dfa4916d9cfb99da6953b8f",
+          "name": "Idavoll Network",
+          "chainId": 1,
+          "isMint": 1,
+          "symbol": "IDV",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/idv.png"
+        }, {
+          "id": 6,
+          "tokenId": "USDC",
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "name": "USD Coin",
+          "chainId": 1,
+          "isMint": 0,
+          "symbol": "USDC",
+          "decimal": 6,
+          "img": "https://files.maplabs.io/bridge/usdc.png"
+        }, {
+          "id": 10,
+          "tokenId": "MAP",
+          "address": "0x9e976f211daea0d652912ab99b0dc21a7fd728e4",
+          "name": "MAP Protocol",
+          "chainId": 1,
+          "isMint": 0,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 12,
+          "tokenId": "ETH",
+          "address": "0x0000000000000000000000000000000000000000",
+          "name": "ETH",
+          "chainId": 1,
+          "isMint": 0,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }],
+        "56": [{
+          "id": 13,
+          "tokenId": "MAP",
+          "address": "0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f",
+          "name": "MAP Protocol",
+          "chainId": 56,
+          "isMint": 1,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 15,
+          "tokenId": "ETH",
+          "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          "name": "ETH",
+          "chainId": 56,
+          "isMint": 0,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }, {
+          "id": 18,
+          "tokenId": "USDC",
+          "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+          "name": "USD Coin",
+          "chainId": 56,
+          "isMint": 0,
+          "symbol": "USDC",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/usdc.png"
+        }, {
+          "id": 20,
+          "tokenId": "BUSD",
+          "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+          "name": "Binance-Peg BUSD",
+          "chainId": 56,
+          "isMint": 0,
+          "symbol": "BUSD",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/busd.png"
+        }],
+        "22776": [{
+          "id": 1,
+          "tokenId": "IDV",
+          "address": "0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a",
+          "name": "Idavoll Network",
+          "chainId": 22776,
+          "isMint": 1,
+          "symbol": "IDV",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/idv.png"
+        }, {
+          "id": 5,
+          "tokenId": "USDC",
+          "address": "0x9f722b2cb30093f766221fd0d37964949ed66918",
+          "name": "USD Coin",
+          "chainId": 22776,
+          "isMint": 1,
+          "symbol": "USDC",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/usdc.png"
+        }, {
+          "id": 9,
+          "tokenId": "MAP",
+          "address": "0x0000000000000000000000000000000000000000",
+          "name": "MAP Protocol",
+          "chainId": 22776,
+          "isMint": 0,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 11,
+          "tokenId": "ETH",
+          "address": "0x05ab928d446d8ce6761e368c8e7be03c3168a9ec",
+          "name": "ETH",
+          "chainId": 22776,
+          "isMint": 1,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }, {
+          "id": 19,
+          "tokenId": "BUSD",
+          "address": "0x35bF4004C3Fc9f509259d4942da6bae3669e1Db1",
+          "name": "Mapped Binance USD",
+          "chainId": 22776,
+          "isMint": 1,
+          "symbol": "BUSD",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/busd.png"
+        }],
+        "137": [{
+          "id": 14,
+          "tokenId": "MAP",
+          "address": "0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a",
+          "name": "MAP Protocol",
+          "chainId": 137,
+          "isMint": 1,
+          "symbol": "MAP",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/map.png"
+        }, {
+          "id": 16,
+          "tokenId": "ETH",
+          "address": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+          "name": "ETH",
+          "chainId": 137,
+          "isMint": 0,
+          "symbol": "ETH",
+          "decimal": 18,
+          "img": "https://files.maplabs.io/bridge/eth.png"
+        }, {
+          "id": 17,
+          "tokenId": "USDC",
+          "address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+          "name": "USD Coin",
+          "chainId": 137,
+          "isMint": 0,
+          "symbol": "USDC",
+          "decimal": 6,
+          "img": "https://files.maplabs.io/bridge/usdc.png"
+        }]
+      },
       // tokenAllList: {
       //   "80001": [{
       //     "id": 16,
@@ -1058,10 +1223,10 @@ export default {
   watch: {
     sendAmount() {
       this.receivedAmount = this.sendAmount
-      if (this.sendAmount>0) {
-        this.showFee=true
-      }else {
-        this.showFee=false
+      if (this.sendAmount > 0) {
+        this.showFee = true
+      } else {
+        this.showFee = false
       }
     },
     address(newVal) {
@@ -1168,11 +1333,10 @@ export default {
     async actionEixt(data) {
       if (data == false) {
         this.showExit = true
-        this.sortAddress='......'
-        this.balanceZ=0
+        this.sortAddress = '......'
+        this.balanceZ = 0
         this.historyList = []
-      }
-      else  {
+      } else {
         this.showExit = false
         await this.getAllData()
       }
@@ -1183,11 +1347,10 @@ export default {
       if (JSON.parse(exit) == false) {
         await this.getAllData()
         this.showExit = true
-        this.sortAddress='......'
-        this.balanceZ=0
+        this.sortAddress = '......'
+        this.balanceZ = 0
         this.historyList = []
-      }
-      else  {
+      } else {
         this.showExit = false
         this.getAllData()
       }
@@ -1199,35 +1362,33 @@ export default {
       let toTokenMint;
       let toDecimal;
       let toAddress;
-      if (v.selectToken.address==null){
+      if (v.selectToken.address == null) {
         return;
       }
       let contract = new v.myWeb3.eth.Contract(tokenAbi, v.selectToken.address)
       // console.log("actionVaultBalance chainFrom", v.chainFrom)
       // From
-      if (v.selectToken.isMint && v.selectToken.isMint==1) {
+      if (v.selectToken.isMint && v.selectToken.isMint == 1) {
         // console.log('mint')
         v.fromVault = 0
-        v.showFromVault=false
-      }
-      else if (v.selectToken.address=='0x0000000000000000000000000000000000000000') {
+        v.showFromVault = false
+      } else if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
         // console.log('zhuFrom',v.chainFrom)
-        let contractFrom = new v.myWeb3.eth.Contract(mapAbi,v.chainFrom.contract)
+        let contractFrom = new v.myWeb3.eth.Contract(mapAbi, v.chainFrom.contract)
         // console.log('contractFrom',contractFrom)
         let tokenFromAddress = await contractFrom.methods.wToken().call()
         // console.log(tokenFromAddress,'tokenFromAddress')
-        let contractZhu = new v.myWeb3.eth.Contract(tokenAbi,tokenFromAddress)
+        let contractZhu = new v.myWeb3.eth.Contract(tokenAbi, tokenFromAddress)
         let fromVault = await contractZhu.methods.balanceOf(v.chainFrom.contract).call();
         // console.log('fromVault',fromVault)
 
-        v.fromVault = new Decimal(fromVault).div(Math.pow(10,v.selectToken.decimal)).toFixed(4)
-        v.showFromVault=true
-      }
-      else {
+        v.fromVault = new Decimal(fromVault).div(Math.pow(10, v.selectToken.decimal)).toFixed(4)
+        v.showFromVault = true
+      } else {
         // console.log('daiFrom')
         let fromVault = await contract.methods.balanceOf(v.chainFrom.contract).call();
-        v.fromVault = new Decimal(fromVault).div(Math.pow(10,v.selectToken.decimal)).toFixed(4)
-        v.showFromVault=true
+        v.fromVault = new Decimal(fromVault).div(Math.pow(10, v.selectToken.decimal)).toFixed(4)
+        v.showFromVault = true
       }
 
       //To
@@ -1246,27 +1407,24 @@ export default {
 
       let toContract = new myToWeb3.eth.Contract(tokenAbi, toAddress)
 
-      if (toTokenMint==1) {
+      if (toTokenMint == 1) {
         v.toVault = 0
-        v.showToVault=false
-      }
-      else if (toAddress=='0x0000000000000000000000000000000000000000') {
+        v.showToVault = false
+      } else if (toAddress == '0x0000000000000000000000000000000000000000') {
         // console.log('zhuTo')
-        let contractTo = new myToWeb3.eth.Contract(mapAbi,v.chainTo.contract)
+        let contractTo = new myToWeb3.eth.Contract(mapAbi, v.chainTo.contract)
         let tokenToAddress = await contractTo.methods.wToken().call()
         let toContractZhu = new myToWeb3.eth.Contract(tokenAbi, tokenToAddress)
         let toVault = await toContractZhu.methods.balanceOf(v.chainTo.contract).call();
 
-        v.toVault = new Decimal(toVault).div(Math.pow(10,toDecimal)).toFixed(4)
-        v.showToVault=true
-      }
-      else {
+        v.toVault = new Decimal(toVault).div(Math.pow(10, toDecimal)).toFixed(4)
+        v.showToVault = true
+      } else {
         // console.log('daiTo')
         let toVault = await toContract.methods.balanceOf(v.chainTo.contract).call();
-        v.toVault =  new Decimal(toVault).div(Math.pow(10,toDecimal)).toFixed(4)
-        v.showToVault=true
+        v.toVault = new Decimal(toVault).div(Math.pow(10, toDecimal)).toFixed(4)
+        v.showToVault = true
       }
-
 
 
     },
@@ -1366,7 +1524,7 @@ export default {
         this.showInsuffcientBalance = false
         return
       }
-      this.showFee=false
+      this.showFee = false
       let transfer = document.getElementById('transfers-btn')
       let amount = this.sendAmount.toString().replace(/[^\d.]/g, "")
       this.sendAmount = amount
@@ -1376,13 +1534,13 @@ export default {
       if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
         input.style.color = '#E44E3A'
         this.showInsuffcientBalance = true
-        transfer.className='tran-connect-approve'
-        this.showFee=false
+        transfer.className = 'tran-connect-approve'
+        this.showFee = false
       } else {
-        this.showFee=true
+        this.showFee = true
         input.style.color = 'black'
         this.showInsuffcientBalance = false
-        transfer.className=''
+        transfer.className = ''
       }
     },
 
@@ -1848,7 +2006,7 @@ export default {
         for (let i = 0; i < tokenTo.length; i++) {
           let token = tokens[i];
           if (fromSymobl === token.symbol) {
-            toDecimal= token.decimal
+            toDecimal = token.decimal
             // console.log(token.decimal)
           }
         }
@@ -1858,13 +2016,10 @@ export default {
 
         //转到对应链的余额
         if (item.inAmount) {
-          newObject.inAmount = new Decimal(item.inAmount).div(Math.pow(10,toDecimal)).toFixed()
+          newObject.inAmount = new Decimal(item.inAmount).div(Math.pow(10, toDecimal)).toFixed()
         } else {
           newObject.inAmount = 'Processing'
         }
-
-
-
 
 
         Object.assign(item, newObject)
@@ -2029,42 +2184,40 @@ export default {
           params.rpcUrls = [item.rpc];
           params.chainName = chain.name;
         }
-        provider.request({method, params: [params]}).then(async result =>{
-          let chainId = await this.$store.getters.getChainId;
-
-          console.log('change',chainId,provider.chainId)
-
-          if (this.selectChain === 0 && this.changeChain) {
-            this.$router.push({
-              path: '/',
-              query: {
-                sourceNetwork: this.chainTo.chain,
-                destNetwork: this.chainFrom.chain,
-                ts: Date.now(),
-              }
-            })
-          }else {
-            this.$router.push({
-              path: '/',
-              query: {
-                sourceNetwork: this.$route.query.sourceNetwork,
-                destNetwork: this.chainTo.chain,
-                ts: Date.now(),
-              }
-            })
-          }
-          this.showSelectChain = false;
-          this.changeChain=false
-        }).catch(error => {
-          console.log('error')
-          // v.$router.replace({
-          //   path: '/',
-          //   query: {sourceNetwork: v.$route.query.sourceNetwork, destNetwork: v.$route.query.destNetwork}
-          // })
-        })
-
-
-
+        provider.request({method, params: [params]})
+        //   .then(async result =>{
+        // let chainId = await this.$store.getters.getChainId;
+        //
+        // console.log('change',chainId,provider.chainId)
+        //
+        // if (this.selectChain === 0 && this.changeChain) {
+        //   this.$router.push({
+        //     path: '/',
+        //     query: {
+        //       sourceNetwork: this.chainTo.chain,
+        //       destNetwork: this.chainFrom.chain,
+        //       ts: Date.now(),
+        //     }
+        //   })
+        // }else {
+        //   this.$router.push({
+        //     path: '/',
+        //     query: {
+        //       sourceNetwork: this.$route.query.sourceNetwork,
+        //       destNetwork: this.chainTo.chain,
+        //       ts: Date.now(),
+        //     }
+        //   })
+        // }
+        // this.showSelectChain = false;
+        // this.changeChain=false
+        // }).catch(error => {
+        //   console.log('error')
+        //   // v.$router.replace({
+        //   //   path: '/',
+        //   //   query: {sourceNetwork: v.$route.query.sourceNetwork, destNetwork: v.$route.query.destNetwork}
+        //   // })
+        // })
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
         v.requestData()
@@ -2074,12 +2227,8 @@ export default {
 
     //打开选择链弹窗
     actionChain(i) {
-      this.showSelectChain = true
-      if (i == 0) {
-        this.selectChain = 0
-      } else if (i == 1) {
-        this.selectChain = 1
-      }
+      this.selectChain = i;
+      this.showSelectChain = true;
     },
 
     //判断当前的From chain 与 To chain 是否一样
@@ -2104,12 +2253,12 @@ export default {
     //输入地址填写
     async getInputAddress() {
       let v = this
-      if (v.allAddress=='') {
-        v.allAddress =  await this.$store.getters.getAddress;
+      if (v.allAddress == '') {
+        v.allAddress = await this.$store.getters.getAddress;
         v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
         v.showAddress = false
         let addressCss = document.getElementById('tran-send-amount')
-        addressCss.style.display='flex'
+        addressCss.style.display = 'flex'
         v.langToAddress = v.allAddress
         return
       }
@@ -2500,15 +2649,19 @@ export default {
 
     },
 
-    async requestHistory(isNext=true){
-      if (isNext){
+    async requestHistory(isNext = true) {
+      if (isNext) {
         if (this.currentPage === this.pageNum) return;
 
-      }else {
+      } else {
         if (this.currentPage === 1) return;
       }
 
-      if (isNext){this.currentPage ++;}else{this.currentPage --;}
+      if (isNext) {
+        this.currentPage++;
+      } else {
+        this.currentPage--;
+      }
       this.actionHistory();
     },
 
@@ -2518,65 +2671,39 @@ export default {
       let result = await this.$http.chainList()
       if (result.code === 200) {
         this.chainList = result.data.list
-        //判断当前路由路由
-        const query = this.$route.query ? JSON.parse(JSON.stringify(this.$route.query)) : {};
-        // console.log('actionGetChain',  query)
-        let chains = await this.$store.getters.getChains;
         let chainId = new Decimal(this.chainIdNumber).toHex();
+        let query = this.$route.query ? this.$route.query : {}
+        let chains = await this.$store.getters.getChains;
         let chain = chains[chainId];
-        if (!chain) {
-          chain = chains['0x1'];
-        }
-        query.sourceNetwork = chain.symbol;
 
-        if (!query.destNetwork){
-          if (query.sourceNetwork=='MAP'){
-            query.destNetwork='ETH';
-          }else{
-            query.destNetwork='MAP';
+        //刷新
+        if (this.selectChain == -1) {
+          query.sourceNetwork=chain.symbol;
+        } else
+            //切换
+        if (this.selectChain == 0) {
+          if (!chain) {
+            chain = chains['0x1'];
+          }
+          let temp = query.sourceNetwork;
+          query.sourceNetwork = chain.symbol;
+          query.destNetwork = temp;
+        } else
+            //from
+        if (this.selectChain == 2) {
+          query.sourceNetwork = chain.symbol;
+        }
+
+        if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
+          if (query.sourceNetwork == 'MAP') {
+            query.destNetwork = 'ETH';
+          } else {
+            query.destNetwork = 'MAP';
           }
         }
 
-        if (query.sourceNetwork == query.destNetwork) {
-          if (query.sourceNetwork=='MAP') {
-            query.destNetwork='ETH';
-          }else  {
-            query.destNetwork='MAP';
-          }
-        }
-
-        query.ts = Date.now();
-        this.$router.push({path: 'home', query})
-
-
-        // console.log('network', query.sourceNetwork, query.destNetwork)
-        // if (query.sourceNetwork==query.destNetwork) {
-        //   for (let item of v.chainList) {
-        //     if (item.chain.toUpperCase() == query.sourceNetwork.toUpperCase()) {
-        //       v.chainFrom = JSON.parse(JSON.stringify(item));
-        //       query.sourceNetwork = item.chain
-        //     }
-        //   }
-        //   if(v.chainList[0].chain.toUpperCase() == query.sourceNetwork){
-        //     v.chainTo = JSON.parse(JSON.stringify(v.chainList[1]));
-        //     query.destNetwork = v.chainList[1].chain
-        //   }else{
-        //     v.chainTo = JSON.parse(JSON.stringify(v.chainList[0]));
-        //     query.destNetwork = v.chainList[0].chain
-        //   }
-        // }else  {
-        //   for (let item of this.chainList) {
-        //     console.log('1111',query.sourceNetwork,query.destNetwork)
-        //     if (item.chain.toUpperCase() === query.sourceNetwork.toUpperCase()) {
-        //       v.chainFrom = JSON.parse(JSON.stringify(item));
-        //     }
-        //     if (item.chain.toUpperCase() === query.destNetwork.toUpperCase()) {
-        //       v.chainTo = JSON.parse(JSON.stringify(item));
-        //     }
-        //   }
-        // }
-        // query.ts = Date.now();
-        // this.$router.push({path: 'home', query})
+        this.showSelectChain=false;
+        this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
 
         for (let item of this.chainList) {
           if (item.chain.toUpperCase() === query.sourceNetwork.toUpperCase()) {
@@ -2637,13 +2764,13 @@ export default {
       //   // window.location.reload();
       //   return;
       // }
-      this.isLoadingAllData=true;
+      this.isLoadingAllData = true;
       this.sendAmount = ''
       let address = await this.$store.getters.getAddress;
       if (!address) {
         window.ethereum.enable()
-        this.isLoadingAllData=false;
-        this.$router.push('home')
+        this.isLoadingAllData = false;
+        // this.$router.push('home?sourceNetwork=ETH&destNetwork=MAP')
         return;
       }
       this.account = address;
@@ -2659,7 +2786,7 @@ export default {
       this.actionGasFee()
       this.actionStatus()
       this.actionInputFont()
-      this.isLoadingAllData=false;
+      this.isLoadingAllData = false;
       // await this.actionMapStatus()
     },
 
@@ -2692,7 +2819,7 @@ export default {
         })
         this.historyTimerLoading = [];
         result = true
-        }
+      }
       return result;
     },
     cleanStatusTimer() {
@@ -2704,14 +2831,14 @@ export default {
   },
 
   beforeDestroy() {
-    this.isLoadingAllData=false;
+    this.isLoadingAllData = false;
     this.cleanHistoryTimer();
     this.cleanLoadingTimer();
     this.cleanStatusTimer();
   },
 
   mounted() {
-    this.isLoadingAllData=false;
+    this.isLoadingAllData = false;
     this.cleanHistoryTimer();
     this.cleanLoadingTimer();
     this.cleanStatusTimer();
@@ -2724,7 +2851,6 @@ export default {
 <style scoped lang="less">
 @import './Home.less';
 //
-
 
 
 </style>
