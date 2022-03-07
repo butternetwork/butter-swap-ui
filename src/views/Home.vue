@@ -2005,8 +2005,11 @@ export default {
 
         }
 
+        console.log('tokenTo',tokenTo)
+
         for (let i = 0; i < tokenTo.length; i++) {
-          let token = tokens[i];
+          let token = tokenTo[i];
+          console.log("token", token)
           if (fromSymobl === token.symbol) {
             toDecimal = token.decimal
             // console.log(token.decimal)
@@ -2014,11 +2017,11 @@ export default {
         }
 
         //余额
-        newObject.amount = new Decimal(item.amount).div(Math.pow(10, fromDecimal)).toFixed()
+        newObject.amount = parseFloat(new Decimal(item.amount).div(Math.pow(10, fromDecimal)).toFixed(6))
 
         //转到对应链的余额
         if (item.inAmount) {
-          newObject.inAmount = new Decimal(item.inAmount).div(Math.pow(10, toDecimal)).toFixed()
+          newObject.inAmount = parseFloat(new Decimal(item.inAmount).div(Math.pow(10, toDecimal)).toFixed(6))
         } else {
           newObject.inAmount = 'Processing'
         }
@@ -2028,6 +2031,7 @@ export default {
         items.push(Object.assign(item, newObject));
       }
       this.historyList = items;
+      console.log('historyList',this.historyList)
     },
 
     //获取历史详情
