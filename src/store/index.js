@@ -29,7 +29,7 @@ const store = new Vuex.Store({
                 symbol: 'BSC',
                 name: 'BinanceSmartChain',
                 network: 'BSC Mainnet',
-                icon: require('../assets/binance.png')
+                icon: require('../assets/token/bsc.png')
             },
             // '0x61': {
             //     chainId:'0x61',
@@ -43,7 +43,7 @@ const store = new Vuex.Store({
                 symbol: 'MAP',
                 name: 'MAP Protocol',
                 network: 'MAP Mainnet',
-                icon: require('../assets/token/map.png')
+                icon: require('../assets/token/map-black.png')
             },
             // '0x13881': {
             //     chainId:'0x13881',
@@ -57,7 +57,7 @@ const store = new Vuex.Store({
                 symbol: 'POLYGON',
                 name: 'Polygon',
                 network: 'Polygon Mainnet',
-                icon: require('../assets/polygon.png')
+                icon: require('../assets/token/polygon.png')
             }
         },
         changed: 0,
