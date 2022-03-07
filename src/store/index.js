@@ -54,7 +54,7 @@ const store = new Vuex.Store({
             // },
             '0x89': {
                 chainId:'0x89',
-                symbol: 'Polygon',
+                symbol: 'POLYGON',
                 name: 'Polygon',
                 network: 'Polygon Mainnet',
                 icon: require('../assets/polygon.png')

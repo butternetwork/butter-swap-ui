@@ -2004,7 +2004,6 @@ export default {
         await this.$router.push({
           path: '/',
           query: {
-            token: this.selectChain.symbol,
             sourceNetwork: this.$route.query.sourceNetwork,
             destNetwork: this.chainTo.chain,
             ts: Date.now(),
@@ -2014,6 +2013,7 @@ export default {
         this.actionGasFee()
         this.actionStatus()
         this.actionInputFont()
+        this.actionVaultBalance()
         return
       }
 
@@ -2029,9 +2029,34 @@ export default {
           params.rpcUrls = [item.rpc];
           params.chainName = chain.name;
         }
-        provider.request({method, params: [params]})
-        // v.requestData()
-        this.showSelectChain = false;
+        provider.request({method, params: [params]}).then(result =>{
+          if (this.selectChain === 0 && this.changeChain) {
+            this.$router.push({
+              path: '/',
+              query: {
+                sourceNetwork: this.chainTo.chain,
+                destNetwork: this.chainFrom.chain,
+                ts: Date.now(),
+              }
+            })
+          }else {
+            this.$router.push({
+              path: '/',
+              query: {
+                sourceNetwork: this.$route.query.sourceNetwork,
+                destNetwork: this.chainTo.chain,
+                ts: Date.now(),
+              }
+            })
+          }
+          this.showSelectChain = false;
+          this.changeChain=false
+        }).catch(error => {
+
+        })
+
+
+
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
         v.requestData()
@@ -2481,13 +2506,13 @@ export default {
 
     //获取链列表
     async actionGetChain() {
-      // console.log('actionGetChain',new Date())
       let v = this;
       let result = await this.$http.chainList()
       if (result.code === 200) {
         this.chainList = result.data.list
         //判断当前路由路由
         const query = this.$route.query ? JSON.parse(JSON.stringify(this.$route.query)) : {};
+        // console.log('actionGetChain',  query)
         let chains = await this.$store.getters.getChains;
         let chainId = new Decimal(this.chainIdNumber).toHex();
         let chain = chains[chainId];
@@ -2495,12 +2520,55 @@ export default {
           chain = chains['0x1'];
         }
         query.sourceNetwork = chain.symbol;
-        query.destNetwork = 'MAP';
-        if (query.sourceNetwork === 'MAP') {
-          query.destNetwork = 'ETH';
+
+        if (!query.destNetwork){
+          if (query.sourceNetwork=='MAP'){
+            query.destNetwork='ETH';
+          }else{
+            query.destNetwork='MAP';
+          }
         }
+
+        if (query.sourceNetwork == query.destNetwork) {
+          if (query.sourceNetwork=='MAP') {
+            query.destNetwork='ETH';
+          }else  {
+            query.destNetwork='MAP';
+          }
+        }
+
         query.ts = Date.now();
-        await this.$router.push({path: 'home', query})
+        this.$router.push({path: 'home', query})
+
+
+        // console.log('network', query.sourceNetwork, query.destNetwork)
+        // if (query.sourceNetwork==query.destNetwork) {
+        //   for (let item of v.chainList) {
+        //     if (item.chain.toUpperCase() == query.sourceNetwork.toUpperCase()) {
+        //       v.chainFrom = JSON.parse(JSON.stringify(item));
+        //       query.sourceNetwork = item.chain
+        //     }
+        //   }
+        //   if(v.chainList[0].chain.toUpperCase() == query.sourceNetwork){
+        //     v.chainTo = JSON.parse(JSON.stringify(v.chainList[1]));
+        //     query.destNetwork = v.chainList[1].chain
+        //   }else{
+        //     v.chainTo = JSON.parse(JSON.stringify(v.chainList[0]));
+        //     query.destNetwork = v.chainList[0].chain
+        //   }
+        // }else  {
+        //   for (let item of this.chainList) {
+        //     console.log('1111',query.sourceNetwork,query.destNetwork)
+        //     if (item.chain.toUpperCase() === query.sourceNetwork.toUpperCase()) {
+        //       v.chainFrom = JSON.parse(JSON.stringify(item));
+        //     }
+        //     if (item.chain.toUpperCase() === query.destNetwork.toUpperCase()) {
+        //       v.chainTo = JSON.parse(JSON.stringify(item));
+        //     }
+        //   }
+        // }
+        // query.ts = Date.now();
+        // this.$router.push({path: 'home', query})
 
         for (let item of this.chainList) {
           if (item.chain.toUpperCase() === query.sourceNetwork.toUpperCase()) {
