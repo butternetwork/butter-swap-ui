@@ -451,7 +451,7 @@ export default {
 
   .header-container {
     width: 100%;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 10px 0;
   }
