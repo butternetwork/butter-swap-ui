@@ -1386,10 +1386,16 @@ export default {
         v.showFromVault = true
       } else {
         // console.log('daiFrom')
+        console.log('chain',v.chainFrom.contract,v.selectToken.address,v.selectToken.decimal)
         let fromVault = await contract.methods.balanceOf(v.chainFrom.contract).call();
+        console.log(fromVault,'fromVault')
         v.fromVault = new Decimal(fromVault).div(Math.pow(10, v.selectToken.decimal)).toFixed(4)
         v.showFromVault = true
       }
+
+
+
+
 
       //To
       // console.log(' v.selectToken.name', v.selectToken.symbol)
@@ -1625,7 +1631,7 @@ export default {
     async actionSelectToken(item, index) {
 
       this.selectToken.symbol = item.symbol
-      this.selectToken.symbol = item.symbol
+      this.selectToken.decimal = item.decimal
       this.selectToken.url = item.img
       this.selectToken.address = item.address
       this.selectToken.isMint = item.isMint
@@ -2005,11 +2011,8 @@ export default {
 
         }
 
-        console.log('tokenTo',tokenTo)
-
         for (let i = 0; i < tokenTo.length; i++) {
           let token = tokenTo[i];
-          console.log("token", token)
           if (fromSymobl === token.symbol) {
             toDecimal = token.decimal
             // console.log(token.decimal)
@@ -2031,7 +2034,6 @@ export default {
         items.push(Object.assign(item, newObject));
       }
       this.historyList = items;
-      console.log('historyList',this.historyList)
     },
 
     //获取历史详情
@@ -2192,6 +2194,8 @@ export default {
         }
         provider.request({method, params: [params]});
         this.showSelectChain=false;
+        //成功后 历史记录变成第一页
+        v.currentPage=1
         // window.ethereum.request({method,params:[params]});
       }).catch(error => {
         v.requestData()
