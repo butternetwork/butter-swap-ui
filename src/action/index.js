@@ -47,7 +47,7 @@ export default {
     async scanMetaMaskChain() {
         if (window.ethereum) {
             let chainId = await window.ethereum.chainId
-            console.log(chainId,'chainid')
+            // console.log(chainId,'chainid')
             // 收集账号状态
 
             let change_json = {

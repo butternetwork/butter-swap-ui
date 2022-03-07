@@ -1068,7 +1068,7 @@ export default {
       this.requestData();
     },
     chainId(newVal) {
-      console.log('Home Watch chainId',newVal)
+      // console.log('Home Watch chainId',newVal)
       this.requestData();
     },
     searchToken(newV, oldV) {
@@ -1710,7 +1710,7 @@ export default {
         if (v.transHash != null && v.transHash != '') {
           v.actionSubBridge()
         }
-        console.log(`hash`, hash)
+        // console.log(`hash`, hash)
         v.dialogTransing = true
         // v.$toast('Transaction has send please wait result')
       }).on('receipt', function (receipt) {
@@ -2108,7 +2108,7 @@ export default {
       v.tokenAllList[v.chainFrom.chainId].forEach(item => {
         if (v.selectToken.symbol == item.symbol) {
           token_address = item.address
-          console.log('token_address', token_address)
+          // console.log('token_address', token_address)
         }
       })
       //approve
@@ -2151,7 +2151,6 @@ export default {
           v.checkApproveToken = token
           v.chainSuccess = true
           localStorage.setItem('approve', 1);
-          console.log("approv 1 :", v.account)
           this.setApproveStatus(v.account + reward_address, token_address, 'doing');
           //server order
         }).on('receipt', (receipt) => {
@@ -2160,7 +2159,6 @@ export default {
           // console.log('receipt',receipt)
           v.dialogApproving = false
           v.allowance = true;
-          console.log("approv 2", v.account)
           this.setApproveStatus(v.account + reward_address, token_address, false);
           let timer = setInterval(() => {
             v.checkApproved(timer)
@@ -2195,7 +2193,7 @@ export default {
       v.tokenAllList[v.chainFrom.chainId].forEach(item => {
         if (item.symbol == 'MAP') {
           token_address = item.address
-          console.log('map token_address', token_address)
+          // console.log('map token_address', token_address)
         }
       })
 
@@ -2240,7 +2238,6 @@ export default {
           v.dialogApproving = true
           v.approveMapHash = hash;
           localStorage.setItem('approve', 2);
-          console.log("approv 3", v.account)
           v.setApproveStatus(v.account + reward_address, token_address, 'doing');
         }).on('receipt', (receipt) => {
           //receipt
@@ -2248,7 +2245,6 @@ export default {
           v.dialogApproving = false
           v.allowanceMap = true
           v.approveMapHash = false;
-          console.log("approv 4", v.account)
           v.setApproveStatus(v.account + reward_address, token_address, false);
           let timer = setInterval(() => {
             v.checkMapApproved(timer)
@@ -2328,7 +2324,6 @@ export default {
       })
       let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress)
       // v.dialogApproving = false;
-      console.log('change', approving)
       if (approving === 'done') {
         // console.log(approving)
         v.allowance = true;
@@ -2340,7 +2335,6 @@ export default {
         if (timer) {
           clearInterval(timer);
         }
-        console.log("approv 5", v.account)
         this.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
         return;
       } else if (approving === 'doing') {
@@ -2354,7 +2348,7 @@ export default {
 
       let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
       contract.methods.allowance(v.account, v.chainFrom.contract).call((error, result) => {
-        console.log('result',result)
+        // console.log('result',result)
         if (result && result != 0) {
           v.allowance = true;
           //清空检测事件
@@ -2364,7 +2358,6 @@ export default {
             clearInterval(timer);
           }
           v.dialogApproving = false;
-          console.log("approv 6", v.account)
           v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
         } else {
           v.allowance = false;
@@ -2427,7 +2420,6 @@ export default {
             if (timer) {
               clearInterval(timer);
             }
-            console.log("approv 7", v.account)
             v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
             // return;
           } else if (approving === 'doing') {
@@ -2489,7 +2481,7 @@ export default {
 
     //获取链列表
     async actionGetChain() {
-      console.log('actionGetChain',new Date())
+      // console.log('actionGetChain',new Date())
       let v = this;
       let result = await this.$http.chainList()
       if (result.code === 200) {
