@@ -825,7 +825,7 @@ export default {
           "address": "0x92ec47df1aa167806dfa4916d9cfb99da6953b8f",
           "name": "Idavoll Network",
           "chainId": 1,
-          "isMint": 1,
+          "isMint": 0,
           "symbol": "IDV",
           "decimal": 18,
           "img": "https://files.maplabs.io/bridge/idv.png"
