@@ -845,7 +845,7 @@ export default {
           "address": "0x9e976f211daea0d652912ab99b0dc21a7fd728e4",
           "name": "MAP Protocol",
           "chainId": 1,
-          "isMint": 0,
+          "isMint": 1,
           "symbol": "MAP",
           "decimal": 18,
           "img": "https://files.maplabs.io/bridge/map.png"
