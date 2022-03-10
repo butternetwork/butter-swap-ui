@@ -15,7 +15,7 @@ const store = new Vuex.Store({
                 symbol: 'ETH',
                 name: 'Ethereum',
                 network: 'Ethereum Mainnet',
-                icon: require('../assets/eth-icon.png')
+                icon: require('../assets/token/eth-icon.png')
             },
             // '0x3': {
             //     chainId:'0x3',

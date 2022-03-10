@@ -1,0 +1,316 @@
+
+
+    .vault-earn {
+      width: 100%;
+      height: 100px;
+      background: url("../assets/vault/background.png")no-repeat;
+      background-size: 100% 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vault-earn-content {
+      width: 1050px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .vault-earn-left {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      span:nth-child(1) {
+        font-family: ProductSans;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        color: white;
+      }
+      span:nth-child(2) {
+        padding-left: 6px;
+        background-image: linear-gradient(to bottom, rgb(255, 0, 0), rgb(255, 200, 71) 100%);
+        font-family: ProductSans;
+        font-size: 36px;
+        font-weight: bold;
+        font-style: italic;
+        text-align: center;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    .vault-earn-right {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      button {
+          width: 100px;
+          height: 40px;
+          border-radius: 10px;
+          background-color: rgb(230, 91, 72);
+          font-size: 12px;
+          font-weight: bold;
+          color: white;
+          cursor: pointer;
+      }
+      img {
+        cursor: pointer;
+        width: 19px;
+        margin-left: 20px;
+      }
+    }
+
+    .overview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 36px;
+    }
+
+    .vault-container {
+      width: 1050px;
+    }
+
+    .overview-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+
+    .overview-content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .overview-content-item {
+      width: 30%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      border-radius: 20px;
+      background-color: white;
+      padding: 35px 0 36px 20px;
+    }
+
+    .overview-content-item-three {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+
+    .overview-content-item-top {
+      font-size: 14px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      img {
+        margin-left: 10px;
+        width: 15px;
+      }
+    }
+
+    .overview-content-item-bottom {
+      padding-top: 15px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .overview-content-item-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .overview-view {
+      margin-left: 20px;
+      button {
+          cursor: pointer;
+          color: white;
+          font-weight: bold;
+          width: 80px;
+          height: 40px;
+          opacity: 0.4;
+          border-radius: 10px;
+          background-color: rgb(89, 45, 45);
+      }
+    }
+
+
+    .vault-stake {
+      padding-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .vault-content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .vault-stake-btn {
+        width: 181px;
+        height: 42px;
+        border-radius: 15px;
+        background-color: white;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        span {
+          padding-right: 23px;
+        }
+
+    }
+
+    .vault-stake-search {
+        width: 337px;
+        height: 42px;
+        border-radius: 15px;
+        background-color: white;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        input {
+          font-size: 14px;
+          width: 80%;
+        }
+      ::-webkit-input-placeholder {
+        font-size: 14px;
+        opacity: 0.3;
+        font-weight: 600;
+        color: #84868B;
+        font-family: 'productRegular';
+      }
+        img {
+          width: 18px;
+        }
+
+    }
+
+
+    .vault-table {
+      padding-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .vault-table-content {
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      //border-spacing: 0;
+      border-spacing: 0px 5px;
+    }
+
+    .text-break {
+      width: 100%;
+      border-radius: 15px;
+      td {
+        padding: 12px 0;
+        background-color: white;
+        width: 200px;
+      }
+      td:nth-child(1) {
+        border-radius: 15px 0 0 15px;
+      }
+      td:last-child{
+        border-radius: 0 15px 15px 0;
+      }
+    }
+
+    .pl-4 {
+      padding-left: 1.5rem !important;
+    }
+
+    .vault-header-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-left: 10px;
+      img {
+        width: 6px;
+      }
+      img:nth-child(2) {
+        margin-top: 3px;
+      }
+    }
+
+    .vault-table-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .vault-table-header-two {
+      justify-content: flex-end;
+    }
+
+    .vault-table-conntent {
+      margin-top: 20px;
+
+      tr {
+
+      }
+      td {
+        background: white;
+        padding: 25px 0;
+      }
+      td:nth-child(1) {
+        padding: 25px 20px;
+        border-radius: 15px 0 0 15px;
+      }
+      td:last-child{
+        border-radius: 0 15px 15px 0;
+      }
+    }
+
+
+    .vault-token {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      img {
+        width: 20px;
+        margin-right: 5px;
+      }
+    }
+
+    .vault-chain {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      img {
+        width: 16px;
+        margin-right: 5px;
+      }
+    }
+
+
+    .vault-liquidity {
+      font-size: 12px;
+      text-align: right;
+    }
+
+
+
+

@@ -6,6 +6,7 @@ import VueRouter from 'vue-router'
 
 /*引入*/
 const Home = () => import('../views/Home');
+const Vault = () => import('../views/Vault');
 
 //申明使用插件
 Vue.use(VueRouter)
@@ -25,5 +26,9 @@ export default new VueRouter({
             path: '/home',
             component: Home,
         },
+        // {
+        //     path: '/vault',
+        //     component: Vault,
+        // },
     ]
 })

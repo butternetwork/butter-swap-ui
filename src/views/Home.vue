@@ -759,7 +759,7 @@ import moment from "moment";
 const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
 import config from '@/config/base'
-
+import eventBus from "@/eventBus";
 
 export default {
   name: "Home.vue",
@@ -800,7 +800,7 @@ export default {
       chainList: [],
       chainFrom: {
         chainName: 'Ethereum Mainnet',
-        chainImg: require('../assets/eth-icon-gray.png'),
+        chainImg: require('../assets/token/eth-icon-gray.png'),
         chain: 'ETH',
         chainId: config.defaultChainFrom,
         contract: config.mapAddress,
@@ -1386,9 +1386,9 @@ export default {
         v.showFromVault = true
       } else {
         // console.log('daiFrom')
-        console.log('chain',v.chainFrom.contract,v.selectToken.address,v.selectToken.decimal)
+        // console.log('chain',v.chainFrom.contract,v.selectToken.address,v.selectToken.decimal)
         let fromVault = await contract.methods.balanceOf(v.chainFrom.contract).call();
-        console.log(fromVault,'fromVault')
+        // console.log(fromVault,'fromVault')
         v.fromVault = new Decimal(fromVault).div(Math.pow(10, v.selectToken.decimal)).toFixed(4)
         v.showFromVault = true
       }
@@ -1401,7 +1401,7 @@ export default {
       // console.log(' v.selectToken.name', v.selectToken.symbol)
       for (const item of v.tokenAllList[v.chainTo.chainId]) {
         if (item.symbol == v.selectToken.symbol) {
-          console.log(item.symbol,v.selectToken.symbol)
+          // console.log(item.symbol,v.selectToken.symbol)
           toTokenMint = item.isMint
           toDecimal = item.decimal
           toAddress = item.address
@@ -1439,6 +1439,9 @@ export default {
 
     actionEmitHeader(data) {
       this.showTab = data
+      // eventBus.$on("listenTab",(message)=>{   //这里最好用箭头函数，不然this指向有问题
+      //   this.showTab = message
+      // })
       if (this.showTab === 0) {
         this.actionOpenTransfer()
       } else if (this.showTab === 1) {
@@ -1509,6 +1512,7 @@ export default {
 
     //打开Token弹窗
     actionOpenToken() {
+      this.searchToken=''
       this.showSelectToken = true
       this.actionShowToken()
     },
@@ -1576,7 +1580,6 @@ export default {
 
     //Token弹窗余额获取
     async actionShowToken() {
-
       if (this.selectTokens) {
         this.selectTokens.forEach(item => {
           item.amount = null;
@@ -1587,11 +1590,13 @@ export default {
       let selectTokens = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
       let formTokenList = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
       let toTokenList = this.$copyObject(this.tokenAllList[this.chainTo.chainId]);
+
       if (!formTokenList || !toTokenList || formTokenList.length === 0 || toTokenList.length === 0) {
         this.tokenList = [];
         this.selectTokens = selectTokens;
         return;
       }
+
       let intersection = [];
       for (const item of formTokenList) {
         for (const token of toTokenList) {
@@ -1624,6 +1629,7 @@ export default {
           this.balanceZ = item.amount
         }
       }
+      this.tokenAllList[this.chainIdNumber]=this.selectTokens;
 
     },
 
@@ -2206,6 +2212,7 @@ export default {
     //打开选择链弹窗
     actionChain(i) {
       this.selectChain = i;
+      this.searchVal=''
       this.showSelectChain = true;
     },
 
