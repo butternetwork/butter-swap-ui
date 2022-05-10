@@ -819,170 +819,10 @@ export default {
       //   "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"}]
       // },//Token所有列表
       tokenAllList: {
-        "1": [{
-          "id": 2,
-          "tokenId": "IDV",
-          "address": "0x92ec47df1aa167806dfa4916d9cfb99da6953b8f",
-          "name": "Idavoll Network",
-          "chainId": 1,
-          "isMint": 0,
-          "symbol": "IDV",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/idv.png"
-        }, {
-          "id": 6,
-          "tokenId": "USDC",
-          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          "name": "USD Coin",
-          "chainId": 1,
-          "isMint": 0,
-          "symbol": "USDC",
-          "decimal": 6,
-          "img": "https://files.maplabs.io/bridge/usdc.png"
-        }, {
-          "id": 10,
-          "tokenId": "MAP",
-          "address": "0x9e976f211daea0d652912ab99b0dc21a7fd728e4",
-          "name": "MAP Protocol",
-          "chainId": 1,
-          "isMint": 1,
-          "symbol": "MAP",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/map.png"
-        }, {
-          "id": 12,
-          "tokenId": "ETH",
-          "address": "0x0000000000000000000000000000000000000000",
-          "name": "ETH",
-          "chainId": 1,
-          "isMint": 0,
-          "symbol": "ETH",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/eth.png"
-        }],
-        "56": [{
-          "id": 13,
-          "tokenId": "MAP",
-          "address": "0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f",
-          "name": "MAP Protocol",
-          "chainId": 56,
-          "isMint": 1,
-          "symbol": "MAP",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/map.png"
-        }, {
-          "id": 15,
-          "tokenId": "ETH",
-          "address": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
-          "name": "ETH",
-          "chainId": 56,
-          "isMint": 0,
-          "symbol": "ETH",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/eth.png"
-        }, {
-          "id": 18,
-          "tokenId": "USDC",
-          "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-          "name": "USD Coin",
-          "chainId": 56,
-          "isMint": 0,
-          "symbol": "USDC",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/usdc.png"
-        }, {
-          "id": 20,
-          "tokenId": "BUSD",
-          "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
-          "name": "Binance-Peg BUSD",
-          "chainId": 56,
-          "isMint": 0,
-          "symbol": "BUSD",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/busd.png"
-        }],
-        "22776": [{
-          "id": 1,
-          "tokenId": "IDV",
-          "address": "0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a",
-          "name": "Idavoll Network",
-          "chainId": 22776,
-          "isMint": 1,
-          "symbol": "IDV",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/idv.png"
-        }, {
-          "id": 5,
-          "tokenId": "USDC",
-          "address": "0x9f722b2cb30093f766221fd0d37964949ed66918",
-          "name": "USD Coin",
-          "chainId": 22776,
-          "isMint": 1,
-          "symbol": "USDC",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/usdc.png"
-        }, {
-          "id": 9,
-          "tokenId": "MAP",
-          "address": "0x0000000000000000000000000000000000000000",
-          "name": "MAP Protocol",
-          "chainId": 22776,
-          "isMint": 0,
-          "symbol": "MAP",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/map.png"
-        }, {
-          "id": 11,
-          "tokenId": "ETH",
-          "address": "0x05ab928d446d8ce6761e368c8e7be03c3168a9ec",
-          "name": "ETH",
-          "chainId": 22776,
-          "isMint": 1,
-          "symbol": "ETH",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/eth.png"
-        }, {
-          "id": 19,
-          "tokenId": "BUSD",
-          "address": "0x35bF4004C3Fc9f509259d4942da6bae3669e1Db1",
-          "name": "Mapped Binance USD",
-          "chainId": 22776,
-          "isMint": 1,
-          "symbol": "BUSD",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/busd.png"
-        }],
-        "137": [{
-          "id": 14,
-          "tokenId": "MAP",
-          "address": "0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a",
-          "name": "MAP Protocol",
-          "chainId": 137,
-          "isMint": 1,
-          "symbol": "MAP",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/map.png"
-        }, {
-          "id": 16,
-          "tokenId": "ETH",
-          "address": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
-          "name": "ETH",
-          "chainId": 137,
-          "isMint": 0,
-          "symbol": "ETH",
-          "decimal": 18,
-          "img": "https://files.maplabs.io/bridge/eth.png"
-        }, {
-          "id": 17,
-          "tokenId": "USDC",
-          "address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-          "name": "USD Coin",
-          "chainId": 137,
-          "isMint": 0,
-          "symbol": "USDC",
-          "decimal": 6,
-          "img": "https://files.maplabs.io/bridge/usdc.png"
-        }]
+        "1":[{"id":2,"tokenId":"IDV","address":"0x92ec47df1aa167806dfa4916d9cfb99da6953b8f","name":"Idavoll Network","chainId":1,"isMint":0,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":6,"tokenId":"USDC","address":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","name":"USD Coin","chainId":1,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":10,"tokenId":"MAP","address":"0x9e976f211daea0d652912ab99b0dc21a7fd728e4","name":"MAP Protocol","chainId":1,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":12,"tokenId":"ETH","address":"0x0000000000000000000000000000000000000000","name":"ETH","chainId":1,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":23,"tokenId":"HELLO","address":"0x9a8275078f9f688452C552900BC44674B115d45C","name":"Hello Wallet DAO","chainId":1,"isMint":0,"symbol":"HELLO","decimal":18,"img":"https://files.maplabs.io/bridge/hello.png"},{"id":24,"tokenId":"NEST","address":"0x04abEdA201850aC0124161F037Efd70c74ddC74C","name":"NEST","chainId":1,"isMint":0,"symbol":"NEST","decimal":18,"img":"https://files.maplabs.io/bridge/nest.png"}],
+        "56":[{"id":13,"tokenId":"MAP","address":"0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f","name":"MAP Protocol","chainId":56,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":15,"tokenId":"ETH","address":"0x2170Ed0880ac9A755fd29B2688956BD959F933F8","name":"ETH","chainId":56,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":18,"tokenId":"USDC","address":"0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d","name":"USD Coin","chainId":56,"isMint":0,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":20,"tokenId":"BUSD","address":"0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56","name":"Binance-Peg BUSD","chainId":56,"isMint":0,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"},{"id":22,"tokenId":"HELLO","address":"0xdB913e87608e3d91C6F0b52E97a6760E7661B8f6","name":"Hello Wallet DAO","chainId":56,"isMint":1,"symbol":"HELLO","decimal":18,"img":"https://files.maplabs.io/bridge/hello.png"}],
+        "22776":[{"id":1,"tokenId":"IDV","address":"0xeac6cfd6e9e2fa033d85b7abdb6b14fe8aa71f2a","name":"Idavoll Network","chainId":22776,"isMint":1,"symbol":"IDV","decimal":18,"img":"https://files.maplabs.io/bridge/idv.png"},{"id":5,"tokenId":"USDC","address":"0x9f722b2cb30093f766221fd0d37964949ed66918","name":"USD Coin","chainId":22776,"isMint":1,"symbol":"USDC","decimal":18,"img":"https://files.maplabs.io/bridge/usdc.png"},{"id":9,"tokenId":"MAP","address":"0x0000000000000000000000000000000000000000","name":"MAP Protocol","chainId":22776,"isMint":0,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":11,"tokenId":"ETH","address":"0x05ab928d446d8ce6761e368c8e7be03c3168a9ec","name":"ETH","chainId":22776,"isMint":1,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":19,"tokenId":"BUSD","address":"0x35bF4004C3Fc9f509259d4942da6bae3669e1Db1","name":"Mapped Binance USD","chainId":22776,"isMint":1,"symbol":"BUSD","decimal":18,"img":"https://files.maplabs.io/bridge/busd.png"},{"id":21,"tokenId":"HELLO","address":"0xa1c30a364cd7dba855fb33af5c3e3fc4a72b7b50","name":"Hello Wallet DAO","chainId":22776,"isMint":1,"symbol":"HELLO","decimal":18,"img":"https://files.maplabs.io/bridge/hello.png"},{"id":25,"tokenId":"NEST","address":"0xE09cF7029092f9833a0d3b6bB28d939095D0A9a6","name":"NEST","chainId":22776,"isMint":1,"symbol":"NEST","decimal":18,"img":"https://files.maplabs.io/bridge/nest.png"}],
+        "137":[{"id":14,"tokenId":"MAP","address":"0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a","name":"MAP Protocol","chainId":137,"isMint":1,"symbol":"MAP","decimal":18,"img":"https://files.maplabs.io/bridge/map.png"},{"id":16,"tokenId":"ETH","address":"0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619","name":"ETH","chainId":137,"isMint":0,"symbol":"ETH","decimal":18,"img":"https://files.maplabs.io/bridge/eth.png"},{"id":17,"tokenId":"USDC","address":"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174","name":"USD Coin","chainId":137,"isMint":0,"symbol":"USDC","decimal":6,"img":"https://files.maplabs.io/bridge/usdc.png"}]
       },
       // tokenAllList: {
       //   "80001": [{
@@ -1230,6 +1070,7 @@ export default {
       }
     },
     address(newVal) {
+      this.allAddress = this.$store.getters.getAddress;
       this.requestData();
     },
     chainId(newVal) {
@@ -1586,6 +1427,7 @@ export default {
         })
       }
       let v = this
+      await  this.actionTokenList()
       let tokenList = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
       let selectTokens = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
       let formTokenList = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
@@ -1720,6 +1562,7 @@ export default {
 
       this.actionChainSuccess()
 
+
       if (this.chainSuccess == false) {
         this.$toast('Network error,please link to the correct network')
         return
@@ -1728,7 +1571,6 @@ export default {
       if (this.showInsuffcientBalance) {
         return
       }
-
 
       let v = this
 
@@ -1741,9 +1583,13 @@ export default {
         v.$toast('Please enter the amount')
         return
       }
+      if (this.toVault && new Decimal(this.toVault).sub(new Decimal(this.sendAmount))<0) {
+        v.$toast('Insufficient balance')
+      }
 
 
-      //当前链
+
+          //当前链
       var chain = v.chainFrom.chain
       //console.log('chain', chain)
 
@@ -1785,8 +1631,14 @@ export default {
 
       // console.log(TokenAddress, 'TokenAddress')
 
+      if (this.langToAddress==''){
+        this.langToAddress = await this.$store.getters.getAddress
+      }
+
+      console.log('this.langToAddres',this.langToAddress)
+
       if (TokenAddress == '0x0000000000000000000000000000000000000000') {
-        reward_stakeData = reward_contract.methods.transferOutNative(this.account, v.sendAllAmount.toFixed(), chainId).encodeABI()
+        reward_stakeData = reward_contract.methods.transferOutNative(this.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
         if (parseInt(v.chainFrom.chainId) == 22776) {
           valueFee = new Decimal(v.sendAllAmount).add(new Decimal(v.gasFee))
         } else {
@@ -1801,7 +1653,7 @@ export default {
       } else {
 
         if (v.selectToken.isMint == 1) {
-          reward_stakeData = reward_contract.methods.transferOutTokenBurn(TokenAddress, this.account, v.sendAllAmount.toFixed(), chainId).encodeABI()
+          reward_stakeData = reward_contract.methods.transferOutTokenBurn(TokenAddress, this.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
           // console.log('reward_stakeData', reward_stakeData)
           if (parseInt(v.chainFrom.chainId) == 22776) {
             valueFee = new Decimal(v.gasFee)
@@ -1816,7 +1668,7 @@ export default {
           }
           // console.log('transParams',transParams)
         } else {
-          reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, this.account, v.sendAllAmount.toFixed(), chainId).encodeABI()
+          reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, this.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
           if (parseInt(v.chainFrom.chainId) == 22776) {
             valueFee = new Decimal(v.gasFee)
           } else {
@@ -2167,6 +2019,15 @@ export default {
           this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
           return;
         }
+        // let toTokenList = this.$copyObject(this.tokenAllList[item.chainId]);
+        // console.log('toTokenList',toTokenList)
+        // for (const token of toTokenList) {
+        //   console.log('this.selectToken.symbol ',v.selectToken.symbol , token.symbol)
+        //   if (! token.symbol==v.selectToken.symbol ){
+        //     this.$toast('There is currently no such coin on the chain')
+        //     return
+        //   }
+        // }
         this.chainTo = JSON.parse(JSON.stringify(item));
         this.destNetwork = item.chain
         this.showSelectChain = false
@@ -2248,7 +2109,8 @@ export default {
         return
       }
       v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
-      this.account = v.allAddress
+      // this.account = v.allAddress
+      v.langToAddress = v.allAddress
       v.showAddress = false
       let addressCss = document.getElementById('tran-send-amount')
       addressCss.style.display = 'flex'

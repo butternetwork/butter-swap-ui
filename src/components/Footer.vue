@@ -3,8 +3,8 @@
           <div class="footer-content">
             <div class="footer-icon">
 <!--              <a href="" target="_blank"><img src="../assets/footer/dis.png"/></a>-->
-              <a href="https://t.me/MarcoPoloMAP" target="_blank"><img src="../assets/footer/tele.png"/></a>
-              <a href="https://twitter.com/MarcoPoloGlobal" target="_blank"><img  src="../assets/footer/tw.png"/></a>
+              <a href="https://t.me/MAPprotocolGroup" target="_blank"><img src="../assets/footer/tele.png"/></a>
+              <a href="https://twitter.com/MapProtocol/status/1521349692336279552" target="_blank"><img  src="../assets/footer/tw.png"/></a>
               <a href="https://github.com/mapprotocol" target="_blank"><img  src="../assets/footer/github.png"/></a>
             </div>
             <span>Powered by MAP Protocol</span>

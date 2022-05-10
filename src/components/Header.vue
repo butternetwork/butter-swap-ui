@@ -3,6 +3,7 @@
     <div class="header-container">
       <div class="header-left">
         <div @click="goMap" class="header-logo"><img src="../assets/logo.png"/></div>
+        <div class="header-beta">Beta</div>
       </div>
 
       <div class="header-middle">
@@ -42,8 +43,9 @@
             <span></span>
           </div>
           <div  @mouseover="tabMore=true" @mouseleave="tabMore=false" v-show="tabMore" class="header-many-tab">
-            <div @click="goSupport()" class="header-many-tab-item">Contract Support</div>
+            <div @click="goSupport()" class="header-many-tab-item">Contact Support</div>
             <div @click="goTutorial()" class="header-many-tab-item">Tutorial</div>
+            <div @click="goCommunity()" class="header-many-tab-item">Community</div>
           </div>
         </div>
       </div>
@@ -89,6 +91,10 @@ export default {
     },
   },
   methods: {
+
+    goCommunity() {
+      window.open('https://t.me/MAPprotocolGroup','blank')
+    },
 
     actionLogOut() {
       this.$store.commit("setAddress","");
@@ -325,6 +331,21 @@ export default {
   }
 }
 
+.header-beta {
+  margin-left: 14px;
+  margin-top: -20px;
+  width: 32px;
+  height: 16px;
+  border-radius: 3px;
+  background-color: rgba(89, 45, 45, 0.15);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
 .header-logo-h5 {
   display: none;
 }
@@ -498,6 +519,10 @@ export default {
       display: none;
       width: 20px;
     }
+  }
+
+  .header-beta {
+    margin-top: 0;
   }
 
 
