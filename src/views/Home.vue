@@ -1805,7 +1805,7 @@ export default {
     actionTimerHistory() {
       let timer = setInterval(() => {
         this.actionUndoneTransfer()
-      }, 2000)
+      }, 30000)
       this.historyTimerLoading.push(timer)
     },
 
