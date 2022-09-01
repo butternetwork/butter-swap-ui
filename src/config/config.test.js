@@ -1,6 +1,6 @@
 export default {
-    baseUrl: 'http://39.99.244.11:8202',// 生产接口请求地址
-    // baseUrl: 'http://39.99.244.11:8201/',// 生产接口请求地址
+    baseUrl: 'http://bridge-api.maplabs.io/',// 生产接口请求地址
+    // baseUrl: 'http://18.139.224.21:8201',// 测试接口请求地址
 
     //切换测试网    需要修改  action/index.js   main.js   header home
     tokenCoin: "0x5aa33a182f3c2e3f41176b9ea100f5dbcd1be553",//测试链的默认代币地址

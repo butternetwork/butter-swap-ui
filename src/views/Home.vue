@@ -1025,8 +1025,8 @@ export default {
       approveMapHash: '',//Approve Map hash
       // dialogApproving: false,//approveing map diaglog
       mapBalance: '',
-      chainIdHex: 1,
-      chainIdNumber: 1,
+      chainIdHex: config.eth.chainHex,
+      chainIdNumber: config.eth.chainId,
 
       selectTokens: [],
       nftList: [
@@ -1071,6 +1071,7 @@ export default {
     },
     address(newVal) {
       this.allAddress = this.$store.getters.getAddress;
+      this.langToAddress = this.$store.getters.getAddress;
       this.requestData();
     },
     chainId(newVal) {
@@ -1632,6 +1633,7 @@ export default {
       // console.log(TokenAddress, 'TokenAddress')
 
       if (this.langToAddress==''){
+        console.log('111')
         this.langToAddress = await this.$store.getters.getAddress
       }
 
@@ -2091,7 +2093,10 @@ export default {
     //显示地址
     async actionShowAddress() {
       this.showAddress = true
-      this.allAddress = this.account;
+      if (this.allAddress == '') {
+        this.allAddress = this.account;
+      }
+
       let addressCss = document.getElementById('tran-send-amount')
       addressCss.style.display = 'none'
     },
@@ -2107,6 +2112,8 @@ export default {
         addressCss.style.display = 'flex'
         v.langToAddress = v.allAddress
         return
+      } else  {
+        v.langToAddress = v.allAddress
       }
       v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
       // this.account = v.allAddress
