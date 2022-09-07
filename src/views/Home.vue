@@ -1586,6 +1586,7 @@ export default {
       }
       if (this.toVault && new Decimal(this.toVault).sub(new Decimal(this.sendAmount))<0) {
         v.$toast('Insufficient balance')
+        return
       }
 
 
