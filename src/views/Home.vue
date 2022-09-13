@@ -107,7 +107,10 @@
           </div>
           <!--                connect-->
           <div class="tran-connect">
-            <button v-if="!allowance && !approveHash && allowanceMap"
+            <button class="tran-connect-approve" style="cursor:no-drop">
+              Transfer
+            </button>
+            <!-- <button v-if="!allowance && !approveHash && allowanceMap"
                     :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionApprove()">Approve
             </button>
             <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
@@ -125,7 +128,7 @@
             </button>
             <button v-if="allowance && transferBtn" class="tran-connect-approve">
               Transfering... <img src="../assets/loading.gif"/>
-            </button>
+            </button> -->
           </div>
         </div>
 
