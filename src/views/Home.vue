@@ -2050,19 +2050,51 @@ export default {
         return
       }
 
-      this.$watcher.getProvider().then(provider => {
+      this.$watcher.getProvider().then(async provider => {
         let chainId = new Decimal(item.chainId).toHex();
-        // console.log('chainId',chainId)
-        let method = 'wallet_switchEthereumChain';
         let params = {chainId}
-        let chains = this.$store.getters.getChains;
-        let chain = chains[chainId];
-        if (chain.symbol !== 'ETH') {
-          method = 'wallet_addEthereumChain';
-          params.rpcUrls = [item.rpc];
-          params.chainName = chain.name;
+        console.log('chainId',chainId)
+        if (provider) {
+          try {
+            await provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: chainId }]
+            });
+            return true;
+          } catch (error) {
+            try {
+              let chains = this.$store.getters.getChains;
+              let chain = chains[chainId];
+              params.rpcUrls = [item.rpc];
+              params.chainName = chain.name;
+              console.log('params',params)
+              await provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [params]
+              });
+              return true;
+            } catch (error) {
+              console.error('Failed to setup the network in Metamask:', error);
+              return false;
+            }
+          }
+        } else {
+          console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
+          return false;
         }
-        provider.request({method, params: [params]});
+
+        // let chainId = new Decimal(item.chainId).toHex();
+        // let params = {chainId}
+        // let method = 'wallet_switchEthereumChain';
+        // let chains = this.$store.getters.getChains;
+        // let chain = chains[chainId];
+        // if (chain.symbol !== 'ETH') {
+        //   method = 'wallet_addEthereumChain';
+        //   params.rpcUrls = [item.rpc];
+        //   params.chainName = chain.name;
+        // }
+        // console.log('params',params)
+        // provider.request({method, params: [params]});
         this.showSelectChain=false;
         //成功后 历史记录变成第一页
         v.currentPage=1
