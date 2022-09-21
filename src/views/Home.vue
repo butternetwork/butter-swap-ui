@@ -106,12 +106,7 @@
             <span>Insufficient balance</span>
           </div>
           <!--                connect-->
-          <div v-if="chainFrom.chain=='ETH' || chainTo.chain=='ETH'"  class="tran-connect">
-            <button class="tran-connect-approve">
-              Transfer
-            </button>
-          </div>
-          <div v-else class="tran-connect">
+          <div class="tran-connect">
             <button v-if="!allowance && !approveHash && allowanceMap"
                     :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionApprove()">Approve
             </button>
