@@ -47,8 +47,8 @@ export default {
                 'http://18.139.224.21:7001', // optional redirect URL on success
             );
 
-            const account = await nearConnection.account(currentUser.accountId);
-            await account.getAccessKeys();
+            // const account = await nearConnection.account(currentUser.accountId);
+            // await account.getAccessKeys();
 
             this.$store.commit("setAddress",currentUser.accountId);
             this.$store.commit("setChainId",config.near.chainId);
