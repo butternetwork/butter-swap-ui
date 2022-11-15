@@ -174,7 +174,7 @@ export default {
       this.$store.dispatch('switchChain',config.bsc.chainHex);
     },
     goMap() {
-      window.open('https://www.maplabs.io/', '_blank')
+      window.open('http://18.139.224.21:7001', '_blank')
     },
     async matchChain() {
       let chainId = await this.$store.getters.getChainId;
