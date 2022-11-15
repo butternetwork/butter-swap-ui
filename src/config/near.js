@@ -52,7 +52,7 @@ export default {
 
             this.$store.commit("setAddress",currentUser.accountId);
             this.$store.commit("setChainId",config.near.chainId);
-            this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+            // this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
         }
 
         console.log('currentUser',currentUser,walletConnection)
