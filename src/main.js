@@ -7,6 +7,9 @@ import api from './api/api'
 import eventbus from './eventBus.js'
 import './assets/css/stylesheet.css'
 import Decimal from 'decimal.js';
+import {SUPPORTED_CHAIN_LIST} from 'barterjs-sdk/dist/constants/index.js';
+// import near from '@/config/neartest'
+
 
 const CLIENT_CACHE={}
 const Web3 = require('web3');
@@ -68,35 +71,25 @@ async function asyncChainClient(chainId){
   });
 }
 async function asyncChainList(){
-  api.chainList().then(result => {
-    if (result.code === 200) {
-      let chainList = result.data.list;
-      // console.log(result.data.list);
-      /*
-      chain: "MAP"
-      chainId: 22776
-      chainImg: "https://files.maplabs.io/bridge/map.png"
-      chainName: "MAP Makalu"
-      contract: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c"
-      gasLimit: "600000"
-      id: 1
-      rpc: "https://poc2-rpc.maplabs.io/"
-      scanUrl: "https://makalu.mapscan.io/"
-       */
-      if (chainList &&chainList.length>0){
-        for (const item of chainList) {
-          let chainId = new Decimal(item.chainId).toHex();
-          CLIENT_CACHE[chainId] = new Web3(new Web3.providers.HttpProvider(item.rpc));
-        }
-      }
+  let chainList = SUPPORTED_CHAIN_LIST
+
+  console.log('chainList',chainList)
+  if (chainList &&chainList.length>0){
+    for (const item of chainList) {
+      let chainId = new Decimal(item.chainId).toHex();
+        CLIENT_CACHE[chainId] = new Web3(new Web3.providers.HttpProvider(item.rpc));
     }
-  }).catch(err => {});
+  }
 }
+
+// Vue.prototype.myMapWeb3 = new Web3('http://18.142.54.137:7445');
+
 asyncChainList();
 
 Vue.config.productionTip = false
 import toastRegistry from './vendor/toast/index'
 import {Providers} from "web3-core";
+import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "barterjs-sdk/dist/constants";
 Vue.use(toastRegistry)
 
 new Vue({

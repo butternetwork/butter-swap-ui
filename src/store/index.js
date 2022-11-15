@@ -10,12 +10,26 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
         chains: {
-            '0x1': {
-                chainId:'0x1',
-                symbol: 'ETH',
-                name: 'Ethereum',
-                network: 'Ethereum Mainnet',
-                icon: require('../assets/token/eth-icon.png')
+            // '0x8682': {
+            //     chainId:'0x8682',
+            //     symbol: 'ETH',
+            //     name: 'Ethereum',
+            //     network: 'Ethereum Private',
+            //     icon: require('../assets/token/eth-icon.png')
+            // },
+            '0xd4': {
+                chainId:'0xd4',
+                symbol: 'MAP',
+                name: 'MAP',
+                network: 'MAP Testnet',
+                icon: require('../assets/token/map.png')
+            },
+            '0x4e454153': {
+                chainId:'0x4e454153',
+                symbol: 'NEAR',
+                name: 'NEAR',
+                network: 'Near Testnet',
+                icon: require("../assets/token/near.png")
             },
             // '0x3': {
             //     chainId:'0x3',
@@ -24,27 +38,27 @@ const store = new Vuex.Store({
             //     network: 'Ethereum Testnet',
             //     icon: require('../assets/token/eth-icon.png')
             // },
-            '0x38': {
-                chainId:'0x38',
-                symbol: 'BSC',
-                name: 'BinanceSmartChain',
-                network: 'BSC Mainnet',
-                icon: require('../assets/token/bsc.png')
-            },
-            // '0x61': {
-            //     chainId:'0x61',
+            // '0x38': {
+            //     chainId:'0x38',
             //     symbol: 'BSC',
             //     name: 'BinanceSmartChain',
-            //     network: 'BinanceSmartChain Mainnet',
-            //     icon: require('../assets/binance.png')
+            //     network: 'BSC Mainnet',
+            //     icon: require('../assets/token/bsc.png')
             // },
-            '0x58f8': {
-                chainId:'0x58f8',
-                symbol: 'MAP',
-                name: 'MAP Protocol',
-                network: 'MAP Mainnet',
-                icon: require('../assets/token/map-black.png')
+            '0x61': {
+                chainId:'0x61',
+                symbol: 'BSC',
+                name: 'BinanceSmartChain',
+                network: 'BSC Testnet',
+                icon: require('../assets/binance.png')
             },
+            // '0x58f8': {
+            //     chainId:'0x58f8',
+            //     symbol: 'MAP',
+            //     name: 'MAP Protocol',
+            //     network: 'MAP Mainnet',
+            //     icon: require('../assets/token/map-black.png')
+            // },
             // '0x13881': {
             //     chainId:'0x13881',
             //     symbol: 'Matic',
@@ -52,13 +66,13 @@ const store = new Vuex.Store({
             //     network: 'Polygon Mainnet',
             //     icon: require('../assets/polygon.png')
             // },
-            '0x89': {
-                chainId:'0x89',
-                symbol: 'POLYGON',
-                name: 'Polygon',
-                network: 'Polygon Mainnet',
-                icon: require('../assets/token/polygon.png')
-            }
+            // '0x89': {
+            //     chainId:'0x89',
+            //     symbol: 'POLYGON',
+            //     name: 'Polygon',
+            //     network: 'Polygon Mainnet',
+            //     icon: require('../assets/token/polygon.png')
+            // }
         },
         changed: 0,
         address: '',
@@ -72,6 +86,7 @@ const store = new Vuex.Store({
         setChainId(state, payload) {
             eventbus.$emit('dataChanged', true)
             payload = new Decimal(payload).toHex();
+            console.log('payload',payload)
             state.chainId = payload;
         },
     },
@@ -103,6 +118,10 @@ const store = new Vuex.Store({
 
                         });
                 });
+        },
+        logout(store, payload) {
+            store.commit('setAddress', '');
+
         },
         switchChain(store, payload) {
             watcherDog.getProvider()

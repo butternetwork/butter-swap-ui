@@ -28,7 +28,7 @@
           <div v-if="exitConntet"  @mouseover="showLogOut=true" @mouseleave="showLogOut=false" class="header-connect-content" id="connect-btn">
             <span @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-if="address" class="header-intall header-intalls">
             <img src="../assets/ant-icon.png"/>{{ $formatAddress(address) }}<span class="header-address-round"></span></span>
-            <span v-else @click="actionConnect()" class="header-intall" >>Connect Wallet</span>
+            <span v-else @click="actionConnect()" class="header-intall" >Connect Wallet</span>
             <span id="logoutBtn" @click.prevent.stop="actionLogOut()" @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-show="showLogOut" class="header-intall header-intalls header-logout">Logout</span>
           </div>
           <div v-else class="header-connect-content">
@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import config from '@/config/base'
+import near from "@/config/near";
 
 export default {
   name: "Header",
@@ -96,14 +98,27 @@ export default {
       window.open('https://t.me/MAPprotocolGroup','blank')
     },
 
-    actionLogOut() {
+   async actionLogOut() {
       this.$store.commit("setAddress","");
       this.showLogOut = false
       this.$emit("exit",false)
       localStorage.setItem('exit',false)
 
-      let chain= document.getElementById('header-chain-content')
+
+     let chainId = await this.$store.getters.getChainId;
+
+     console.log('chainId',chainId)
+
+     if (chainId==config.near.chainHex) {
+       near.closeNearWallet()
+     }
+
+
+
+     let chain= document.getElementById('header-chain-content')
       chain.style.visibility='hidden'
+
+
 
 
       this.exitConntet =  false
@@ -156,7 +171,7 @@ export default {
       this.$store.dispatch('connect');
     },
     actionNetwork() {
-      this.$store.dispatch('switchChain','0x1');
+      this.$store.dispatch('switchChain',config.bsc.chainHex);
     },
     goMap() {
       window.open('https://www.maplabs.io/', '_blank')
@@ -445,7 +460,7 @@ export default {
   -webkit-animation: circle 3s infinite linear;
 }
 
-@-webkit-keyframes circle {
+@keyframes circle {
   0% {
     transform: rotate(0deg);
   }

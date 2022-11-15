@@ -29,7 +29,7 @@
               <span>From</span>
               <div @click="actionChain(2)" class="tran-from-btn">
                 <!--                  <div class="tran-from-btn">-->
-                <img :src="chainFrom.chainImg"/>
+                <img :src="chainFrom.chainLogo"/>
                 <span>{{ chainFrom.chainName }}</span>
                 <img src="../assets/arrow-bottom-black.png"/>
               </div>
@@ -46,7 +46,7 @@
               <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
                      placeholder="0.0"/>
               <div @click="actionOpenToken()" class="tran-send-btn">
-                <img :src="selectToken.url"/>
+                <img :src="selectToken.logo"/>
                 <span>{{ selectToken.symbol }}</span>
                 <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>
               </div>
@@ -66,7 +66,7 @@
               <span>To  </span>
               <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
                 <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
-                <img :src="chainTo.chainImg"/>
+                <img :src="chainTo.chainLogo"/>
                 <span>{{ chainTo.chainName }}</span>
                 <img src="../assets/arrow-bottom-black.png"/>
               </div>
@@ -107,20 +107,20 @@
           </div>
           <!--                connect-->
           <div class="tran-connect">
-            <button v-if="!allowance && !approveHash && allowanceMap"
+            <button v-if="!allowance && !approveHash && chainFrom.chainName!=='NEAR' "
                     :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionApprove()">Approve
             </button>
             <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
               Approving... <img src="../assets/loading.gif"/>
             </button>
-            <button v-if="!allowanceMap && !approveMapHash" :class="chainSuccess==false ? 'tran-connect-approve' :''"
-                    @click="actionMapApprove()">Approve MAP
-            </button>
-            <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">
-              Approving... <img src="../assets/loading.gif"/>
-            </button>
-            <button v-if="allowance && !transferBtn && allowanceMap"
-                    :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="actionTrans()">
+<!--            <button v-if="!allowanceMap && !approveMapHash" :class="chainSuccess==false ? 'tran-connect-approve' :''"-->
+<!--                    @click="actionMapApprove()">Approve MAP-->
+<!--            </button>-->
+<!--            <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">-->
+<!--              Approving... <img src="../assets/loading.gif"/>-->
+<!--            </button>-->
+            <button v-if="allowance && !transferBtn"
+                    :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="actionTrans($event)">
               Transfer
             </button>
             <button v-if="allowance && transferBtn" class="tran-connect-approve">
@@ -137,8 +137,8 @@
               <span>From</span>
               <div @click="actionChain(0)" class="tran-from-btn">
                 <!--                  <div class="tran-from-btn">-->
-                <img :src="chainFrom.chainImg"/>
-                <span>{{ chainFrom.chainName }}</span>
+                <img :src="chainFrom.chainLogo"/>
+                <span>111</span>
                 <img src="../assets/arrow-bottom-red.png"/>
               </div>
             </div>
@@ -196,7 +196,7 @@
               <span>To  </span>
               <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
                 <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
-                <img :src="chainTo.chainImg"/>
+                <img :src="chainTo.chainLogo"/>
                 <span>{{ chainTo.chainName }}</span>
                 <img src="../assets/arrow-bottom-red.png"/>
               </div>
@@ -419,7 +419,7 @@
             <div class="bridge-rate-left">
               Fee<img src="../assets/error.png"/>
             </div>
-            <div class="bridge-rate-right">{{ gasFeeVue }} MAP</div>
+            <div class="bridge-rate-right">{{ gasFeeVue }} {{selectToken.symbol}}</div>
           </div>
           <div class="bridge-rate-content-item">
             <div class="bridge-rate-left">Estimated Time of Arrival</div>
@@ -449,7 +449,7 @@
         <div class="dialog-selectChain-coin">
           <div v-for="(item,index) in listChain" :key="index" @click="handleLink(item,index)" class="dialog-Chain-coin">
             <div class="dialog-selectChain-coin-content">
-              <img :src="item.chainImg"/>
+              <img :src="item.chainLogo"/>
               <span>{{ item.chainName }}</span>
             </div>
           </div>
@@ -480,7 +480,7 @@
             <div class="dialog-token-contentlist">
               <div class="dialog-token-detail">
                 <div class="dialog-token-detail-left">
-                  <img :src="item.img"/>
+                  <img :src="item.logo"/>
                   <div class="dialog-token-detail-left-text">
                     {{ item.name }}
                     <!--                            <span> {{ item.symbol }}</span>-->
@@ -759,7 +759,25 @@ import moment from "moment";
 const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
 import config from '@/config/base'
+import near from '@/config/near'
 import eventBus from "@/eventBus";
+
+//sdk
+import {getBridgeFee, getVaultBalance} from "barterjs-sdk/dist/core/tools/dataFetch";
+import { ChainId, ETH_PRIV_NEAR, BSC_TEST_NEAR ,SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'barterjs-sdk/dist/constants/index.js';
+import {ID_TO_SUPPORTED_TOKEN} from "barterjs-sdk/dist/constants/supported_tokens.js";
+import { getTokenCandidates } from "barterjs-sdk/dist/core/tools/dataFetch.js";
+import {Token} from "barterjs-sdk/dist/entities/index.js";
+import {EVMNativeCoin} from "barterjs-sdk/dist/entities/native/EVMNativeCoin.js";
+import Web3 from "web3";
+import {BarterBridge} from "barterjs-sdk";
+
+
+import * as nearAPI from "near-api-js";
+const { connect, Contract ,keyStores } = nearAPI;
+import { parseNearAmount } from 'near-api-js/lib/utils/format';
+
+
 
 export default {
   name: "Home.vue",
@@ -799,18 +817,18 @@ export default {
       showTranDetail: false,
       chainList: [],
       chainFrom: {
-        chainName: 'Ethereum Mainnet',
-        chainImg: require('../assets/token/eth-icon-gray.png'),
-        chain: 'ETH',
-        chainId: config.defaultChainFrom,
-        contract: config.mapAddress,
+        chainName: "BSC Testnet",
+        chainLogo: require('../assets/token/bsc.png'),
+        chain: 'BSC',
+        chainId: 97,
+        contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(97)],
       },  //From Chain选择
       chainTo: {
-        chainName: 'Makalu Testnet',
-        chainImg: require('../assets/token/map.png'),
-        chain: 'MAP',
-        chainId: config.defaultChainTo,
-        contract: config.toAddress,
+        chainName: "Near Testnet",
+        chainLogo: require('../assets/token/near.png'),
+        chain: 'Near',
+        chainId: 1313161555,
+        contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(1313161555)],
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
@@ -1026,7 +1044,7 @@ export default {
       // dialogApproving: false,//approveing map diaglog
       mapBalance: '',
       chainIdHex: config.eth.chainHex,
-      chainIdNumber: config.eth.chainId,
+      chainIdNumber:config.eth.chainId,
 
       selectTokens: [],
       nftList: [
@@ -1082,7 +1100,7 @@ export default {
       //逻辑-->根据input的value值筛选goodsList中的数据
       let inputContent = this.searchToken.substring(0, 2)
       let arrByZM = [];//声明一个空数组来存放数据
-      let tokenListRes = this.tokenAllList[this.chainIdNumber]
+      let tokenListRes = ID_TO_SUPPORTED_TOKEN(this.chainIdNumber)
       if (tokenListRes) {
         if (inputContent !== '0x') {
           for (let i = 0; i < tokenListRes.length; i++) {
@@ -1198,83 +1216,73 @@ export default {
       }
     },
 
+    //获取token信息
+    actionTokenDetail() {
+      let tokenDetail;
+      let v = this
+
+      // this.actionTokenList()
+
+      //主币
+      if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
+        tokenDetail = new EVMNativeCoin(
+            v.selectToken.chainId,
+            v.selectToken.decimals,
+            v.selectToken.symbol,
+            v.selectToken.name,
+            v.selectToken.logo,
+        )
+        return tokenDetail
+      }
+      //代币
+      else {
+        // console.log(' v.selectToken.chainId,', v.selectToken.chainId,)
+        tokenDetail = new Token(
+            v.selectToken.chainId,
+            v.selectToken.address,
+            v.selectToken.decimals,
+            v.selectToken.symbol,
+            v.selectToken.name,
+            v.selectToken.logo,
+        )
+        return tokenDetail
+      }
+
+    },
+
     //获取vault
     async actionVaultBalance() {
       let v = this
-      let toTokenMint;
-      let toDecimal;
-      let toAddress;
+
       if (v.selectToken.address == null) {
         return;
       }
-      let contract = new v.myWeb3.eth.Contract(tokenAbi, v.selectToken.address)
-      // console.log("actionVaultBalance chainFrom", v.chainFrom)
-      // From
-      if (v.selectToken.isMint && v.selectToken.isMint == 1) {
-        // console.log('mint')
-        v.fromVault = 0
-        v.showFromVault = false
-      } else if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
-        // console.log('zhuFrom',v.chainFrom)
-        let contractFrom = new v.myWeb3.eth.Contract(mapAbi, v.chainFrom.contract)
-        // console.log('contractFrom',contractFrom)
-        let tokenFromAddress = await contractFrom.methods.wToken().call()
-        // console.log(tokenFromAddress,'tokenFromAddress')
-        let contractZhu = new v.myWeb3.eth.Contract(tokenAbi, tokenFromAddress)
-        let fromVault = await contractZhu.methods.balanceOf(v.chainFrom.contract).call();
-        // console.log('fromVault',fromVault)
-
-        v.fromVault = new Decimal(fromVault).div(Math.pow(10, v.selectToken.decimal)).toFixed(4)
-        v.showFromVault = true
-      } else {
-        // console.log('daiFrom')
-        // console.log('chain',v.chainFrom.contract,v.selectToken.address,v.selectToken.decimal)
-        let fromVault = await contract.methods.balanceOf(v.chainFrom.contract).call();
-        // console.log(fromVault,'fromVault')
-        v.fromVault = new Decimal(fromVault).div(Math.pow(10, v.selectToken.decimal)).toFixed(4)
-        v.showFromVault = true
-      }
 
 
+      let tokenDetail = v.actionTokenDetail()
+
+      var prodiver = this.actionProvider()
+
+      console.log('tokenDetail', tokenDetail, v.chainFrom.chainId, v.chainTo.chainId, prodiver)
+
+      let vaultsFrom = await getVaultBalance(
+          v.chainFrom.chainId,
+          tokenDetail,
+          v.chainTo.chainId,
+          prodiver
+      )
+
+      let vaultsTo = await getVaultBalance(
+          v.chainTo.chainId,
+          vaultsFrom.token,
+          v.chainFrom.chainId,
+          prodiver
+      )
 
 
-
-      //To
-      // console.log(' v.selectToken.name', v.selectToken.symbol)
-      for (const item of v.tokenAllList[v.chainTo.chainId]) {
-        if (item.symbol == v.selectToken.symbol) {
-          // console.log(item.symbol,v.selectToken.symbol)
-          toTokenMint = item.isMint
-          toDecimal = item.decimal
-          toAddress = item.address
-        }
-      }
-
-      // console.log('toTokenMint',toTokenMint)
-      const Web3 = require('web3');
-
-      let myToWeb3 = new Web3(v.chainTo.rpc);
-
-      let toContract = new myToWeb3.eth.Contract(tokenAbi, toAddress)
-
-      if (toTokenMint == 1) {
-        v.toVault = 0
-        v.showToVault = false
-      } else if (toAddress == '0x0000000000000000000000000000000000000000') {
-        // console.log('zhuTo')
-        let contractTo = new myToWeb3.eth.Contract(mapAbi, v.chainTo.contract)
-        let tokenToAddress = await contractTo.methods.wToken().call()
-        let toContractZhu = new myToWeb3.eth.Contract(tokenAbi, tokenToAddress)
-        let toVault = await toContractZhu.methods.balanceOf(v.chainTo.contract).call();
-
-        v.toVault = new Decimal(toVault).div(Math.pow(10, toDecimal)).toFixed(4)
-        v.showToVault = true
-      } else {
-        // console.log('daiTo')
-        let toVault = await toContract.methods.balanceOf(v.chainTo.contract).call();
-        v.toVault = new Decimal(toVault).div(Math.pow(10, toDecimal)).toFixed(4)
-        v.showToVault = true
-      }
+      v.toVault = vaultsFrom.balance
+      v.fromVault = vaultsTo.balance
+      // console.log('  v.FromVault',  v.fromVault, v.toVault )
 
 
     },
@@ -1354,7 +1362,7 @@ export default {
 
     //打开Token弹窗
     actionOpenToken() {
-      this.searchToken=''
+      this.searchToken = ''
       this.showSelectToken = true
       this.actionShowToken()
     },
@@ -1392,6 +1400,7 @@ export default {
         this.showFee = false
       } else {
         this.showFee = true
+        this.actionGasFee()
         input.style.color = 'black'
         this.showInsuffcientBalance = false
         transfer.className = ''
@@ -1401,16 +1410,50 @@ export default {
     //获取gas费
     async actionGasFee() {
       //创建合约
-      let web3 = await this.$client(this.chainIdHex);
-      let contract = new web3.eth.Contract(mapAbi, this.chainFrom.contract)
-      // console.log(this.chainTo.chainId, this.chainFrom.contract)
-      let gas = await contract.methods.chainGasFee(this.chainTo.chainId).call();
-      this.gasFee = gas
-      try {
-        this.gasFeeVue = new Decimal(gas).div(new Decimal(Math.pow(10, 18)))
-      } catch (e) {
-        this.gasFeeVue = '0';
+      //
+      let web3Map = new Web3('http://18.142.54.137:7445');
+      let tokenDetail = this.actionTokenDetail()
+      // console.log('tokenDetail',tokenDetail)
+      let provider = this.actionProvider()
+
+      if (!this.sendAmount) {
+        return
       }
+
+      let amount = this.sendAmount.toString()
+      console.log('amount', amount)
+
+      const fee = await getBridgeFee(
+          tokenDetail,
+          this.chainTo.chainId,
+          web3Map.utils.toWei(amount).toString(),
+          provider
+      );
+
+      this.gasFeeVue = new Decimal(fee.amount).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
+
+      console.log('gasFeeVue fee', this.gasFeeVue);
+      console.log('approve', this.allowance, this.transferBtn);
+
+
+      // return
+
+
+      // let web3 = await this.$client(this.chainIdHex);
+      //
+      // let contractAddress = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(this.chainFrom.chainId)]
+      //
+      // let contract = new web3.eth.Contract(mapAbi,contractAddress)
+      // // let contract = new web3.eth.Contract(mapAbi, this.chainFrom.contract)
+      //
+      // let gas = await contract.methods.chainGasFee(this.chainTo.chainId).call();
+      // console.log('gas',gas)
+      // this.gasFee = gas
+      // try {
+      //   this.gasFeeVue = new Decimal(gas).div(new Decimal(Math.pow(10, 18)))
+      // } catch (e) {
+      //   this.gasFeeVue = '0';
+      // }
     },
 
     //交换链
@@ -1428,11 +1471,11 @@ export default {
         })
       }
       let v = this
-      await  this.actionTokenList()
-      let tokenList = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
-      let selectTokens = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
-      let formTokenList = this.$copyObject(this.tokenAllList[this.chainIdNumber]);
-      let toTokenList = this.$copyObject(this.tokenAllList[this.chainTo.chainId]);
+      // await  this.actionTokenList()
+      let tokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber));
+      let selectTokens = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber));
+      let formTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber));
+      let toTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId));
 
       if (!formTokenList || !toTokenList || formTokenList.length === 0 || toTokenList.length === 0) {
         this.tokenList = [];
@@ -1440,20 +1483,33 @@ export default {
         return;
       }
 
-      let intersection = [];
-      for (const item of formTokenList) {
-        for (const token of toTokenList) {
-          if (item.symbol === token.symbol) {
-            item.amount = 0;
-            intersection.push(this.$copyObject(item));
-          }
-        }
-      }
+      // let intersection = [];
+      // for (const item of formTokenList) {
+      //   for (const token of toTokenList) {
+      //     if (item.symbol === token.symbol) {
+      //       item.amount = 0;
+      //       intersection.push(this.$copyObject(item));
+      //     }
+      //   }
+      // }
+
+      let prodiver = this.actionProvider()
+
+      // console.log('prodiver',prodiver,v.chainFrom.chainId,v.chainTo.chainId)
+      const tokenCandidates = await getTokenCandidates(
+          v.chainFrom.chainId, // from chain
+          v.chainTo.chainId, // to chain
+          // prodiver
+          prodiver
+      );
+      console.log('target token', tokenCandidates);
+
 
       //获取地址
       let temp = [];
-      for (let i = 0; i < intersection.length; i++) {
-        let item = intersection[i]
+      for (let i = 0; i < tokenCandidates.length; i++) {
+        let item = tokenCandidates[i]
+        console.log(tokenCandidates[0])
         //如果当前链的币种是选择链上的主币   获取主币余额
         let item2 = {};
         if (item.address === '0x0000000000000000000000000000000000000000') {
@@ -1466,24 +1522,28 @@ export default {
         temp.push(this.$copyObject(item2))
       }
       this.tokenList = temp;
+
       this.selectTokens = temp;
       for (const item of this.selectTokens) {
         if (this.selectToken.symbol === item.symbol) {
           this.balanceZ = item.amount
         }
       }
-      this.tokenAllList[this.chainIdNumber]=this.selectTokens;
 
+      // this.tokenAllList(this.chainIdNumber) = this.selectTokens
+      let tokenlist = ID_TO_SUPPORTED_TOKEN(this.chainIdNumber)
+      tokenlist = this.selectTokens;
+
+      console.log('tokenlist', tokenlist)
     },
 
     //选择Token
     async actionSelectToken(item, index) {
 
       this.selectToken.symbol = item.symbol
-      this.selectToken.decimal = item.decimal
-      this.selectToken.url = item.img
+      this.selectToken.decimals = item.decimals
+      this.selectToken.url = item.logo
       this.selectToken.address = item.address
-      this.selectToken.isMint = item.isMint
 
       // this.selectToken=item
 
@@ -1509,12 +1569,28 @@ export default {
       if (!web3 || !this.tokenList) {
         return item
       }
-      let result = await web3.eth.getBalance(this.account)
+
+      let balance;
+
+      //NEAR 链的情况
+      if (item.symbol === 'NEAR') {
+        // gets account balance
+        const nearConnection = await connect(config.connectionConfig);
+
+        const account = await nearConnection.account(this.account);
+        balance = await account.getAccountBalance();
+        console.log('balance', balance)
+      } else {
+        balance = await web3.eth.getBalance(this.account)
+      }
+
+      //其他链的情况
+
       for (const token of this.tokenList) {
         if (token.symbol === item.symbol) {
           let newObject = {}
-          let decimal = token.decimal
-          newObject.amount = new Decimal(result).div(Math.pow(10, decimal))
+          let decimal = token.decimals
+          newObject.amount = new Decimal(balance.total).div(Math.pow(10, decimal))
           newObject.amount = Math.floor(newObject.amount * 1000000) / 1000000
           item = Object.assign(item, newObject)
           item = JSON.parse(JSON.stringify(item));
@@ -1527,15 +1603,39 @@ export default {
     //获取代币余额
     async getTokenBalance(item) {
       let web3 = await this.$client(this.chainIdHex);
+
       if (!this.chainList || !web3) {
         return item;
       }
       let token_address = item.address;
-      let contract = new web3.eth.Contract(tokenAbi, token_address)
-      // 查询代币余额
-      let balance = await contract.methods.balanceOf(this.account).call();
+      let balance;
+
+      //near链上
+      if (this.chainFrom.symbol === 'NEAR') {
+
+        const nearConnection = await connect(config.connectionConfig);
+        const account = await nearConnection.account(this.account);
+        const contractToken = new Contract(
+            account,// the account object that is connecting
+            token_address, // 代币的地址
+            {
+              // name of contract you're connecting to
+              viewMethods: ["ft_balance_of"], // 获取余额的方法
+            }
+        );
+        balance = await contractToken.ft_balance_of({'account_id': this.account}); // 用户账户地址
+        console.log(balance);
+      }
+      //metamask上
+      else {
+        let contract = new web3.eth.Contract(tokenAbi, token_address)
+        // 查询代币余额
+        balance = await contract.methods.balanceOf(this.account).call();
+      }
+
+
       //获取代币精度
-      let decimals = item.decimal
+      let decimals = item.decimals
       if (balance) {
         let newObject = {}
         newObject.amount = new Decimal(balance).div(Math.pow(10, decimals))
@@ -1553,13 +1653,15 @@ export default {
         //清空检测事件
         this.approveHash = '';
       } else {
-        this.checkMapApproved()
+        this.checkApproved()
       }
 
     },
 
     //发送Transfer交易
-    async actionTrans() {
+    async actionTrans(e) {
+
+      e.preventDefault()
 
       this.actionChainSuccess()
 
@@ -1575,6 +1677,7 @@ export default {
 
       let v = this
 
+
       // return
       let reward_address = v.chainFrom.contract
 
@@ -1584,10 +1687,131 @@ export default {
         v.$toast('Please enter the amount')
         return
       }
-      if (this.toVault && new Decimal(this.toVault).sub(new Decimal(this.sendAmount))<0) {
+
+      if (this.toVault && new Decimal(this.toVault).sub(new Decimal(this.sendAmount)) < 0) {
         v.$toast('Insufficient balance')
         return
       }
+
+
+      const bridge = new BarterBridge();
+
+      v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, v.selectToken.decimals)).toString()
+
+      console.log('sendAllAmount', v.sendAllAmount)
+
+
+      if (this.langToAddress == '') {
+        this.langToAddress = await this.$store.getters.getAddress
+      }
+
+      let tokenDetail = {
+        chainId: v.selectToken.chainId,
+        address: v.selectToken.address,
+        decimals: v.selectToken.decimals,
+        symbol: v.selectToken.symbol,
+        name: v.selectToken.name,
+        logo: v.selectToken.logo,
+      }
+
+      // console.log('this.selectToken',tokenDetail,this.sendAllAmount)
+
+      let request = {
+        fromAddress: v.account,
+        fromToken: tokenDetail,
+        fromChainId: this.chainFrom.chainId,
+        toChainId: this.chainTo.chainId,
+        toAddress: this.langToAddress,
+        amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
+        options: {signerOrProvider: this.myWeb3.eth},
+      };
+
+      let bridgeRequest;
+
+      if (this.chainFrom.symbol == 'NEAR') {
+
+        let nearConnect = await near.asyncNearWallet()
+
+        bridgeRequest = {
+          fromAddress: v.account,
+          fromToken: v.selectToken,
+          fromChainId: this.chainFrom.chainId,
+          toChainId: this.chainTo.chainId,
+          toAddress: this.langToAddress,
+          amount: parseNearAmount(v.sendAmount).toString(),
+          options: {
+            nearProvider: nearConnect.walletConnection,
+            gas: '100000000000000', // 例子
+          },
+        };
+
+      } else {
+
+        //gas预估
+
+        const estimatedGas = await bridge.gasEstimateBridgeToken(request);
+        console.log('gas estimate', estimatedGas);
+
+
+        // 3. Bridge(真正的Bridge)
+        const adjustedGas = Math.floor(
+            Number.parseFloat(estimatedGas) * 1.2
+        ).toString();
+
+        console.log('adjustedGas', adjustedGas)
+
+
+        bridgeRequest = {
+          fromAddress: v.account,
+          fromToken: v.selectToken,
+          fromChainId: this.chainFrom.chainId,
+          toChainId: this.chainTo.chainId,
+          toAddress: this.langToAddress,
+          amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
+          options: {signerOrProvider: this.myWeb3.eth, gas: adjustedGas},
+        };
+      }
+
+
+      // const result = await nearConnect.walletConnection.account().sendMoney('xyli.testnet', parseNearAmount(v.sendAmount));
+
+      // console.log('result',result)
+
+
+      console.log('bridgeRequest',bridgeRequest)
+
+      const receipt = await bridge.bridgeToken(bridgeRequest);
+      console.log('tx receipt', receipt,receipt.transactionHash);
+
+      this.$router.push(`/home?sourceNetwork=${this.$route.query.sourceNetwork}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+
+
+      const promiReceipt = receipt.promiReceipt;
+      await promiReceipt
+          .on('transactionHash', function (hash) {
+            console.log('hash', hash);
+            v.transHash = hash
+            v.transferBtn = true
+            if (v.transHash != null && v.transHash != '') {
+              v.actionSubBridge()
+            }
+            // console.log(`hash`, hash)
+            v.dialogTransing = true
+          })
+          .on('receipt', function (receipt) {
+            console.log('receipt', receipt);
+            v.allowance = true
+            v.transferBtn = false
+            v.dialogTransing = false
+          });
+          this.getAllData()
+          this.actionTimerHistory()
+
+
+
+      // console.log('statusToken',statusToken)
+
+      return
 
 
 
@@ -1634,7 +1858,6 @@ export default {
       // console.log(TokenAddress, 'TokenAddress')
 
       if (this.langToAddress==''){
-        console.log('111')
         this.langToAddress = await this.$store.getters.getAddress
       }
 
@@ -1854,8 +2077,8 @@ export default {
             newObject.toChainName = chain.chainName
           }
         }
-        let tokens = this.tokenAllList[fromChainId]
-        let tokenTo = this.tokenAllList[toChainId]
+        let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId)
+        let tokenTo = ID_TO_SUPPORTED_TOKEN(toChainId)
 
 
         for (let i = 0; i < tokens.length; i++) {
@@ -2013,12 +2236,11 @@ export default {
 
     //切换链
     async handleLink(item) {
-      // console.log('handleLink===>>>',item)
       //To 选择
       let v = this
+
       if (this.selectChain === 1) {
-        // console.log('handleLink===>>> 01')
-        if (item.chain === this.chainFrom.chain) {
+        if (item.chainName === this.chainFrom.chainName) {
           this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
           return;
         }
@@ -2031,14 +2253,15 @@ export default {
         //     return
         //   }
         // }
+        console.log('chainTo',this.chainTo)
         this.chainTo = JSON.parse(JSON.stringify(item));
-        this.destNetwork = item.chain
+        this.destNetwork = item.symbol
         this.showSelectChain = false
         await this.$router.push({
           path: '/',
           query: {
             sourceNetwork: this.$route.query.sourceNetwork,
-            destNetwork: this.chainTo.chain,
+            destNetwork: this.chainTo.symbol,
             ts: Date.now(),
           }
         })
@@ -2050,12 +2273,76 @@ export default {
         return
       }
 
+
+
+      if (item.symbol== 'NEAR') {
+        console.log('item.chainName === this.chainFrom.chainName',item.chainName , this.chainFrom.chainName)
+        if (this.selectChain==0) {
+          this.chainTo = this.chainFrom
+        }
+        if (item.chainName === this.chainTo.chainName) {
+          this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
+          return;
+        }
+
+        let nearAccount = await near.asyncNearWallet()
+        v.account= nearAccount.currentUser.accountId
+        console.log(' v.account', v.account)
+        this.chainIdNumber = item.chainId
+        this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+        this.chainFrom = JSON.parse(JSON.stringify(item));
+        this.showSelectChain = false
+
+        // console.log(' this.chainFrom.symbol', this.chainFrom.symbol,this.chainTo.symbol)
+        // this.$store.dispatch('logout')
+        this.$router.push(`/home?sourceNetwork=${this.chainFrom.symbol}&destNetwork=${this.chainTo.symbol}&ts=${Date.now()}`)
+        console.log('query',this.$route.query )
+        this.actionTokenList()
+        this.actionShowToken()
+        this.actionGasFee()
+        this.actionStatus()
+        this.actionInputFont()
+        this.actionVaultBalance()
+        this.actionApproveOrTransfer()
+            // v.requestData()
+        return
+      }
+
+      if (item.chainName === this.chainFrom.chainName) {
+        this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
+        return;
+      }
+
+
+      if (window.ethereum.chainId === new Decimal(item.chainId).toHex()) {
+        this.chainIdNumber = item.chainId
+
+        let account = await this.myWeb3.eth.getAccounts()
+        this.$store.commit("setAddress",account[0]);
+        this.$store.commit("setChainId",item.chainId);
+        this.chainFrom = JSON.parse(JSON.stringify(item));
+        this.showSelectChain = false
+
+        console.log('qqqqqqq',account,item.chainId)
+        v.$router.push(`/home?sourceNetwork=${item.symbol}&destNetwork=${v.chainTo.symbol}&ts=${Date.now()}`)
+        this.actionTokenList()
+        this.actionShowToken()
+        this.actionGasFee()
+        this.actionStatus()
+        this.actionInputFont()
+        this.actionVaultBalance()
+        this.actionApproveOrTransfer()
+        return
+      }
+
       this.$watcher.getProvider().then(async provider => {
+        // let chainId = item.chainId.toHex();
+        console.log('item.chainId',item.chainId)
         let chainId = new Decimal(item.chainId).toHex();
         let params = {chainId}
-        console.log('chainId',chainId)
         if (provider) {
           try {
+            console.log('========')
             await provider.request({
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: chainId }]
@@ -2064,6 +2351,7 @@ export default {
           } catch (error) {
             try {
               let chains = this.$store.getters.getChains;
+              console.log('chains',chains)
               let chain = chains[chainId];
               params.rpcUrls = [item.rpc];
               params.chainName = chain.name;
@@ -2082,26 +2370,13 @@ export default {
           console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
           return false;
         }
-
-        // let chainId = new Decimal(item.chainId).toHex();
-        // let params = {chainId}
-        // let method = 'wallet_switchEthereumChain';
-        // let chains = this.$store.getters.getChains;
-        // let chain = chains[chainId];
-        // if (chain.symbol !== 'ETH') {
-        //   method = 'wallet_addEthereumChain';
-        //   params.rpcUrls = [item.rpc];
-        //   params.chainName = chain.name;
-        // }
-        // console.log('params',params)
-        // provider.request({method, params: [params]});
+        console.log('========',this.chainFrom,this.chainTo)
         this.showSelectChain=false;
         //成功后 历史记录变成第一页
         v.currentPage=1
-        // window.ethereum.request({method,params:[params]});
       }).catch(error => {
+        this.chainFrom = JSON.parse(JSON.stringify(item));
         v.requestData()
-
       });
     },
 
@@ -2172,9 +2447,9 @@ export default {
 
       //当前链
       // var chain = this.chainFrom.coin
-      let reward_address = v.chainFrom.contract
+      let reward_address = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
       let token_address = v.selectToken.address
-      v.tokenAllList[v.chainFrom.chainId].forEach(item => {
+      ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
         if (v.selectToken.symbol == item.symbol) {
           token_address = item.address
           // console.log('token_address', token_address)
@@ -2257,9 +2532,9 @@ export default {
       let v = this
       //当前链
       // var chain = this.chainFrom.coin
-      let reward_address = v.chainFrom.contract
+      let reward_address = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
       let token_address;
-      v.tokenAllList[v.chainFrom.chainId].forEach(item => {
+      ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
         if (item.symbol == 'MAP') {
           token_address = item.address
           // console.log('map token_address', token_address)
@@ -2339,12 +2614,11 @@ export default {
         clearInterval(v.statusTimer);
         v.statusTimer = null;
       }
-      let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, v.selectToken.address);
+      let approving = this.getApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, v.selectToken.address);
       if (approving == 'done') {
         //关闭弹窗
         v.dialogApproving = false;
-        v.dialogApproving = false;
-        v.checkMapApproved()
+        v.checkApproved()
         return;
       }
       let timer
@@ -2352,7 +2626,7 @@ export default {
         //打开弹窗
         v.dialogApproving = true
         timer = setInterval(() => {
-          v.checkMapApproved(timer);
+          v.checkApproved(timer);
         }, 1000);
         v.statusTimer = timer
       }
@@ -2369,13 +2643,23 @@ export default {
         return
       }
 
+      if (v.chainFrom.symbol=='NEAR') {
+        //Near链上 代币不用approve
+        v.allowance = true;
+        v.transferBtn = false
+        v.approveHash = ''
+        console.log('1111111',v.chainFrom.symbol)
+        return true
+      }
+
+
+
       if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
         // console.log('主币不用Approve')
         v.allowance = true;
         v.transferBtn = false
-        v.allowanceMap = true
         v.approveHash = ''
-        return
+        return true
       }
 
       if (!v.account) {
@@ -2385,26 +2669,34 @@ export default {
       let token = v.selectToken.symbol
       let tokenAddress = ''
 
-      v.tokenAllList[v.chainFrom.chainId].forEach(item => {
+      ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
         if (item.symbol == token) {
           tokenAddress = item.address
           return
         }
       })
-      let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress)
+
+
+
+      let approving = this.getApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress)
+
+      console.log('approving',approving)
+
       // v.dialogApproving = false;
       if (approving === 'done') {
         // console.log(approving)
         v.allowance = true;
         //清空检测事件
         v.approveHash = '';
+        v.transferBtn = false
         v.checkApproveToken = ''
         v.dialogApproving = false;
 
         if (timer) {
           clearInterval(timer);
         }
-        this.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
+        this.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
+        console.log(' v.allowance ', v.allowance , v.transferBtn )
         return;
       } else if (approving === 'doing') {
         v.allowance = false
@@ -2413,21 +2705,22 @@ export default {
         v.approveHash = false
         v.dialogApproving = false;
       }
-      // console.log('dialog========', v.dialogApproving)
 
       let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
-      contract.methods.allowance(v.account, v.chainFrom.contract).call((error, result) => {
-        // console.log('result',result)
+      // console.log('contract',contract,tokenAddress)
+      contract.methods.allowance(v.account, MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call((error, result) => {
+        console.log('result',result)
         if (result && result != 0) {
           v.allowance = true;
           //清空检测事件
           v.approveHash = '';
+          v.transferBtn = false
           v.checkApproveToken = ''
           if (timer) {
             clearInterval(timer);
           }
           v.dialogApproving = false;
-          v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
+          v.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
         } else {
           v.allowance = false;
           // v.approveHash = false;
@@ -2439,102 +2732,102 @@ export default {
     },
 
     //检查MAP是否approve
-    async checkMapApproved(timer) {
-      let v = this
-
-      if (!this.$web3) {
-        return
-      }
-      if (!v.account) {
-        return
-      }
-
-      var tokenAddress = ''
-      let token = v.selectToken.symbol
-
-      v.tokenAllList[v.chainFrom.chainId].forEach(item => {
-
-        if (item.symbol == token) {
-          tokenAddress = item.address
-          return
-        }
-      })
-
-      let approving = this.getApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress)
-      // v.dialogApproving = false;
-      // console.log('approving', approving)
-
-      if (parseInt(v.chainFrom.chainId) != 22776) {
-
-        await v.actionGasFee()
-
-        if (v.gasFee > 0) {
-          v.allowanceMap = false
-          v.approveMapHash = false
-
-          v.tokenList.forEach(item => {
-
-            if (item.symbol == 'MAP') {
-              tokenAddress = item.address
-              return
-            }
-          })
-
-
-          if (approving === 'done') {
-            v.allowanceMap = true
-            v.approveMapHash = ''
-            v.dialogApproving = false;
-            // v.dialogApproving = false
-            if (timer) {
-              clearInterval(timer);
-            }
-            v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
-            // return;
-          } else if (approving === 'doing') {
-            v.allowanceMap = false
-            v.approveMapHash = true
-          } else if (approving === 'none') {
-            v.approveMapHash = false
-            v.dialogApproving = false;
-            // v.dialogApproving = false
-          }
-
-          let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
-          // console.log("approv account", v.account)
-          contract.methods.allowance(v.account, v.chainFrom.contract).call(function (error, result) {
-            if (result && result != 0) {
-              v.allowanceMap = true
-              v.approveMapHash = true
-              if (timer) {
-                clearInterval(timer);
-              }
-              v.dialogApproving = false;
-              // console.log("approv 8", v.account)
-              v.setApproveStatus(`${v.account}${v.chainFrom.contract}`, tokenAddress, false);
-              v.checkApproved(v.statusTimer)
-            } else {
-              v.allowanceMap = false
-            }
-            if (error) {
-              //console.log('error', error)
-            }
-          });
-
-        } else {
-          v.allowanceMap = true
-          v.approveMapHash = true
-          v.checkApproved(v.statusTimer)
-        }
-
-      } else {
-        v.allowanceMap = true
-        v.approveMapHash = true
-        await v.actionGasFee()
-        await v.checkApproved(v.statusTimer)
-      }
-
-    },
+    // async checkMapApproved(timer) {
+    //   let v = this
+    //
+    //   if (!this.$web3) {
+    //     return
+    //   }
+    //   if (!v.account) {
+    //     return
+    //   }
+    //
+    //   var tokenAddress = ''
+    //   let token = v.selectToken.symbol
+    //
+    //   ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
+    //
+    //     if (item.symbol == token) {
+    //       tokenAddress = item.address
+    //       return
+    //     }
+    //   })
+    //
+    //   let approving = this.getApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress)
+    //   // v.dialogApproving = false;
+    //   // console.log('approving', approving)
+    //
+    //   if (parseInt(v.chainFrom.chainId) != 22776) {
+    //
+    //     await v.actionGasFee()
+    //
+    //     if (v.gasFee > 0) {
+    //       v.allowanceMap = false
+    //       v.approveMapHash = false
+    //
+    //       v.tokenList.forEach(item => {
+    //
+    //         if (item.symbol == 'MAP') {
+    //           tokenAddress = item.address
+    //           return
+    //         }
+    //       })
+    //
+    //
+    //       if (approving === 'done') {
+    //         v.allowanceMap = true
+    //         v.approveMapHash = ''
+    //         v.dialogApproving = false;
+    //         // v.dialogApproving = false
+    //         if (timer) {
+    //           clearInterval(timer);
+    //         }
+    //         v.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
+    //         // return;
+    //       } else if (approving === 'doing') {
+    //         v.allowanceMap = false
+    //         v.approveMapHash = true
+    //       } else if (approving === 'none') {
+    //         v.approveMapHash = false
+    //         v.dialogApproving = false;
+    //         // v.dialogApproving = false
+    //       }
+    //
+    //       let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
+    //       // console.log("approv account", v.account)
+    //       contract.methods.allowance(v.account, MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call(function (error, result) {
+    //         if (result && result != 0) {
+    //           v.allowanceMap = true
+    //           v.approveMapHash = true
+    //           if (timer) {
+    //             clearInterval(timer);
+    //           }
+    //           v.dialogApproving = false;
+    //           // console.log("approv 8", v.account)
+    //           v.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
+    //           v.checkApproved(v.statusTimer)
+    //         } else {
+    //           v.allowanceMap = false
+    //         }
+    //         if (error) {
+    //           //console.log('error', error)
+    //         }
+    //       });
+    //
+    //     } else {
+    //       v.allowanceMap = true
+    //       v.approveMapHash = true
+    //       v.checkApproved(v.statusTimer)
+    //     }
+    //
+    //   } else {
+    //     v.allowanceMap = true
+    //     v.approveMapHash = true
+    //     await v.actionGasFee()
+    //     await v.checkApproved(v.statusTimer)
+    //   }
+    //
+    // },
 
     async requestHistory(isNext = true) {
       if (isNext) {
@@ -2554,23 +2847,27 @@ export default {
 
     //获取链列表
     async actionGetChain() {
-      let v = this;
-      let result = await this.$http.chainList()
-      if (result.code === 200) {
-        this.chainList = result.data.list
-        let chainId = new Decimal(this.chainIdNumber).toHex();
+        let v = this;
+        // let result = await this.$http.chainList()
+        // if (result.code === 200) {
+        //   this.chainList = result.data.list
+        v.chainList = SUPPORTED_CHAIN_LIST
+        console.log( v.chainList)
+
+        let chainId = new Decimal(v.chainIdNumber).toHex();
         let query = this.$route.query ? this.$route.query : {}
         let chains = await this.$store.getters.getChains;
         let chain = chains[chainId];
 
-        //刷新
+      //刷新
         if (this.selectChain == -1) {
           query.sourceNetwork=chain.symbol;
         } else
             //切换
         if (this.selectChain == 0) {
           if (!chain) {
-            chain = chains['0x1'];
+            chain = chains[config.bsc.chainHex];
+            // chain = chains['0x1'];
           }
           let temp = query.sourceNetwork;
           query.sourceNetwork = chain.symbol;
@@ -2582,25 +2879,32 @@ export default {
         }
 
         if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-          if (query.sourceNetwork == 'MAP') {
-            query.destNetwork = 'ETH';
+          if (query.sourceNetwork == 'NEAR') {
+            query.destNetwork = 'BSC';
           } else {
-            query.destNetwork = 'MAP';
+            query.destNetwork = 'NEAR';
           }
         }
+        // if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
+        //   if (query.sourceNetwork == 'MAP') {
+        //     query.destNetwork = 'ETH';
+        //   } else {
+        //     query.destNetwork = 'MAP';
+        //   }
+        // }
 
         this.showSelectChain=false;
         this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
 
         for (let item of this.chainList) {
-          if (item.chain.toUpperCase() === query.sourceNetwork.toUpperCase()) {
+          if (item.symbol.toUpperCase() === query.sourceNetwork.toUpperCase()) {
             v.chainFrom = JSON.parse(JSON.stringify(item));
           }
-          if (item.chain.toUpperCase() === query.destNetwork.toUpperCase()) {
+          if (item.symbol.toUpperCase() === query.destNetwork.toUpperCase()) {
             v.chainTo = JSON.parse(JSON.stringify(item));
           }
         }
-      }
+      // }
     },
 
     //获取Token列表
@@ -2609,32 +2913,51 @@ export default {
         this.tokenAllList = [];
         return;
       }
-      let result = await this.$http.tokenList()
-      if (result.code !== 200) {
-        this.tokenAllList = [];
-        return;
-      }
-      this.tokenAllList = result.data.list;
-      this.tokenList = this.tokenAllList[this.chainIdNumber];
+      let v = this
+      console.log('this.chainIdNumber',this.chainIdNumber)
+      this.tokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId);
+      // console.log(' this.tokenList', this.tokenList,ID_TO_SUPPORTED_TOKEN(this.chainIdNumber))
+
       let selectToken = null;
       let flag = false;
       if (!this.tokenList) {
         return
       }
+
+      let prodiver = this.actionProvider()
+
+      const tokenCandidates = await getTokenCandidates(
+          v.chainFrom.chainId, // from chain
+          v.chainTo.chainId, // to chain
+          // prodiver
+          prodiver
+      );
+      this.tokenList = tokenCandidates
+
+      console.log('tokenList1111111',this.tokenList)
+
       for (let i = 0; i < this.tokenList.length; i++) {
+        // if (this.tokenList[i].symbol === 'NEAR') {
         if (this.tokenList[i].symbol === 'MAP') {
           selectToken = JSON.parse(JSON.stringify(this.tokenList[i]))
           flag = true;
           break;
         }
       }
+
+
       if (!selectToken) {
         selectToken = JSON.parse(JSON.stringify(this.tokenList[0]))
       }
       this.selectToken = selectToken;
-      this.selectToken.url = selectToken.img;
+      this.selectToken.url = selectToken.logo;
 
-      let approvedResult = await this.checkMapApproved(this.statusTimer);
+      let approvedResult = await this.checkApproved(this.statusTimer);
+      console.log('approvedResult',approvedResult,this.statusTimer)
+      // let approvedResult = await this.checkMapApproved(this.statusTimer);
+      if (approvedResult == 'undefined') {
+        approvedResult = false
+      }
       if (!flag) {
         this.allowance = approvedResult;
       }
@@ -2642,22 +2965,27 @@ export default {
 
     //判断当前链跟选择的from链是否一致
     async actionChainSuccess() {
+      console.log('chainSuccess',new Decimal(this.chainFrom.chainId).toNumber(),this.chainIdNumber)
       this.chainSuccess = new Decimal(this.chainFrom.chainId).toNumber() == this.chainIdNumber;
     },
 
+    //provider
+    actionProvider() {
+      let provider = {
+        url: 'http://18.142.54.137:7445', // map test rpc
+        chainId: 212,
+      };
+      return provider
+    },
+
     async getAllData() {
-      // if (this.isLoadingAllData){
-      //   console.log('Home getAllData 01')
-      //   // window.location.reload();
-      //   return;
-      // }
+      console.log('window.ethereum.chainId',window.ethereum.chainId)
       this.isLoadingAllData = true;
       this.sendAmount = ''
       let address = await this.$store.getters.getAddress;
       if (!address) {
         window.ethereum.enable()
         this.isLoadingAllData = false;
-        // this.$router.push('home?sourceNetwork=ETH&destNetwork=MAP')
         return;
       }
       this.account = address;
@@ -2665,22 +2993,36 @@ export default {
       let chainId = await this.$store.getters.getChainId;
       this.chainIdHex = new Decimal(chainId).toHex();
       this.chainIdNumber = new Decimal(chainId).toNumber();
+
+      ///当前链是NEAR链
+      if (this.chainFrom.symbol==='NEAR') {
+        let nearAccount = await near.asyncNearWallet()
+        this.account= nearAccount.currentUser.accountId
+        console.log(' v.account', this.account)
+        this.chainIdHex = config.near.chainHex
+        this.chainIdNumber = config.near.chainId
+        this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+        this.$store.commit("setChainId",config.near.chainId);
+        this.allowance = true;
+        this.transferBtn = false
+        this.allowanceMap = true
+        this.approveHash = ''
+        // this.$router.push(/`/home?sourceNetwork=${this.$route.query.sourceNetwork}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+      }
       await this.actionGetChain()
       await this.actionTokenList()
-      await this.actionChainSuccess()
       await this.actionShowToken()
       await this.actionVaultBalance()
-      this.actionGasFee()
       this.actionStatus()
       this.actionInputFont()
+      await this.actionChainSuccess()
       this.isLoadingAllData = false;
-      // await this.actionMapStatus()
     },
 
     async requestData() {
       this.$watcher.getProvider().then(provider => {
         this.getAllData();
-        this.actionTimerHistory();
+        // this.actionTimerHistory();
       }).catch(err => {
       });
     },
@@ -2724,7 +3066,8 @@ export default {
     this.cleanStatusTimer();
   },
 
-  mounted() {
+ async mounted() {
+    //token列表
     this.isLoadingAllData = false;
     this.cleanHistoryTimer();
     this.cleanLoadingTimer();

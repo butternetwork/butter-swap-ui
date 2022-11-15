@@ -1,3 +1,8 @@
+import * as nearAPI from "near-api-js";
+
+const { keyStores } = nearAPI;
+
+
 export default {
     baseUrl: 'https://bridge-api.maplabs.io/',
 
@@ -7,17 +12,17 @@ export default {
 
 
     defaultChain: {
-        from: '1',
+        from: '34434',
         to: '22776'
     },
 
     eth: {
-        chainId: '1',
-        chainHex: '0x1',
+        chainId: '34434',
+        chainHex: '0x8682',
     },
     bsc: {
-        chainId: '56',
-        chainHex: '0x38',
+        chainId: '97',
+        chainHex: '0x61',
     },
     map: {
         chainId: '22776',
@@ -26,5 +31,21 @@ export default {
     polygon:{
         chainId: '137',
         chainHex: '0x89',
+    },
+
+    near:{
+        chainId: 1313161555,
+        chainHex: 0x4e454153,
+    },
+
+
+    connectionConfig : {
+        networkId: "testnet",
+        keyStore: new keyStores.BrowserLocalStorageKeyStore(), // first create a key store
+        nodeUrl: "https://rpc.testnet.near.org",
+        walletUrl: "https://wallet.testnet.near.org",
+        helperUrl: "https://helper.testnet.near.org",
+        explorerUrl: "https://explorer.testnet.near.org",
     }
+
 }
