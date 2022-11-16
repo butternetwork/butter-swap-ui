@@ -43,8 +43,8 @@ export default {
             walletConnection.requestSignIn(
                 contract, // contract requesting access
                 "Butter Bridge", // optional title
-                'http://18.139.224.21:7001' , // optional redirect URL on success
-                'http://18.139.224.21:7001', // optional redirect URL on success
+                "http://18.139.224.21:7001" , // optional redirect URL on success
+                "http://18.139.224.21:7001", // optional redirect URL on success
             );
 
             // const account = await nearConnection.account(currentUser.accountId);
