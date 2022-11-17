@@ -34,8 +34,8 @@ export default {
     },
 
     near:{
-        chainId: 1313161555,
-        chainHex: 0x4e454153,
+        chainId: '5566818579631833089',
+        chainHex: '0x4d41500100000001',
     },
 
 

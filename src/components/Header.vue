@@ -180,8 +180,10 @@ export default {
       let chainId = await this.$store.getters.getChainId;
       let chains = await this.$store.getters.getChains;
 
+      console.log('chainId',chains[chainId.toString()])
+
       let chain=null;
-      if (chains[chainId]) {
+      if (chains[chainId.toString()]) {
         chain = chains[chainId];
         this.error = false;
       } else {
@@ -194,11 +196,14 @@ export default {
         this.chain=chain;
         // console.log('this.chain',this.chain)
       }
+      console.log(' this.error', this.error)
+      console.log('this.chain',this.chain)
 
     },
     async requestData() {
       this.$watcher.getProvider().then((provider) => {
         this.matchChain();
+        console.log('0000000')
       }).catch(err => {
         this.error = true
       })

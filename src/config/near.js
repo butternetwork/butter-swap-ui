@@ -6,7 +6,7 @@ const { connect, WalletConnection ,KeyPair } = nearAPI;
 
 import config from "./base";
 
-import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "barterjs-sdk/dist/constants";
+import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "butterjs-sdk/dist/constants";
 
 
 let currentUser;
@@ -20,7 +20,7 @@ export default {
 
         const walletConnection = new WalletConnection(nearConnection);
 
-        let contract = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.near.chainId)]
+        let contract = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.near.chainId.toString())]
 
         //判断是否登录获取账户信息
         if (walletConnection.getAccountId()) {
@@ -43,15 +43,12 @@ export default {
             walletConnection.requestSignIn(
                 contract, // contract requesting access
                 "Butter Bridge", // optional title
-                "http://18.139.224.21:7001" , // optional redirect URL on success
-                "http://18.139.224.21:7001", // optional redirect URL on success
+                // "http://18.139.224.21:7001" , // optional redirect URL on success
+                // "http://18.139.224.21:7001", // optional redirect URL on success
             );
 
-            // const account = await nearConnection.account(currentUser.accountId);
-            // await account.getAccessKeys();
-
             this.$store.commit("setAddress",currentUser.accountId);
-            this.$store.commit("setChainId",config.near.chainId);
+            this.$store.commit("setChainId",config.near.chainId.toString());
             this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
         }
 

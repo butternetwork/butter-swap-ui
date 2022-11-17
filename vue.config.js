@@ -3,6 +3,7 @@ module.exports = {
     publicPath: '/',
     /* 是否在构建生产包时生成 sourceMap 文件，false将提高构建速度 */
     productionSourceMap: false,
+    transpileDependencies: ['/butterjs-sdk/']
     /* 代码保存时进行eslint检测 */
     // lintOnSave: true,
     // devServer: {

@@ -7,7 +7,7 @@ import api from './api/api'
 import eventbus from './eventBus.js'
 import './assets/css/stylesheet.css'
 import Decimal from 'decimal.js';
-import {SUPPORTED_CHAIN_LIST} from 'barterjs-sdk/dist/constants/index.js';
+import {SUPPORTED_CHAIN_LIST} from 'butterjs-sdk/dist/constants/index.js';
 // import near from '@/config/neartest'
 
 
@@ -89,7 +89,7 @@ asyncChainList();
 Vue.config.productionTip = false
 import toastRegistry from './vendor/toast/index'
 import {Providers} from "web3-core";
-import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "barterjs-sdk/dist/constants";
+import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "butterjs-sdk/dist/constants";
 Vue.use(toastRegistry)
 
 new Vue({

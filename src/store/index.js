@@ -24,8 +24,8 @@ const store = new Vuex.Store({
                 network: 'MAP Testnet',
                 icon: require('../assets/token/map.png')
             },
-            '0x4e454153': {
-                chainId:'0x4e454153',
+            '0x4d41500100000001': {
+                chainId:'0x4d41500100000001',
                 symbol: 'NEAR',
                 name: 'NEAR',
                 network: 'Near Testnet',
