@@ -53,7 +53,8 @@
             </div>
             <div v-show="showFromVault" class="tran-send-vault">
               <span>Vault:</span>
-              <span>{{ fromVault }} {{ selectToken.symbol }}</span>
+              <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token</span>
+              <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
             </div>
           </div>
           <!--                change-->
@@ -87,7 +88,9 @@
             </div>
             <div v-show="showToVault" class="tran-send-vault">
               <span>Vault:</span>
-              <span>{{ toVault }} {{ selectToken.symbol }}</span>
+              <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token</span>
+              <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
+
             </div>
             <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
               <div class="tran-send-address-left">
@@ -770,7 +773,7 @@ import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
 import {EVMNativeCoin} from "butterjs-sdk/dist/entities/native/EVMNativeCoin.js";
 import Web3 from "web3";
-import {ButterBridge} from "butterjs-sdk";
+import { ButterBridge } from "butterjs-sdk/dist/core/bridge/bridge.js";
 
 
 import * as nearAPI from "near-api-js";
@@ -1087,8 +1090,6 @@ export default {
 
       var prodiver = this.actionProvider()
 
-      console.log('tokenDetail', tokenDetail, v.chainFrom.chainId, v.chainTo.chainId, prodiver)
-
       let vaultsFrom = await getVaultBalance(
           v.chainFrom.chainId,
           tokenDetail,
@@ -1102,10 +1103,21 @@ export default {
           v.chainFrom.chainId,
           prodiver
       )
+      if (vaultsFrom && vaultsFrom.isMintable) {
+        v.toVault = vaultsFrom
+      }
+      else  {
+        v.toVault = new Decimal(vaultsFrom.balance).div(Math.pow(10,v.selectToken.decimals))
+      }
 
-      v.toVault = new Decimal(vaultsFrom.balance).div(Math.pow(10,v.selectToken.decimals))
-      v.fromVault = new Decimal(vaultsTo.balance).div(Math.pow(10,v.selectToken.decimals))
-      // console.log('  v.FromVault',  v.fromVault, v.toVault )
+      if (vaultsTo && vaultsTo.isMintable) {
+        v.fromVault = vaultsTo
+      }
+      else  {
+        v.fromVault = new Decimal(vaultsTo.balance).div(Math.pow(10,v.selectToken.decimals))
+      }
+
+      console.log('  v.FromVault',  vaultsFrom, vaultsTo )
 
 
     },
@@ -1539,7 +1551,7 @@ export default {
         logo: v.selectToken.logo,
       }
 
-      // console.log('this.selectToken',tokenDetail,this.sendAllAmount)
+      console.log('this.selectToken',tokenDetail,this.sendAllAmount)
 
       let request = {
         fromAddress: v.account,
@@ -1550,6 +1562,8 @@ export default {
         amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
         options: {signerOrProvider: this.myWeb3.eth},
       };
+
+      console.log('request',request,'this.myWeb3.eth',this.myWeb3.eth)
 
       let bridgeRequest;
 
@@ -1574,6 +1588,7 @@ export default {
 
         //gas预估
 
+        console.log('estimatedGas')
         const estimatedGas = await bridge.gasEstimateBridgeToken(request);
         console.log('gas estimate', estimatedGas);
 
@@ -1586,21 +1601,22 @@ export default {
         console.log('adjustedGas', adjustedGas)
 
 
+        if (this.sendAmount && new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue)) < 0) {
+          v.$toast('Insufficient balance')
+            return
+        }
+
+
         bridgeRequest = {
           fromAddress: v.account,
           fromToken: v.selectToken,
           fromChainId: this.chainFrom.chainId,
           toChainId: this.chainTo.chainId,
           toAddress: this.langToAddress,
-          amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
+          amount: this.myWeb3.utils.toWei(new Decimal(v.sendAmount).sub(new Decimal(this.gasFeeVue)).toString()),
           options: {signerOrProvider: this.myWeb3.eth, gas: adjustedGas},
         };
       }
-
-
-      // const result = await nearConnect.walletConnection.account().sendMoney('xyli.testnet', parseNearAmount(v.sendAmount));
-
-      // console.log('result',result)
 
 
       console.log('bridgeRequest',bridgeRequest)
@@ -1608,7 +1624,12 @@ export default {
       const receipt = await bridge.bridgeToken(bridgeRequest);
       console.log('tx receipt', receipt,receipt.transactionHash);
 
-      this.$router.push(`/home?sourceNetwork=${this.$route.query.sourceNetwork}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+      if (this.chainFrom.symbol=='NEAR') {
+        this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+        return
+      }
+
+
 
 
       const promiReceipt = receipt.promiReceipt;
@@ -1873,6 +1894,7 @@ export default {
         return;
       }
       this.historyList = result.data.list
+      return
       this.total = result.data.total
       this.pageNum = Math.ceil(this.total / this.pageSize) || 1;
       if (this.historyList.length <= 0) {
