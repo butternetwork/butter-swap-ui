@@ -25,8 +25,8 @@ export default {
         chainHex: '0x61',
     },
     map: {
-        chainId: '22776',
-        chainHex: '0x58f8',
+        chainId: '212',
+        chainHex: '0xd4',
     },
     polygon:{
         chainId: '137',

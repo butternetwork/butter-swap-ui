@@ -53,7 +53,7 @@
             </div>
             <div v-show="showFromVault" class="tran-send-vault">
               <span>Vault:</span>
-              <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token</span>
+              <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
               <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
             </div>
           </div>
@@ -88,7 +88,7 @@
             </div>
             <div v-show="showToVault" class="tran-send-vault">
               <span>Vault:</span>
-              <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token</span>
+              <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
               <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
 
             </div>
@@ -821,18 +821,18 @@ export default {
       showTranDetail: false,
       chainList: [],
       chainFrom: {
+        chainName: "MAP Testnet",
+        chainLogo: require('../assets/token/map.png'),
+        chain: 'MAP',
+        chainId: '212',
+        contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID('212')],
+      },  //From Chain选择
+      chainTo: {
         chainName: "BSC Testnet",
         chainLogo: require('../assets/token/bsc.png'),
         chain: 'BSC',
         chainId: '97',
         contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID('97')],
-      },  //From Chain选择
-      chainTo: {
-        chainName: "Near Testnet",
-        chainLogo: require('../assets/token/near.png'),
-        chain: 'Near',
-        chainId: '5566818579631833089',
-        contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID('5566818579631833089')],
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
@@ -1542,6 +1542,22 @@ export default {
         this.langToAddress = await this.$store.getters.getAddress
       }
 
+      if (this.chainTo.symbol=='NEAR') {
+        console.log('this.langToAddress.lastIn',this.langToAddress.lastIndexOf('.testnet'))
+
+        let testnet = /.testnet$/
+        let near = /.near$/
+
+        //校验near上时 地址要以.testnet .near 结尾
+        if ( testnet.test(this.langToAddress) || near.test(this.langToAddress))   {  // if ( this.langToAddress.lastIndexOf('.testnet')!== -1 || this.langToAddress.lastIndexOf('.near')!==-1) {
+
+        }else  {
+          this.$toast('Please enter the address of the NEAR chain')
+          return
+        }
+      }
+
+
       let tokenDetail = {
         chainId: v.selectToken.chainId,
         address: v.selectToken.address,
@@ -1563,7 +1579,8 @@ export default {
         options: {signerOrProvider: this.myWeb3.eth},
       };
 
-      console.log('request',request,'this.myWeb3.eth',this.myWeb3.eth)
+      console.log('request',request)
+
 
       let bridgeRequest;
 
@@ -1577,7 +1594,7 @@ export default {
           fromChainId: this.chainFrom.chainId,
           toChainId: this.chainTo.chainId,
           toAddress: this.langToAddress,
-          amount: parseNearAmount(v.sendAmount).toString(),
+          amount: parseNearAmount((new Decimal(v.sendAmount).sub(new Decimal(this.gasFeeVue)))).toString(),
           options: {
             nearProvider: nearConnect.walletConnection,
             gas: '100000000000000', // 例子
@@ -1602,7 +1619,7 @@ export default {
 
 
         if (this.sendAmount && new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue)) < 0) {
-          v.$toast('Insufficient balance')
+          v.$toast('The transfer amount needs to be greater than Fee')
             return
         }
 
@@ -2117,6 +2134,12 @@ export default {
         this.actionStatus()
         this.actionInputFont()
         this.actionVaultBalance()
+        if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+          let address = await this.$store.getters.getAddress;
+          this.sortAddress = this.$formatAddress(address);
+        }else  {
+          this.sortAddress = ''
+        }
         return
       }
 
@@ -2728,10 +2751,10 @@ export default {
         }
 
         if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-          if (query.sourceNetwork == 'NEAR') {
-            query.destNetwork = 'BSC';
+          if (query.sourceNetwork == 'BSC') {
+            query.destNetwork = 'MAP';
           } else {
-            query.destNetwork = 'NEAR';
+            query.destNetwork = 'BSC';
           }
         }
         // if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
@@ -2868,6 +2891,10 @@ export default {
       this.actionStatus()
       this.actionInputFont()
       await this.actionChainSuccess()
+      if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+      }else  {
+        this.sortAddress = ''
+      }
       this.isLoadingAllData = false;
     },
 
@@ -2920,7 +2947,6 @@ export default {
 
  async mounted() {
    //token列表
-   console.log('MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.near.chainId.toString())]',MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(new Decimal(config.near.chainId).toString())])
 
     this.isLoadingAllData = false;
     this.cleanHistoryTimer();

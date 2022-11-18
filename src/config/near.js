@@ -36,6 +36,7 @@ export default {
             const account = await nearConnection.account(currentUser.accountId);
             await account.getAccessKeys()
             console.log('walletAccountObj',walletAccountObj)
+            console.log('_networkId',walletConnection._networkId)
             console.log('success')
         }
         //没有登录

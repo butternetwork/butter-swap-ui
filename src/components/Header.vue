@@ -171,7 +171,7 @@ export default {
       this.$store.dispatch('connect');
     },
     actionNetwork() {
-      this.$store.dispatch('switchChain',config.bsc.chainHex);
+      this.$store.dispatch('switchChain',config.map.chainHex);
     },
     goMap() {
       window.open('http://18.139.224.21:7001', '_blank')
