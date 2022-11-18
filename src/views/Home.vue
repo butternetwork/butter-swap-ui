@@ -794,6 +794,7 @@ export default {
   components: {Footer, Header},
   data() {
     return {
+      ReceivedAmount:0,
       showExit: false,//退出
       showFee: false,//显示Fee
       showFromVault: true,//From 如果代币是ismint 不显示
@@ -913,7 +914,7 @@ export default {
 
   watch: {
     sendAmount() {
-      this.receivedAmount = this.sendAmount
+      this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
       if (this.sendAmount > 0) {
         this.showFee = true
       } else {
@@ -1272,7 +1273,7 @@ export default {
       );
 
       this.gasFeeVue = new Decimal(fee.amount).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
-
+      this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
       console.log('gasFeeVue fee', this.gasFeeVue);
       console.log('approve', this.allowance, this.transferBtn);
 
