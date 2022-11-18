@@ -14,8 +14,14 @@
       </div>
     </div>
 
-
     <div class="bridge">
+      <div :class="isLoadingAllData ? 'home-loading' : ''"  class=""></div>
+      <div v-show="isLoadingAllData" class="dialog-selectChain dialog-loadinng">
+        <div class="dialog-content dialog-content-approve">
+          <img class="loading-icon" src="../assets/dialog/loading.png"/>
+          <div class="dialog-content-approve-text">Please Waitting...</div>
+        </div>
+      </div>
       <div class="bridge-switch" v-show="!chainSuccess">
         <img src="../assets/warn-two.png"/>
         <span>You must switch <span style="color:#e44e3a;padding-left: 0">{{ chainFrom.chainName }}</span>  to begin the transfer</span>
@@ -1594,7 +1600,7 @@ export default {
           fromChainId: this.chainFrom.chainId,
           toChainId: this.chainTo.chainId,
           toAddress: this.langToAddress,
-          amount: parseNearAmount((new Decimal(v.sendAmount).sub(new Decimal(this.gasFeeVue)))).toString(),
+          amount: parseNearAmount(v.sendAmount).toString(),
           options: {
             nearProvider: nearConnect.walletConnection,
             gas: '100000000000000', // 例子
@@ -1630,7 +1636,7 @@ export default {
           fromChainId: this.chainFrom.chainId,
           toChainId: this.chainTo.chainId,
           toAddress: this.langToAddress,
-          amount: this.myWeb3.utils.toWei(new Decimal(v.sendAmount).sub(new Decimal(this.gasFeeVue)).toString()),
+          amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
           options: {signerOrProvider: this.myWeb3.eth, gas: adjustedGas},
         };
       }
@@ -2278,11 +2284,17 @@ export default {
           this.allAddress = ''
         }
         // this.allAddress = this.account;
+      }else {
+        if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+          this.allAddress = await this.$store.getters.getAddress;
+        }else  {
+          this.allAddress = ''
+        }
       }
 
       if (this.sortAddress==='') {
         if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
-          this.allAddress = this.account;
+          this.allAddress = await this.$store.getters.getAddress;
         }else  {
           this.allAddress = ''
         }
