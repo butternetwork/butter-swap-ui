@@ -2272,7 +2272,20 @@ export default {
     async actionShowAddress() {
       this.showAddress = true
       if (this.allAddress == '') {
-        this.allAddress = this.account;
+        if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+          this.allAddress = this.account;
+        }else  {
+          this.allAddress = ''
+        }
+        // this.allAddress = this.account;
+      }
+
+      if (this.sortAddress==='') {
+        if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+          this.allAddress = this.account;
+        }else  {
+          this.allAddress = ''
+        }
       }
 
       let addressCss = document.getElementById('tran-send-amount')
@@ -2282,8 +2295,14 @@ export default {
     //输入地址填写
     async getInputAddress() {
       let v = this
+      console.log('v.allAddress',v.allAddress)
       if (v.allAddress == '') {
-        v.allAddress = await this.$store.getters.getAddress;
+        if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+          this.allAddress = await this.$store.getters.getAddress;
+        }else  {
+          this.allAddress = ''
+        }
+        // v.allAddress = await this.$store.getters.getAddress;
         v.sortAddress = v.allAddress.substr(0, 9) + '...' + v.allAddress.substr(38)
         v.showAddress = false
         let addressCss = document.getElementById('tran-send-amount')
