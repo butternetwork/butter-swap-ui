@@ -17,9 +17,9 @@
     <div class="bridge">
       <div :class="isLoadingAllData ? 'home-loading' : ''"  class=""></div>
       <div v-show="isLoadingAllData" class="dialog-selectChain dialog-loadinng">
-        <div class="dialog-content dialog-content-approve">
+        <div class="dialog-content dialog-content-approve dialog-content-loading">
           <img class="loading-icon" src="../assets/dialog/loading.png"/>
-          <div class="dialog-content-approve-text">Please Waitting...</div>
+          <div class="dialog-content-approve-text">Please waiting for connections</div>
         </div>
       </div>
       <div class="bridge-switch" v-show="!chainSuccess">
@@ -82,7 +82,7 @@
           </div>
           <div class="tran-send">
             <div class="tran-send-top">
-              <span>Received Amount:</span>
+              <span>Receiving Amount:</span>
               <span>Received Address:</span>
             </div>
             <div id="tran-send-amount" class="tran-send-bottom">
@@ -1255,22 +1255,24 @@ export default {
       //
       let web3Map = new Web3('http://18.142.54.137:7445');
       let tokenDetail = this.actionTokenDetail()
-      // console.log('tokenDetail',tokenDetail)
+      console.log('tokenDetail',tokenDetail)
       let provider = this.actionProvider()
 
       if (!this.sendAmount) {
         return
       }
 
-      let amount = this.sendAmount.toString()
-      console.log('amount', amount)
+      let amount = new Decimal(this.sendAmount).mul(Math.pow(10, this.selectToken.decimals))
+
+      console.log('amount', amount.toFixed(),this.selectToken.decimals,amount.toFixed().toString())
 
       const fee = await getBridgeFee(
           tokenDetail,
           this.chainTo.chainId,
-          web3Map.utils.toWei(amount).toString(),
+          amount.toFixed().toString(),
           provider
       );
+      console.log('amount',fee.amount)
 
       this.gasFeeVue = new Decimal(fee.amount).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
       this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
@@ -1563,6 +1565,17 @@ export default {
           return
         }
       }
+      // else  {
+      //   let address = /.$0x/
+      //   console.log('address.test(this.langToAddress)',address.test(this.langToAddress))
+      //   if ( address.test(this.langToAddress))   {  // if ( this.langToAddress.lastIndexOf('.testnet')!== -1 || this.langToAddress.lastIndexOf('.near')!==-1) {
+      //
+      //   }else  {
+      //     this.$toast(`Please enter the address of the ${this.chainTo.symbol} chain`)
+      //     return
+      //   }
+      //
+      // }
 
 
       let tokenDetail = {
