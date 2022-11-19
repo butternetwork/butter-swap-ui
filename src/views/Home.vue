@@ -134,7 +134,7 @@
 <!--              Approving... <img src="../assets/loading.gif"/>-->
 <!--            </button>-->
             <button v-if="allowance && !transferBtn"
-                    :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="actionTrans($event)">
+                    :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="actionTrans()">
               Transfer
             </button>
             <button v-if="allowance && transferBtn" class="tran-connect-approve">
@@ -1277,7 +1277,7 @@ export default {
 
       let amount = new Decimal(this.sendAmount).mul(Math.pow(10, this.selectToken.decimals))
 
-      console.log('amount', amount.toFixed(),this.selectToken.decimals,amount.toFixed().toString())
+      console.log('amount',this.chainTo.chainId,tokenDetail,amount.toFixed().toString(),provider)
 
       const fee = await getBridgeFee(
           tokenDetail,
@@ -1520,9 +1520,7 @@ export default {
     },
 
     //发送Transfer交易
-    async actionTrans(e) {
-
-      e.preventDefault()
+    async actionTrans() {
 
       this.actionChainSuccess()
 
@@ -1615,6 +1613,7 @@ export default {
       };
 
       console.log('request',request)
+      console.log('this.myWeb3.eth',this.myWeb3.eth,this.myWeb3.eth.currentProvider)
 
 
       let bridgeRequest;

@@ -71,15 +71,15 @@ async function asyncChainClient(chainId){
   });
 }
 async function asyncChainList(){
-  let chainList = SUPPORTED_CHAIN_LIST
-
-  console.log('chainList',chainList)
-  if (chainList &&chainList.length>0){
-    for (const item of chainList) {
-      let chainId = new Decimal(item.chainId).toHex();
-        CLIENT_CACHE[chainId] = new Web3(new Web3.providers.HttpProvider(item.rpc));
-    }
-  }
+  // let chainList = SUPPORTED_CHAIN_LIST
+  //
+  // console.log('chainList',chainList)
+  // if (chainList &&chainList.length>0){
+  //   for (const item of chainList) {
+  //     let chainId = new Decimal(item.chainId).toHex();
+  //       CLIENT_CACHE[chainId] = new Web3(new Web3.providers.HttpProvider(item.rpc));
+  //   }
+  // }
 }
 
 // Vue.prototype.myMapWeb3 = new Web3('http://18.142.54.137:7445');
