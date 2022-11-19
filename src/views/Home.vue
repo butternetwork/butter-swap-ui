@@ -794,6 +794,7 @@ export default {
   components: {Footer, Header},
   data() {
     return {
+      error:true,//是否在链上链接
       ReceivedAmount:0,
       showExit: false,//退出
       showFee: false,//显示Fee
@@ -1558,24 +1559,24 @@ export default {
         let near = /.near$/
 
         //校验near上时 地址要以.testnet .near 结尾
-        if ( testnet.test(this.langToAddress) || near.test(this.langToAddress))   {  // if ( this.langToAddress.lastIndexOf('.testnet')!== -1 || this.langToAddress.lastIndexOf('.near')!==-1) {
+        if ( testnet.test(this.langToAddress) || near.test(this.langToAddress))   {
 
         }else  {
           this.$toast('Please enter the address of the NEAR chain')
           return
         }
       }
-      // else  {
-      //   let address = /.$0x/
-      //   console.log('address.test(this.langToAddress)',address.test(this.langToAddress))
-      //   if ( address.test(this.langToAddress))   {  // if ( this.langToAddress.lastIndexOf('.testnet')!== -1 || this.langToAddress.lastIndexOf('.near')!==-1) {
-      //
-      //   }else  {
-      //     this.$toast(`Please enter the address of the ${this.chainTo.symbol} chain`)
-      //     return
-      //   }
-      //
-      // }
+      else  {
+        let address = /^0x/
+        console.log('address.test(this.langToAddress)',address.test(this.langToAddress))
+        if ( address.test(this.langToAddress))   {
+
+        }else  {
+          this.$toast(`Please enter the address of the ${this.chainTo.symbol} chain`)
+          return
+        }
+
+      }
 
 
       let tokenDetail = {
@@ -2150,6 +2151,7 @@ export default {
           }
         })
         // this.getAllData()
+        this.receivedAmount = 0
         this.actionGasFee()
         this.actionStatus()
         this.actionInputFont()
@@ -2907,11 +2909,28 @@ export default {
         this.isLoadingAllData = false;
         return;
       }
+
+
       this.account = address;
       this.sortAddress = this.$formatAddress(address);
       let chainId = await this.$store.getters.getChainId;
       this.chainIdHex = new Decimal(chainId).toHex();
       this.chainIdNumber = new Decimal(chainId).toNumber();
+
+      let chains = await this.$store.getters.getChains;
+
+      let chain=null;
+      if (chains[chainId.toString()]) {
+        chain = chains[chainId];
+        this.error = false;
+      } else {
+        chain = null;
+        this.error = true;
+        this.isLoadingAllData = false;
+        return
+      }
+
+      this.receivedAmount = '0.0'
 
       ///当前链是NEAR链
       if (this.$route.query.sourceNetwork==='NEAR') {

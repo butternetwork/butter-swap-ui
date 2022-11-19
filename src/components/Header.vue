@@ -301,7 +301,7 @@ export default {
 }
 
 .header-many-tab {
-  z-index: 12;
+  z-index: 9;
   width: 130px;
   margin-top: 5px;
   border-radius: 7px;
@@ -329,10 +329,7 @@ export default {
 
 .header {
   position: relative;
-  width: 100%;
-  z-index: 12;
   height: 81px;
-  //background:  #f8f8f8;
 }
 
 .header-container {
@@ -349,7 +346,6 @@ export default {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  z-index: 9;
   img {
     width: 170px;
   }
@@ -383,7 +379,7 @@ export default {
 .header-line {
   width: 100%;
   border-bottom:1px solid rgba(0, 0, 0,0.05);
-  z-index: 12;
+  z-index: 8;
   position: absolute;
   top: 81px;
 }
@@ -409,7 +405,7 @@ export default {
 .header-logout {
   margin-top: 5px;
   position: relative;
-  z-index: 12;
+  z-index: 9;
 }
 
 
