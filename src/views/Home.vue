@@ -19,7 +19,7 @@
       <div v-show="isLoadingAllData" class="dialog-selectChain dialog-loadinng">
         <div class="dialog-content dialog-content-approve dialog-content-loading">
           <img class="loading-icon" src="../assets/dialog/loading.png"/>
-          <div class="dialog-content-approve-text">Please waiting for connections</div>
+          <div class="dialog-content-approve-text">Waiting for connections</div>
         </div>
       </div>
       <div class="bridge-switch" v-show="!chainSuccess">
