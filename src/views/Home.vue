@@ -778,24 +778,20 @@ const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
 import config from '@/config/base'
 import near from '@/config/near'
-import eventBus from "@/eventBus";
 
 //sdk
 import {getBridgeFee, getVaultBalance} from "butterjs-sdk/dist/core/tools/dataFetch";
-import { ChainId, ETH_PRIV_NEAR, BSC_TEST_NEAR ,SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
+import { SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/constants/supported_tokens.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
 import {EVMNativeCoin} from "butterjs-sdk/dist/entities/native/EVMNativeCoin.js";
-import Web3 from "web3";
 import { ButterBridge } from "butterjs-sdk/dist/core/bridge/bridge.js";
 
 
 import * as nearAPI from "near-api-js";
 const { connect, Contract ,keyStores } = nearAPI;
 import { parseNearAmount } from 'near-api-js/lib/utils/format';
-import jsonBig from 'json-bigint'
-import BigNumber from "bignumber.js";
 
 
 export default {
@@ -1107,6 +1103,11 @@ export default {
       let tokenDetail = v.actionTokenDetail()
 
       var prodiver = this.actionProvider()
+
+      console.log('getVaultBalance', v.chainFrom.chainId,
+          tokenDetail,
+          v.chainTo.chainId,
+          prodiver)
 
       let vaultsFrom = await getVaultBalance(
           v.chainFrom.chainId,
@@ -1438,6 +1439,7 @@ export default {
 
         const account = await nearConnection.account(this.account);
         balance = await account.getAccountBalance();
+        balance = balance.total;
         console.log('balance', balance)
       } else {
         balance = await web3.eth.getBalance(this.account)
@@ -1449,7 +1451,7 @@ export default {
         if (token.symbol === item.symbol) {
           let newObject = {}
           let decimal = token.decimals
-          newObject.amount = new Decimal(balance.total).div(Math.pow(10, decimal))
+          newObject.amount = new Decimal(balance).div(Math.pow(10, decimal))
           newObject.amount = Math.floor(newObject.amount * 1000000) / 1000000
           item = Object.assign(item, newObject)
           item = JSON.parse(JSON.stringify(item));
