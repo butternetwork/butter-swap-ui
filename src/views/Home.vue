@@ -1591,14 +1591,7 @@ export default {
       }
 
 
-      let tokenDetail = {
-        chainId: v.selectToken.chainId,
-        address: v.selectToken.address,
-        decimals: v.selectToken.decimals,
-        symbol: v.selectToken.symbol,
-        name: v.selectToken.name,
-        logo: v.selectToken.logo,
-      }
+      let tokenDetail = v.selectToken
 
       console.log('this.selectToken',tokenDetail,this.sendAllAmount)
 
@@ -2203,7 +2196,7 @@ export default {
         this.$router.push(`/home?sourceNetwork=${this.chainFrom.symbol}&destNetwork=${this.chainTo.symbol}&ts=${Date.now()}`)
         console.log('query',this.$route.query )
         this.actionTokenList()
-        this.actionShowToken()
+        // this.actionShowToken()
         this.actionGasFee()
         this.actionStatus()
         this.actionInputFont()
@@ -2231,7 +2224,7 @@ export default {
         console.log('qqqqqqq',account,item.chainId)
         v.$router.push(`/home?sourceNetwork=${item.symbol}&destNetwork=${v.chainTo.symbol}&ts=${Date.now()}`)
         this.actionTokenList()
-        this.actionShowToken()
+        // this.actionShowToken()
         this.actionGasFee()
         this.actionStatus()
         this.actionInputFont()
@@ -2788,6 +2781,46 @@ export default {
       this.selectToken = selectToken;
       this.selectToken.url = selectToken.logo;
 
+      const nearConnection = await connect(config.connectionConfig);
+      const account = await nearConnection.account(this.account);
+      let token_address = this.selectToken.address
+      let web3 = await this.$client(this.chainIdHex);
+
+      //主币余额
+      if ( token_address === '0x0000000000000000000000000000000000000000') {
+        if (this.selectToken.symbol === 'NEAR') {
+          // gets account balance
+          this.balanceZ = await account.getAccountBalance();
+          this.balanceZ = this.balanceZ.total;
+        } else {
+          this.balanceZ = await web3.eth.getBalance(this.account)
+        }
+      }
+      //代币余额
+      else {
+        if (this.chainFrom.symbol === 'NEAR') {
+          const contractToken = new Contract(
+              account,// the account object that is connecting
+              token_address, // 代币的地址
+              {
+                // name of contract you're connecting to
+                viewMethods: ["ft_balance_of"], // 获取余额的方法
+              }
+          );
+          this.balanceZ  = await contractToken.ft_balance_of({'account_id': this.account}); // 用户账户地址
+        }
+        //metamask上
+        else {
+          let contract = new web3.eth.Contract(tokenAbi, token_address)
+          // 查询代币余额
+          this.balanceZ = await contract.methods.balanceOf(this.account).call();
+        }
+      }
+      console.log(this.balanceZ );
+
+      this.balanceZ = new Decimal(this.balanceZ).div(Math.pow(10,this.selectToken.decimals))
+      this.balanceZ = Math.floor( this.balanceZ * 1000000) / 1000000
+
       let approvedResult = await this.checkApproved(this.statusTimer);
       console.log('approvedResult',approvedResult,this.statusTimer)
       // let approvedResult = await this.checkMapApproved(this.statusTimer);
@@ -2865,7 +2898,7 @@ export default {
       }
       await this.actionGetChain()
       await this.actionTokenList()
-      await this.actionShowToken()
+      // await this.actionShowToken()
       await this.actionVaultBalance()
       this.actionStatus()
       this.actionInputFont()
