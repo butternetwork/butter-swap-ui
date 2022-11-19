@@ -441,7 +441,7 @@
           </div>
           <div class="bridge-rate-content-item">
             <div class="bridge-rate-left">Estimated Time of Arrival</div>
-            <div class="bridge-rate-right">5-20 minutes</div>
+            <div class="bridge-rate-right">2-3 minutes</div>
           </div>
         </div>
       </div>
@@ -493,7 +493,10 @@
                   </span>
         </div>
         <div class="dialog-token">
-          <div v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"
+          <div v-if="selectTokens.length==0">
+            <img style="width: 50px;margin-top: 15px" src="../assets/loading2.gif"/>
+          </div>
+          <div v-else v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"
                class="dialog-token-content">
             <div class="dialog-token-contentlist">
               <div class="dialog-token-detail">
@@ -1324,6 +1327,7 @@ export default {
     //Token弹窗余额获取
     async actionShowToken() {
       console.log('==========',typeof this.chainIdNumber)
+      // this.actionTokenList()
       if (this.selectTokens) {
         this.selectTokens.forEach(item => {
           item.amount = null;
@@ -1331,7 +1335,18 @@ export default {
       }
       let v = this
       // await  this.actionTokenList()
-      let tokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber.toString()));
+
+      let prodiver = this.actionProvider()
+
+      const tokenCandidates = await getTokenCandidates(
+          v.chainFrom.chainId, // from chain
+          v.chainTo.chainId, // to chain
+          // prodiver
+          prodiver
+      );
+      console.log('target token', tokenCandidates);
+
+      let tokenList = this.$copyObject(tokenCandidates);
       let selectTokens = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber.toString()));
       let formTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber.toString()));
       let toTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId));
@@ -1341,28 +1356,6 @@ export default {
         this.selectTokens = selectTokens;
         return;
       }
-
-      // let intersection = [];
-      // for (const item of formTokenList) {
-      //   for (const token of toTokenList) {
-      //     if (item.symbol === token.symbol) {
-      //       item.amount = 0;
-      //       intersection.push(this.$copyObject(item));
-      //     }
-      //   }
-      // }
-
-      let prodiver = this.actionProvider()
-
-
-      // console.log('prodiver',prodiver,v.chainFrom.chainId,v.chainTo.chainId)
-      const tokenCandidates = await getTokenCandidates(
-          v.chainFrom.chainId, // from chain
-          v.chainTo.chainId, // to chain
-          // prodiver
-          prodiver
-      );
-      console.log('target token', tokenCandidates);
 
 
       //获取地址
@@ -1391,7 +1384,7 @@ export default {
       }
 
       // this.tokenAllList(this.chainIdNumber) = this.selectTokens
-      let tokenlist = ID_TO_SUPPORTED_TOKEN(this.chainIdNumber.toString())
+      let tokenlist = tokenCandidates
       tokenlist = this.selectTokens;
 
       console.log('tokenlist', tokenlist)
@@ -1404,6 +1397,8 @@ export default {
       this.selectToken.decimals = item.decimals
       this.selectToken.url = item.logo
       this.selectToken.address = item.address
+      this.selectToken.isToken = item.isToken
+      this.selectToken.isNative = item.isNative
 
       // this.selectToken=item
 
@@ -1590,6 +1585,8 @@ export default {
 
       }
 
+
+      console.log('isNative',v.selectToken.isNative)
 
       let tokenDetail = v.selectToken
 
