@@ -86,7 +86,8 @@
               <span>Received Address:</span>
             </div>
             <div id="tran-send-amount" class="tran-send-bottom">
-              <span>{{ receivedAmount }}</span>
+              <span v-if="receivedAmountLoading"> <img style="width:21px" src="../assets/loading2.gif"/></span>
+              <span v-else>{{ receivedAmount }}</span>
               <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                 <span class="tran-send-btn-address">{{ sortAddress }}</span>
                 <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
@@ -109,6 +110,10 @@
               </div>
             </div>
           </div>
+<!--          <div v-show="receivedAmountLoading" class="tran-send tran-send-loading">-->
+<!--            <img style="width:21px" src="../assets/loading2.gif"/>-->
+<!--            <span>Fetching best price...</span>-->
+<!--          </div>-->
           <!--                  余额不足提醒-->
           <div v-show="showInsuffcientBalance" class="tran-insuff">
             <img src="../assets/warn-two.png"/>
@@ -428,7 +433,11 @@
             <div class="bridge-rate-left">
               Fee<img src="../assets/error.png"/>
             </div>
-            <div class="bridge-rate-right">{{ gasFeeVue }} {{selectToken.symbol}}</div>
+            <div v-if="receivedAmountLoading" class="bridge-rate-right bridge-rate-right-loading">
+              <img style="width:20px" src="../assets/loading2.gif"/>
+              {{selectToken.symbol}}
+            </div>
+            <div v-else class="bridge-rate-right">{{ gasFeeVue }} {{selectToken.symbol}}</div>
           </div>
           <div class="bridge-rate-content-item">
             <div class="bridge-rate-left">Estimated Time of Arrival</div>
@@ -795,6 +804,7 @@ export default {
   data() {
     return {
       error:true,//是否在链上链接
+      receivedAmountLoading:true,
       ReceivedAmount:0,
       showExit: false,//退出
       showFee: false,//显示Fee
@@ -1263,6 +1273,8 @@ export default {
         return
       }
 
+      this.receivedAmountLoading = true
+
       let amount = new Decimal(this.sendAmount).mul(Math.pow(10, this.selectToken.decimals))
 
       console.log('amount', amount.toFixed(),this.selectToken.decimals,amount.toFixed().toString())
@@ -1277,6 +1289,7 @@ export default {
 
       this.gasFeeVue = new Decimal(fee.amount).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
       this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
+      this.receivedAmountLoading = false
       console.log('gasFeeVue fee', this.gasFeeVue);
       console.log('approve', this.allowance, this.transferBtn);
 
@@ -2647,104 +2660,6 @@ export default {
       });
 
     },
-
-    //检查MAP是否approve
-    // async checkMapApproved(timer) {
-    //   let v = this
-    //
-    //   if (!this.$web3) {
-    //     return
-    //   }
-    //   if (!v.account) {
-    //     return
-    //   }
-    //
-    //   var tokenAddress = ''
-    //   let token = v.selectToken.symbol
-    //
-    //   ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
-    //
-    //     if (item.symbol == token) {
-    //       tokenAddress = item.address
-    //       return
-    //     }
-    //   })
-    //
-    //   let approving = this.getApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress)
-    //   // v.dialogApproving = false;
-    //   // console.log('approving', approving)
-    //
-    //   if (parseInt(v.chainFrom.chainId) != 22776) {
-    //
-    //     await v.actionGasFee()
-    //
-    //     if (v.gasFee > 0) {
-    //       v.allowanceMap = false
-    //       v.approveMapHash = false
-    //
-    //       v.tokenList.forEach(item => {
-    //
-    //         if (item.symbol == 'MAP') {
-    //           tokenAddress = item.address
-    //           return
-    //         }
-    //       })
-    //
-    //
-    //       if (approving === 'done') {
-    //         v.allowanceMap = true
-    //         v.approveMapHash = ''
-    //         v.dialogApproving = false;
-    //         // v.dialogApproving = false
-    //         if (timer) {
-    //           clearInterval(timer);
-    //         }
-    //         v.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
-    //         // return;
-    //       } else if (approving === 'doing') {
-    //         v.allowanceMap = false
-    //         v.approveMapHash = true
-    //       } else if (approving === 'none') {
-    //         v.approveMapHash = false
-    //         v.dialogApproving = false;
-    //         // v.dialogApproving = false
-    //       }
-    //
-    //       let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
-    //       // console.log("approv account", v.account)
-    //       contract.methods.allowance(v.account, MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call(function (error, result) {
-    //         if (result && result != 0) {
-    //           v.allowanceMap = true
-    //           v.approveMapHash = true
-    //           if (timer) {
-    //             clearInterval(timer);
-    //           }
-    //           v.dialogApproving = false;
-    //           // console.log("approv 8", v.account)
-    //           v.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
-    //           v.checkApproved(v.statusTimer)
-    //         } else {
-    //           v.allowanceMap = false
-    //         }
-    //         if (error) {
-    //           //console.log('error', error)
-    //         }
-    //       });
-    //
-    //     } else {
-    //       v.allowanceMap = true
-    //       v.approveMapHash = true
-    //       v.checkApproved(v.statusTimer)
-    //     }
-    //
-    //   } else {
-    //     v.allowanceMap = true
-    //     v.approveMapHash = true
-    //     await v.actionGasFee()
-    //     await v.checkApproved(v.statusTimer)
-    //   }
-    //
-    // },
 
     async requestHistory(isNext = true) {
       if (isNext) {
