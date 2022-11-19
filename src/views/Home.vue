@@ -804,7 +804,7 @@ export default {
   data() {
     return {
       error:true,//是否在链上链接
-      receivedAmountLoading:true,
+      receivedAmountLoading:false,
       ReceivedAmount:0,
       showExit: false,//退出
       showFee: false,//显示Fee
@@ -1264,9 +1264,8 @@ export default {
     async actionGasFee() {
       //创建合约
       //
-      let web3Map = new Web3('http://18.142.54.137:7445');
       let tokenDetail = this.actionTokenDetail()
-      console.log('tokenDetail',tokenDetail)
+      // console.log('tokenDetail',tokenDetail)
       let provider = this.actionProvider()
 
       if (!this.sendAmount) {
