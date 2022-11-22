@@ -1362,26 +1362,38 @@ export default {
       let temp = [];
       for (let i = 0; i < tokenCandidates.length; i++) {
         let item = tokenCandidates[i]
-        console.log(tokenCandidates[0])
+        console.log('item',item)
         //如果当前链的币种是选择链上的主币   获取主币余额
         let item2 = {};
         if (item.address === '0x0000000000000000000000000000000000000000') {
-          item2 = await v.getBalance(item)
+          if (this.chainFrom.symbol=='NEAR') {
+            item2 = await v.getNearBalance(item)
+          }
+          else  {
+            item2 = await v.getBalance(item)
+          }
+          // item2 = await v.getBalance(item)
         }
         //代币余额
         else {
-          item2 = await v.getTokenBalance(item)
+          if (this.chainFrom.symbol=='NEAR') {
+            item2 = await v.getNearTokenBalance(item)
+          }
+          else  {
+            item2 = await v.getTokenBalance(item)
+          }
+          // item2 = await v.getTokenBalance(item)
         }
         temp.push(this.$copyObject(item2))
       }
       this.tokenList = temp;
 
       this.selectTokens = temp;
-      for (const item of this.selectTokens) {
-        if (this.selectToken.symbol === item.symbol) {
-          this.balanceZ = item.amount
-        }
-      }
+      // for (const item of this.selectTokens) {
+      //   if (this.selectToken.symbol === item.symbol) {
+      //     this.balanceZ = item.amount
+      //   }
+      // }
 
       // this.tokenAllList(this.chainIdNumber) = this.selectTokens
       let tokenlist = tokenCandidates
@@ -1418,8 +1430,8 @@ export default {
 
     },
 
-    //获取主币余额
-    async getBalance(item) {
+    //near链主币
+    async getNearBalance(item) {
       let web3 = await this.$client(this.chainIdHex);
       if (!web3 || !this.tokenList) {
         return item
@@ -1428,19 +1440,72 @@ export default {
       let balance;
 
       //NEAR 链的情况
-      if (item.symbol === 'NEAR') {
         // gets account balance
         const nearConnection = await connect(config.connectionConfig);
-
         const account = await nearConnection.account(this.account);
         balance = await account.getAccountBalance();
         balance = balance.total;
         console.log('balance', balance)
-      } else {
-        balance = await web3.eth.getBalance(this.account)
+
+      for (const token of this.tokenList) {
+        if (token.symbol === item.symbol) {
+          let newObject = {}
+          let decimal = token.decimals
+          newObject.amount = new Decimal(balance).div(Math.pow(10, decimal))
+          newObject.amount = Math.floor(newObject.amount * 1000000) / 1000000
+          item = Object.assign(item, newObject)
+          item = JSON.parse(JSON.stringify(item));
+          break;
+        }
+      }
+      return item
+    },
+
+    //获取代币余额
+    async getNearTokenBalance(item) {
+      let web3 = await this.$client(this.chainIdHex);
+
+      if (!this.chainList || !web3) {
+        return item;
+      }
+      let token_address = item.address;
+      let balance;
+
+      //near链上
+        const nearConnection = await connect(config.connectionConfig);
+        const account = await nearConnection.account(this.account);
+        const contractToken = new Contract(
+            account,// the account object that is connecting
+            token_address, // 代币的地址
+            {
+              // name of contract you're connecting to
+              viewMethods: ["ft_balance_of"], // 获取余额的方法
+            }
+        );
+        balance = await contractToken.ft_balance_of({'account_id': this.account}); // 用户账户地址
+        console.log(balance);
+      //metamask上
+
+      //获取代币精度
+      let decimals = item.decimals
+      if (balance) {
+        let newObject = {}
+        newObject.amount = new Decimal(balance).div(Math.pow(10, decimals))
+        newObject.amount = Math.floor(newObject.amount * 1000000) / 1000000
+        item = Object.assign(item, newObject)
+        item = JSON.parse(JSON.stringify(item));
+      }
+      return item
+    },
+
+    //获取主币余额
+    async getBalance(item) {
+      let web3 = await this.$client(this.chainIdHex);
+      if (!web3 || !this.tokenList) {
+        return item
       }
 
-      //其他链的情况
+      let balance = await web3.eth.getBalance(this.account)
 
       for (const token of this.tokenList) {
         if (token.symbol === item.symbol) {
@@ -1459,36 +1524,12 @@ export default {
     //获取代币余额
     async getTokenBalance(item) {
       let web3 = await this.$client(this.chainIdHex);
-
       if (!this.chainList || !web3) {
         return item;
       }
       let token_address = item.address;
-      let balance;
-
-      //near链上
-      if (this.chainFrom.symbol === 'NEAR') {
-
-        const nearConnection = await connect(config.connectionConfig);
-        const account = await nearConnection.account(this.account);
-        const contractToken = new Contract(
-            account,// the account object that is connecting
-            token_address, // 代币的地址
-            {
-              // name of contract you're connecting to
-              viewMethods: ["ft_balance_of"], // 获取余额的方法
-            }
-        );
-        balance = await contractToken.ft_balance_of({'account_id': this.account}); // 用户账户地址
-        console.log(balance);
-      }
-      //metamask上
-      else {
-        let contract = new web3.eth.Contract(tokenAbi, token_address)
-        // 查询代币余额
-        balance = await contract.methods.balanceOf(this.account).call();
-      }
-
+      let contract = new web3.eth.Contract(tokenAbi, token_address)
+      let balance = await contract.methods.balanceOf(this.account).call();
 
       //获取代币精度
       let decimals = item.decimals
