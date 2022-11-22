@@ -788,6 +788,7 @@ import { SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'but
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/constants/supported_tokens.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
+import {verifyNearAccountId} from "butterjs-sdk/dist/utils/addressUtil.js";
 import {EVMNativeCoin} from "butterjs-sdk/dist/entities/native/EVMNativeCoin.js";
 import { ButterBridge } from "butterjs-sdk/dist/core/bridge/bridge.js";
 
@@ -1583,12 +1584,6 @@ export default {
         return
       }
 
-      // if (this.toVault && new Decimal(this.toVault).sub(new Decimal(this.sendAmount)) < 0) {
-      //   v.$toast('Insufficient balance')
-      //   return
-      // }
-
-
       const bridge = new ButterBridge();
 
       v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, v.selectToken.decimals)).toString()
@@ -1600,34 +1595,21 @@ export default {
         this.langToAddress = await this.$store.getters.getAddress
       }
 
-      if (this.chainTo.symbol=='NEAR') {
-        console.log('this.langToAddress.lastIn',this.langToAddress.lastIndexOf('.testnet'))
 
-        let testnet = /.testnet$/
-        let near = /.near$/
-
-        //校验near上时 地址要以.testnet .near 结尾
-        if ( testnet.test(this.langToAddress) || near.test(this.langToAddress))   {
-
-        }else  {
-          this.$toast('Please enter the address of the NEAR chain')
-          return
-        }
-      }
-      else  {
-        let address = /^0x/
-        console.log('address.test(this.langToAddress)',address.test(this.langToAddress))
-        if ( address.test(this.langToAddress))   {
-
-        }else  {
-          this.$toast(`Please enter the address of the ${this.chainTo.symbol} chain`)
+      if (v.chainTo.symbol==='NEAR') {
+        //校验Received Address地址规则
+        let nearAccountState = await verifyNearAccountId(
+            this.langToAddress,
+            this.chainTo.chainId
+        );
+        console.log('nearAccountState',nearAccountState)
+        if (!nearAccountState.isValid) {
+          let msg = nearAccountState.errMsg.split(':')[1]
+          this.$toast(msg)
           return
         }
 
       }
-
-
-      console.log('isNative',v.selectToken.isNative)
 
       let tokenDetail = v.selectToken
 
@@ -1642,10 +1624,7 @@ export default {
         amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
         options: {signerOrProvider: this.myWeb3.eth},
       };
-
       console.log('request',request)
-      console.log('this.myWeb3.eth',this.myWeb3.eth,this.myWeb3.eth.currentProvider)
-
 
       let bridgeRequest;
 
