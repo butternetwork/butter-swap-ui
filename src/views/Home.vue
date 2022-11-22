@@ -2272,30 +2272,33 @@ export default {
       }
 
       this.$watcher.getProvider().then(async provider => {
-        // let chainId = item.chainId.toHex();
-        console.log('item.chainId',item.chainId)
         let chainId = new Decimal(item.chainId).toHex();
         let params = {chainId}
         if (provider) {
           try {
-            console.log('========')
             await provider.request({
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: chainId }]
             });
+            let account = await this.myWeb3.eth.getAccounts()
+            this.$store.commit("setAddress",account[0]);
+            this.$store.commit("setChainId",item.chainId);
+            this.$route.query.sourceNetwork=item.symbol
             return true;
           } catch (error) {
             try {
               let chains = this.$store.getters.getChains;
-              console.log('chains',chains)
               let chain = chains[chainId];
               params.rpcUrls = [item.rpc];
               params.chainName = chain.name;
-              console.log('params',params)
               await provider.request({
                 method: 'wallet_addEthereumChain',
                 params: [params]
               });
+              let account = await this.myWeb3.eth.getAccounts()
+              this.$store.commit("setAddress",account[0]);
+              this.$store.commit("setChainId",item.chainId);
+              this.$route.query.sourceNetwork=item.symbol
               return true;
             } catch (error) {
               console.error('Failed to setup the network in Metamask:', error);
@@ -2307,6 +2310,7 @@ export default {
           return false;
         }
         console.log('========',this.chainFrom,this.chainTo)
+        console.log('   this.showSelectChain', this.showSelectChain)
         this.showSelectChain=false;
         //成功后 历史记录变成第一页
         v.currentPage=1
@@ -2932,7 +2936,6 @@ export default {
         this.transferBtn = false
         this.allowanceMap = true
         this.approveHash = ''
-        // this.$router.push(/`/home?sourceNetwork=${this.$route.query.sourceNetwork}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
       }
       await this.actionGetChain()
       await this.actionTokenList()
