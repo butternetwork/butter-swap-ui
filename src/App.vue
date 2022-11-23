@@ -48,6 +48,8 @@ input {
   height: 100%;
   background: url("assets/home-bg.png") no-repeat;
   background-size: 100% 100%;
+  background-attachment:fixed;
+  min-height: 100vh
 }
 ::-webkit-input-placeholder {
   font-size: 20px;
