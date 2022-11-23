@@ -27,7 +27,7 @@
         <div class="header-connect">
           <div v-if="exitConntet"  @mouseover="showLogOut=true" @mouseleave="showLogOut=false" class="header-connect-content" id="connect-btn">
             <span @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-if="address" class="header-intall header-intalls">
-            <img src="../assets/ant-icon.png"/>{{ $formatAddress(address) }}<span class="header-address-round"></span></span>
+            <img src="../assets/header/butter-logo.png"/>{{ $formatAddress(address) }}<span class="header-address-round"></span></span>
             <span v-else @click="actionConnect()" class="header-intall" >Connect Wallet</span>
             <span id="logoutBtn" @click.prevent.stop="actionLogOut()" @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-show="showLogOut" class="header-intall header-intalls header-logout">Logout</span>
           </div>
@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <div class="header-line"></div>
+<!--    <div class="header-line"></div>-->
   </div>
 </template>
 
@@ -230,11 +230,15 @@ export default {
 }
 
 .header-middle-trans {
+  position: relative;
+  z-index: 1;
   cursor: pointer;
   width: 130px;
   height: 40px;
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  color: #b27100;
+  background: white;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -243,10 +247,12 @@ export default {
 }
 
 .header-middle-tran-active {
+  position: relative;
+  z-index: 2;
   width: 130px;
   height: 40px;
   border-radius: 10px;
-  background-color: #0e1012;
+  background-color: #b27100;
   font-weight: bold;
   color: white;
   display: flex;
@@ -289,6 +295,7 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  background: white;
   span {
     width: 4px;
     height: 4px;
@@ -320,16 +327,21 @@ export default {
 }
 .header-many-tab-item:hover {
   margin: 0 5px;
-  background: rgba(228, 80, 60, 0.1);
-  color: #e44e3a;
+  background: rgba(255, 209, 79, 0.1);
+  color: #ffd14f;
   border-radius: 5px;
 }
 
 
 
 .header {
+  width: 100%;
+  height: 123px;
+  max-height: 123px;
+  background: url("../assets/header/header-bg.png")no-repeat;
+  background-size:100% 100%;
   position: relative;
-  height: 81px;
+  //height: 81px;
 }
 
 .header-container {
@@ -357,12 +369,13 @@ export default {
   width: 32px;
   height: 16px;
   border-radius: 3px;
-  background-color: rgba(89, 45, 45, 0.15);
+  background-color: white;
   font-size: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  color: #c58e2d;
 }
 
 
@@ -446,6 +459,12 @@ export default {
   color: white;
 }
 
+.header-intalls {
+  img {
+    border: 0;
+  }
+}
+
 .header-intalls:hover {
   background-color: black;
   color: white;
@@ -484,7 +503,11 @@ export default {
 @media (max-width: 960px) {
   .header {
     width: 100%;
+    height: 123px;
+    background: url("../assets/header/header-bg-h5.png")no-repeat;
+    background-size:100% auto;
   }
+
 
   .header-middle {
     display: none;

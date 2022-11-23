@@ -86,7 +86,7 @@
               <span>Received Address:</span>
             </div>
             <div id="tran-send-amount" class="tran-send-bottom">
-              <span v-if="receivedAmountLoading"> <img style="width:21px" src="../assets/loading2.gif"/></span>
+              <span v-if="receivedAmountLoading"> <img style="width:30px" src="../assets/loading2.gif"/></span>
               <span v-else>{{ receivedAmount }}</span>
               <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                 <span class="tran-send-btn-address">{{ sortAddress }}</span>
@@ -434,7 +434,7 @@
               Fee<img src="../assets/error.png"/>
             </div>
             <div v-if="receivedAmountLoading" class="bridge-rate-right bridge-rate-right-loading">
-              <img style="width:20px" src="../assets/loading2.gif"/>
+              <img style="width:25px" src="../assets/loading2.gif"/>
               {{selectToken.symbol}}
             </div>
             <div v-else class="bridge-rate-right">{{ gasFeeVue }} {{selectToken.symbol}}</div>
@@ -494,7 +494,7 @@
         </div>
         <div class="dialog-token">
           <div v-if="selectTokens.length==0">
-            <img style="width: 50px;margin-top: 15px" src="../assets/loading2.gif"/>
+            <img style="width: 60px;margin-top: 15px" src="../assets/loading2.gif"/>
           </div>
           <div v-else v-for="(item,index) in selectTokens" :key="index" @click="actionSelectToken(item,index)"
                class="dialog-token-content">
@@ -788,7 +788,7 @@ import { SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'but
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/constants/supported_tokens.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
-import {verifyNearAccountId} from "butterjs-sdk/dist/utils/addressUtil.js";
+import {verifyNearAccountId,validateAndParseAddressByChainId} from "butterjs-sdk/dist/utils/addressUtil.js";
 import {EVMNativeCoin} from "butterjs-sdk/dist/entities/native/EVMNativeCoin.js";
 import { ButterBridge } from "butterjs-sdk/dist/core/bridge/bridge.js";
 
@@ -941,11 +941,20 @@ export default {
       // console.log('Home Watch chainId',newVal)
       this.requestData();
     },
-    searchToken(newV, oldV) {
+    async searchToken(newV, oldV) {
       //逻辑-->根据input的value值筛选goodsList中的数据
       let inputContent = this.searchToken.substring(0, 2)
       let arrByZM = [];//声明一个空数组来存放数据
-      let tokenListRes = ID_TO_SUPPORTED_TOKEN(this.chainIdNumber)
+
+      let prodiver = this.actionProvider()
+      const tokenCandidates = await getTokenCandidates(
+          this.chainFrom.chainId.toString(), // from chain
+          this.chainTo.chainId.toString(), // to chain
+          // prodiver
+          prodiver
+      );
+
+      let tokenListRes = tokenCandidates
       if (tokenListRes) {
         if (inputContent !== '0x') {
           for (let i = 0; i < tokenListRes.length; i++) {
@@ -1606,6 +1615,14 @@ export default {
         if (!nearAccountState.isValid) {
           let msg = nearAccountState.errMsg.split(':')[1]
           this.$toast(msg)
+          return
+        }
+      }else  {
+        try {
+          let evmAddress = validateAndParseAddressByChainId( this.langToAddress, this.chainTo.chainId);
+          console.log('evmAddress',evmAddress)
+        }catch (e) {
+          this.$toast(`account ${this.langToAddress} does not exist while viewing`)
           return
         }
 
@@ -2919,15 +2936,15 @@ export default {
       await this.actionGetChain()
       await this.actionTokenList()
       // await this.actionShowToken()
-      await this.actionVaultBalance()
-      this.actionStatus()
-      this.actionInputFont()
       await this.actionChainSuccess()
+      this.actionStatus()
+      this.isLoadingAllData = false;
+      await this.actionVaultBalance()
+      this.actionInputFont()
       if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
       }else  {
         this.sortAddress = ''
       }
-      this.isLoadingAllData = false;
     },
 
     async requestData() {

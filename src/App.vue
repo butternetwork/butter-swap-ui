@@ -39,11 +39,15 @@ input {
 
 
 #app {
-  width: 100%;
-  height: 100vh;
-  background-color: #f8f8f8;
+  /*width: 100%;*/
+  /*height: 100vh;*/
+  /*background-color: #f8f8f8;*/
   color: #333333;
   font-family: 'productRegular';
+  width: 100%;
+  height: 100%;
+  background: url("assets/home-bg.png") no-repeat;
+  background-size: 100% 100%;
 }
 ::-webkit-input-placeholder {
   font-size: 20px;

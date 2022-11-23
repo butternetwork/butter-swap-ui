@@ -36,7 +36,7 @@
 
     .footer {
       position: relative;
-      background: #f8f8f8;
+      //background: #f8f8f8;
       width: 100%;
       display: flex;
       flex-direction: column;
