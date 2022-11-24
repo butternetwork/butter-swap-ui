@@ -330,7 +330,7 @@
                   <button>Previous</button>
                 </div>
                 <div>
-                  <span style="color:#E44E3A ">{{ currentPage }}</span>/{{ pageNum }}
+                  <span style="color:#f7be1d ">{{ currentPage }}</span>/{{ pageNum }}
                 </div>
                 <div :class="currentPage==pageNum?'btn-pre':'btn-next'" @click="requestHistory()" class="">
                   <button>Next</button>
@@ -1261,7 +1261,7 @@ export default {
 
       //余额不足时 input字体颜色  Transfer按钮颜色  余额不足提醒
       if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
-        input.style.color = '#E44E3A'
+        input.style.color = '#ffbc00'
         this.showInsuffcientBalance = true
         transfer.className = 'tran-connect-approve'
         this.showFee = false
