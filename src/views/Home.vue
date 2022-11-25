@@ -6,7 +6,7 @@
 
     <div class="header-middle">
       <div @click="actionOpenTransfer(showTab=0)" :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">
-        Transfer funds
+        Bridge
       </div>
       <div @click="actionHistory(showTab=1)"
            :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">

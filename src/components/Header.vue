@@ -9,11 +9,11 @@
       <div class="header-middle">
         <div @click="actionShowTab(showTab=0)"
              :class="showTab==0?'header-middle-tran-active':'header-middle-trans'">
-          {{ $t('Transfer funds') }}
+          Bridge
         </div>
         <div @click="actionShowTab(showTab=1)"
              :class="showTab==1?'header-middle-tran-active header-middle-his-active':'header-middle-trans header-middle-his'">
-          {{ $t('History') }}
+              History
           <img v-show="loadingHistory && loadingHistory>0" class="loading-icon" src="../assets/cycle.png"/>
         </div>
       </div>
