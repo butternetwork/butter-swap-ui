@@ -2712,7 +2712,8 @@ export default {
     //provider
     actionProvider() {
       let provider = {
-        url: 'http://18.142.54.137:7445', // map test rpc
+        url: 'https://testnet-rpc.maplabs.io', // map test rpc
+        // url: 'http://18.142.54.137:7445', // map test rpc
         chainId: 212,
       };
       return provider
