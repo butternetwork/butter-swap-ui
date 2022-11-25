@@ -2,27 +2,25 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router/index' //引入路由
 import i18n from './locale';
-import store,{watcher} from './store'
+import store from './store'
 import api from './api/api'
 import eventbus from './eventBus.js'
 import './assets/css/stylesheet.css'
 import Decimal from 'decimal.js';
-import {SUPPORTED_CHAIN_LIST} from 'butterjs-sdk/dist/constants/index.js';
-// import near from '@/config/neartest'
-
+import { SUPPORTED_CHAIN_LIST} from 'butterjs-sdk/dist/constants/index.js';
 
 const CLIENT_CACHE={}
 const Web3 = require('web3');
-watcher.getProvider().then(async provider=>{
-  Vue.prototype.$web3 = await watcher.bindClient();
-  Vue.prototype.$provider = provider;
-}).catch(e=>{})
-Vue.prototype.$client = (chainId)=>{
-  return asyncChainClient(chainId);
-};
+// watcher.getProvider().then(async provider=>{
+//   Vue.prototype.$web3 = await watcher.bindClient();
+//   Vue.prototype.$provider = provider;
+// }).catch(e=>{})
+// Vue.prototype.$client = (chainId)=>{
+//   return asyncChainClient(chainId);
+// };
 Vue.prototype.$http = api;
 Vue.prototype.$event = eventbus;
-Vue.prototype.$watcher = watcher;
+// Vue.prototype.$watcher = watcher;
 Vue.prototype.$copy=(data)=>{
   let oInput = document.createElement('input');
   oInput.value = data;
@@ -70,6 +68,7 @@ async function asyncChainClient(chainId){
     }
   });
 }
+
 async function asyncChainList(){
   let chainList = SUPPORTED_CHAIN_LIST
 
@@ -88,8 +87,6 @@ asyncChainList();
 
 Vue.config.productionTip = false
 import toastRegistry from './vendor/toast/index'
-import {Providers} from "web3-core";
-import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "butterjs-sdk/dist/constants";
 Vue.use(toastRegistry)
 
 new Vue({

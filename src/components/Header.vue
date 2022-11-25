@@ -57,6 +57,7 @@
 <script>
 import config from '@/config/base'
 import near from "@/config/near";
+import connector from "@/store/connector";
 
 export default {
   name: "Header",
@@ -101,8 +102,9 @@ export default {
    async actionLogOut() {
       this.$store.commit("setAddress","");
       this.showLogOut = false
-      this.$emit("exit",false)
-      localStorage.setItem('exit',false)
+      this.$store.dispatch('logout');
+      // this.$emit("exit",false)
+      // localStorage.setItem('exit',false)
 
 
      let chainId = await this.$store.getters.getChainId;
@@ -125,13 +127,24 @@ export default {
     },
     //intall
     async actionConnectI() {
-      this.$store.dispatch('connect')
-      this.$emit("exit",true)
-      localStorage.setItem('exit',true)
+      // this.$store.dispatch('connect')
+      // this.$emit("exit",true)
+      // localStorage.setItem('exit',true)
+      //
+      // let chain= document.getElementById('header-chain-content')
+      // chain.style.visibility='visible'
+      // this.exitConntet =  true
+      try {
+        await this.$store.dispatch('connect')
+        // this.$emit("exit",true)
+        // localStorage.setItem('exit',true)
 
-      let chain= document.getElementById('header-chain-content')
-      chain.style.visibility='visible'
-      this.exitConntet =  true
+        let chain= document.getElementById('header-chain-content')
+        chain.style.visibility='visible'
+        this.exitConntet =  true
+      } catch (e) {
+        console.error(e);
+      }
     },
 
     //判断当前是否是断开情况
@@ -145,9 +158,11 @@ export default {
         this.exitConntet =  false
       }
       else  {
-        this.$store.dispatch('connect')
-        chain.style.visibility='visible'
-        this.exitConntet =  true
+        if (connector.web3modal.cachedProvider) {
+          await this.$store.dispatch('connect');
+          chain.style.visibility='visible'
+          this.exitConntet =  true
+        }
       }
 
     },
@@ -201,12 +216,13 @@ export default {
 
     },
     async requestData() {
-      this.$watcher.getProvider().then((provider) => {
-        this.matchChain();
-        console.log('0000000')
-      }).catch(err => {
-        this.error = true
-      })
+      // this.$watcher.getProvider().then((provider) => {
+      //   this.matchChain();
+      //   console.log('0000000')
+      // }).catch(err => {
+      //   this.error = true
+      // })
+      this.matchChain();
     }
   },
   mounted() {

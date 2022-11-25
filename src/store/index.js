@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Decimal from 'decimal.js';
-import Watcher from './watcher';
+// import Watcher from './watcher';
 import eventbus from '../eventBus.js'
-import api from '../api/api'
+import connector from "@/store/connector";
 
 Vue.use(Vuex)
 
@@ -99,83 +99,70 @@ const store = new Vuex.Store({
         },
         getChainId: (state) => {
             return state.chainId;
+        },
+        provider: (state) => {
+            return connector.provider;
+        },
+        web3: (state) => {
+            return connector.web3;
         }
     },
     actions: {
-        connect(store) {
-            watcherDog.getProvider()
-                .then((provider) => {
-                    provider.request({
-                        method: 'eth_requestAccounts',
-                        params: []
-                    })
-                        .then(result => {
-                            // console.log("eth_requestAccounts",result)
-                            matchAddress(result);
-
-                        })
-                        .catch(err => {
-
-                        });
-                });
+        async connect(store) {
+            const {
+                account,
+                chainId
+            } = await connector.connect();
+            console.log(account, chainId);
         },
         logout(store, payload) {
             store.commit('setAddress', '');
-
+            connector.web3modal.clearCachedProvider();
         },
         switchChain(store, payload) {
-            watcherDog.getProvider()
-                .then((provider) => {
-                    provider.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{chainId: payload}],
-                    })
-                        .then(result => {
-
-                        })
-                        .catch(err => {
-
-                        });
-                });
-        }
+            connector.provider.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{chainId: payload}],
+            });
+        },
     },
     modules: {
     }
 });
-const matchChainId = (data) => {
-    if (!data) {
-        return;
-    }
-    data = new Decimal(data).toHex();
-    store.commit('setChainId', data);
-};
-const matchAddress = (data) => {
-    if (!data) {
-        return;
-    }
-    if (typeof data === 'string') {
-        store.commit('setAddress', data);
-    } else {
-        store.commit('setAddress', data[0]);
-    }
-};
-const watcherDog = new Watcher();
-watcherDog.listen('providerReady', async () => {
-    let client = await watcherDog.bindClient();
-    Vue.prototype.$web3 = client;
-    Vue.prototype.$provider = watcherDog.provider;
-    if (window.web3) {
-        Vue.prototype.myWeb3 = client
-    }
-    matchChainId(watcherDog.provider.chainId);
-    matchAddress(watcherDog.provider.selectedAddress);
-});
-watcherDog.listen('chainChanged', (chainId) => {
-    matchChainId(chainId)
-});
-watcherDog.listen('accountChanged', (accounts) => {
-    matchAddress(accounts);
-});
+// const matchChainId = (data) => {
+//     if (!data) {
+//         return;
+//     }
+//     data = new Decimal(data).toHex();
+//     store.commit('setChainId', data);
+// };
+// const matchAddress = (data) => {
+//     if (!data) {
+//         return;
+//     }
+//     if (typeof data === 'string') {
+//         store.commit('setAddress', data);
+//     } else {
+//         store.commit('setAddress', data[0]);
+//     }
+// };
+// const watcherDog = new Watcher();
+// watcherDog.listen('providerReady', async () => {
+//     let client = await watcherDog.bindClient();
+//     Vue.prototype.$web3 = client;
+//     Vue.prototype.$provider = watcherDog.provider;
+//     if (window.web3) {
+//         Vue.prototype.myWeb3 = client
+//     }
+//     matchChainId(watcherDog.provider.chainId);
+//     matchAddress(watcherDog.provider.selectedAddress);
+// });
+// watcherDog.listen('chainChanged', (chainId) => {
+//     matchChainId(chainId)
+// });
+// watcherDog.listen('accountChanged', (accounts) => {
+//     matchAddress(accounts);
+// });
 
-export const watcher = watcherDog;
+// export const watcher = watcherDog;
 export default store;

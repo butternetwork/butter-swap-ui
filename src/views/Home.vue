@@ -781,6 +781,7 @@ const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
 import config from '@/config/base'
 import near from '@/config/near'
+import Web3 from 'web3'
 
 //sdk
 import {getBridgeFee, getVaultBalance} from "butterjs-sdk/dist/core/tools/dataFetch";
@@ -2190,7 +2191,6 @@ export default {
             ts: Date.now(),
           }
         })
-        // this.getAllData()
         this.receivedAmount = 0
         this.actionGasFee()
         this.actionStatus()
@@ -2204,7 +2204,11 @@ export default {
         }
         return
       }
-
+      const provider = this.$store.getters.provider;
+      console.log('provider',provider)
+      let chainId = new Decimal(item.chainId).toHex();
+      let params = {chainId}
+      let account = await this.$web3.eth.getAccounts()
 
 
       if (item.symbol== 'NEAR') {
@@ -2249,7 +2253,7 @@ export default {
       if (window.ethereum.chainId === new Decimal(item.chainId).toHex()) {
         this.chainIdNumber = item.chainId
 
-        let account = await this.myWeb3.eth.getAccounts()
+        console.log('account[0]',account[0])
         this.$store.commit("setAddress",account[0]);
         this.$store.commit("setChainId",item.chainId);
         this.chainFrom = JSON.parse(JSON.stringify(item));
@@ -2267,53 +2271,88 @@ export default {
         return
       }
 
-      this.$watcher.getProvider().then(async provider => {
-        let chainId = new Decimal(item.chainId).toHex();
-        let params = {chainId}
-        if (provider) {
+      if (provider) {
+        try {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: chainId }]
+          });
+          this.$store.commit("setAddress",account[0]);
+          this.$store.commit("setChainId",item.chainId);
+          this.$route.query.sourceNetwork=item.symbol
+          return true;
+        } catch (error) {
           try {
+            let chains = this.$store.getters.getChains;
+            let chain = chains[chainId];
+            params.rpcUrls = [item.rpc];
+            params.chainName = chain.name;
+            console.log('params',params)
             await provider.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: chainId }]
+              method: 'wallet_addEthereumChain',
+              params: [params]
             });
-            let account = await this.myWeb3.eth.getAccounts()
             this.$store.commit("setAddress",account[0]);
             this.$store.commit("setChainId",item.chainId);
             this.$route.query.sourceNetwork=item.symbol
             return true;
           } catch (error) {
-            try {
-              let chains = this.$store.getters.getChains;
-              let chain = chains[chainId];
-              params.rpcUrls = [item.rpc];
-              params.chainName = chain.name;
-              await provider.request({
-                method: 'wallet_addEthereumChain',
-                params: [params]
-              });
-              let account = await this.myWeb3.eth.getAccounts()
-              this.$store.commit("setAddress",account[0]);
-              this.$store.commit("setChainId",item.chainId);
-              this.$route.query.sourceNetwork=item.symbol
-              return true;
-            } catch (error) {
-              console.error('Failed to setup the network in Metamask:', error);
-              return false;
-            }
+            console.error('Failed to setup the network in Metamask:', error);
+            return false;
           }
-        } else {
-          console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
-          return false;
         }
-        console.log('========',this.chainFrom,this.chainTo)
-        console.log('   this.showSelectChain', this.showSelectChain)
-        this.showSelectChain=false;
-        //成功后 历史记录变成第一页
-        v.currentPage=1
-      }).catch(error => {
-        this.chainFrom = JSON.parse(JSON.stringify(item));
-        v.requestData()
-      });
+      } else {
+        console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
+        return false;
+      }
+
+      // this.$watcher.getProvider().then(async provider => {
+      //   let chainId = new Decimal(item.chainId).toHex();
+      //   let params = {chainId}
+      //   if (provider) {
+      //     try {
+      //       await provider.request({
+      //         method: 'wallet_switchEthereumChain',
+      //         params: [{ chainId: chainId }]
+      //       });
+      //       let account = await this.myWeb3.eth.getAccounts()
+      //       this.$store.commit("setAddress",account[0]);
+      //       this.$store.commit("setChainId",item.chainId);
+      //       this.$route.query.sourceNetwork=item.symbol
+      //       return true;
+      //     } catch (error) {
+      //       try {
+      //         let chains = this.$store.getters.getChains;
+      //         let chain = chains[chainId];
+      //         params.rpcUrls = [item.rpc];
+      //         params.chainName = chain.name;
+      //         await provider.request({
+      //           method: 'wallet_addEthereumChain',
+      //           params: [params]
+      //         });
+      //         let account = await this.myWeb3.eth.getAccounts()
+      //         this.$store.commit("setAddress",account[0]);
+      //         this.$store.commit("setChainId",item.chainId);
+      //         this.$route.query.sourceNetwork=item.symbol
+      //         return true;
+      //       } catch (error) {
+      //         console.error('Failed to setup the network in Metamask:', error);
+      //         return false;
+      //       }
+      //     }
+      //   } else {
+      //     console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
+      //     return false;
+      //   }
+      //   console.log('========',this.chainFrom,this.chainTo)
+      //   console.log('   this.showSelectChain', this.showSelectChain)
+      //   this.showSelectChain=false;
+      //   //成功后 历史记录变成第一页
+      //   v.currentPage=1
+      // }).catch(error => {
+      //   this.chainFrom = JSON.parse(JSON.stringify(item));
+      //   v.requestData()
+      // });
     },
 
     //打开选择链弹窗
@@ -2948,11 +2987,11 @@ export default {
     },
 
     async requestData() {
-      this.$watcher.getProvider().then(provider => {
-        this.getAllData();
-        // this.actionTimerHistory();
-      }).catch(err => {
-      });
+      this.getAllData();
+      // this.$watcher.getProvider().then(provider => {
+      //   this.getAllData();
+      // }).catch(err => {
+      // });
     },
 
     cleanHistoryTimer() {
