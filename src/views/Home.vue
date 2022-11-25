@@ -50,8 +50,8 @@
                     <img style="width:30px" src="../assets/loading2.gif"/>
                   </div>
                   <div v-else>
-                    <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
-                    <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
+                    <span class="font-yellow" v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
+                    <span class="font-yellow" v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
                   </div>
 
                 </div>
@@ -112,8 +112,8 @@
                   <img style="width:30px" src="../assets/loading2.gif"/>
                 </div>
                 <div v-else>
-                  <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
-                  <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
+                  <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
+                  <span class="font-yellow" v-else>{{ toVault }} {{ selectToken.symbol }}</span>
                 </div>
               </div>
               <div v-show="!showAddress" @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
