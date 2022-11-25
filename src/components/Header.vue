@@ -3,7 +3,7 @@
     <div class="header-container">
       <div class="header-left">
         <div @click="goMap" class="header-logo"><img src="../assets/logo.png"/></div>
-        <div class="header-beta">Beta</div>
+        <div class="header-beta">alpha</div>
       </div>
 
       <div class="header-middle">
@@ -366,7 +366,7 @@ export default {
 .header-beta {
   margin-left: 14px;
   margin-top: -20px;
-  width: 32px;
+  width: 35px;
   height: 16px;
   border-radius: 3px;
   background-color: white;
