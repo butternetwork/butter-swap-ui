@@ -196,19 +196,19 @@
                 <div class="historys-statu">
                   <div v-if="item.state==0" class="history-status history-status-cancel">
                     <span>Pending</span>
-                    <img src="../assets/arrow-right-yellow.png"/>
+                    <img src="../assets/arrow-right-write.png"/>
                   </div>
                   <div v-else-if="item.state==1" class="history-status history-status-success">
                     <span>Complete</span>
-                    <img src="../assets/arrow-right-green.png"/>
+                    <img src="../assets/arrow-right-write.png"/>
                   </div>
                   <div v-else-if="item.state==998" class="history-status">
                     <span>Failed</span>
-                    <img src="../assets/arrow-right-red.png"/>
+                    <img src="../assets/arrow-right-write.png"/>
                   </div>
                   <div v-else class="history-status history-status-cancel">
                     <span>Processing</span>
-                    <img src="../assets/arrow-right-yellow.png"/>
+                    <img src="../assets/arrow-right-write.png"/>
                   </div>
                   <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>
                 </div>
@@ -230,10 +230,6 @@
               <div v-else class="home-page-not">
                 No data
               </div>
-            </div>
-            <div class="history-ant">
-              <!--              <img src="../assets/ant.png"/>-->
-              <!--              <span>In the end</span>-->
             </div>
           </div>
           <!--                  h5-->
@@ -1530,8 +1526,8 @@ export default {
         fromChainId: this.chainFrom.chainId,
         toChainId: this.chainTo.chainId,
         toAddress: this.langToAddress,
-        amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
-        options: {signerOrProvider: this.myWeb3.eth},
+        amount: this.$web3.utils.toWei(v.sendAmount).toString(),
+        options: {signerOrProvider: this.$web3.eth},
       };
       console.log('request',request)
 
@@ -1583,8 +1579,8 @@ export default {
           fromChainId: this.chainFrom.chainId,
           toChainId: this.chainTo.chainId,
           toAddress: this.langToAddress,
-          amount: this.myWeb3.utils.toWei(v.sendAmount).toString(),
-          options: {signerOrProvider: this.myWeb3.eth, gas: adjustedGas},
+          amount: this.$web3.utils.toWei(v.sendAmount).toString(),
+          options: {signerOrProvider: this.$web3.eth, gas: adjustedGas},
         };
       }
 
@@ -1854,17 +1850,17 @@ export default {
 
     //获取历史记录
     async actionHistory() {
+      console.log('history',this.chainIdNumber, this.account,this.currentPage,this.pageSize)
       let result = await this.$http.historyList({
-        chainId: this.chainIdNumber,
+        chainId: parseInt(this.chainIdNumber),
         address: this.account,
-        pageNo: this.currentPage,
-        pageSize: this.pageSize,
+        page: this.currentPage,
+        size: this.pageSize,
       })
       if (result.code !== 200) {
         return;
       }
       this.historyList = result.data.list
-      return
       this.total = result.data.total
       this.pageNum = Math.ceil(this.total / this.pageSize) || 1;
       if (this.historyList.length <= 0) {
@@ -1878,33 +1874,37 @@ export default {
           toLogo: '',
           toChainName: ''
         }
-        let fromChainId = item.fromChainid
-        let toChainId = item.toChainid
+        let fromChainId = item.sourceChainId
+        let toChainId = item.destinationChainId
         let fromDecimal
         let toDecimal
         let fromSymobl
 
+        console.log('fromChainId',fromChainId)
+
         for (const chain of this.chainList) {
           if (fromChainId == chain.chainId) {
-            newObject.fromLogo = chain.chainImg
+            newObject.fromLogo = chain.chainLogo
             newObject.fromChainName = chain.chainName
           }
           if (toChainId == chain.chainId) {
-            newObject.toLogo = chain.chainImg
+            newObject.toLogo = chain.chainLogo
             newObject.toChainName = chain.chainName
           }
         }
-        let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId)
-        let tokenTo = ID_TO_SUPPORTED_TOKEN(toChainId)
+
+
+        let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId.toString())
+        let tokenTo = ID_TO_SUPPORTED_TOKEN(toChainId.toString())
 
 
         for (let i = 0; i < tokens.length; i++) {
           let token = tokens[i];
-          if (token.address.toLowerCase() === item.tokenAddress.toLowerCase()) {
+          if (token.address.toLowerCase() === item.sourceTokenAddress.toLowerCase()) {
             newObject.coin = token.symbol
             fromSymobl = token.symbol
-            newObject.coinImg = token.img
-            fromDecimal = token.decimal
+            newObject.coinImg = token.logo
+            fromDecimal = token.decimals
             //时间
             newObject.nowTime = moment.utc(item.updatedAt).local().format("yyyy/MM/DD HH:mm:ss")
             break;
@@ -1942,17 +1942,17 @@ export default {
       let v = this
       v.showTranDetail = true
 
-      v.historyHash = item.hash
+      v.historyHash = item.id
 
       v.fromLogo = item.fromLogo
       v.toLogo = item.toLogo
 
-      var result = await v.$http.historyDetail({txHash: v.historyHash})
+      var result = await v.$http.historyDetail({id: v.historyHash})
       // //console.log(result)
       if (result.code == 200) {
-        v.historyDetailList = result.data
-        // v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, 18))
-        v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
+        v.historyDetailList = result.data.info
+        v.historyDetailList.sending = v.historyDetailList.amount
+        // v.historyDetailList.sending = new Decimal(v.historyDetailList.amount).div(Math.pow(10, v.historyDetailList.fromDecimal))
         v.historyDetailList.receiving = v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) : null
         //高度from
         if (v.historyDetailList.confirmHeight) {
@@ -2003,12 +2003,12 @@ export default {
     //重新调取历史详情
     async refersHistoryDetail() {
       let v = this
-      var result = await v.$http.historyDetail({txHash: v.historyHash})
+      var result = await v.$http.historyDetail({id: v.historyHash})
       // //console.log(result)
       if (result.code == 200) {
-        v.historyDetailList = result.data
+        v.historyDetailList = result.data.info
 
-        v.historyDetailList.sending = new Decimal(v.historyDetailList.sending).div(Math.pow(10, v.historyDetailList.fromDecimal))
+        v.historyDetailList.sending = v.historyDetailList.amount
         v.historyDetailList.receiving = v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) : null
         //高度from
         if (v.historyDetailList.confirmHeight) {
@@ -2253,17 +2253,6 @@ export default {
       this.showSelectChain = true;
     },
 
-    //判断当前的From chain 与 To chain 是否一样
-    getDifChain(chainName) {
-      for (let item of this.chainList) {
-        if (chainName !== item.chain) {
-          return JSON.parse(JSON.stringify(item));
-        }
-      }
-      return null;
-
-    },
-
     //显示地址
     async actionShowAddress() {
       this.showAddress = true
@@ -2403,92 +2392,6 @@ export default {
           //receipt
           localStorage.removeItem(v.account + reward_address)
           v.approveHash = false;
-          v.dialogApproving = false
-          //console.log(receipt)
-          resolve(false);
-        })
-      })
-
-    },
-
-    // MAP approve
-    async actionMapApprove() {
-      this.actionChainSuccess()
-
-      if (this.chainSuccess == false) {
-        this.$toast('Network error,please link to the correct network')
-        return
-      }
-
-      let v = this
-      //当前链
-      // var chain = this.chainFrom.coin
-      let reward_address = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
-      let token_address;
-      ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
-        if (item.symbol == 'MAP') {
-          token_address = item.address
-          // console.log('map token_address', token_address)
-        }
-      })
-
-      v.approveMapHash = '111';
-
-      //approve
-      let web3 = await this.$client(this.chainIdHex);
-      let contract = new web3.eth.Contract(tokenAbi, token_address)
-      const approveData = contract.methods.approve(reward_address, '1000000000000000000000000000').encodeABI();
-      // console.log('approvedata', approveData)
-
-      return new Promise(async resolve => {
-
-        //报错
-        let error = null;
-        try {
-          await this.$web3.eth.estimateGas({
-            from: this.account,
-            to: token_address,
-            data: approveData
-          })
-        } catch (e) {
-          // let result = e.message.substring(e.message.indexOf("{"))
-          // error = JSON.parse(result).message
-          // this.$toast(error)
-          v.showErrorMessage = true
-          v.errorMessage = e.message
-        }
-        if (error) {
-          resolve(false);
-        }
-
-        this.$web3.eth.sendTransaction({
-          from: this.account,
-          to: token_address,
-          value: 0,
-          data: approveData
-        }).on('transactionHash', (hash) => {
-          //hash
-          //console.log(`hash: ` + hash)
-          // v.$toast('Transaction has send please wait result')
-          v.dialogApproving = true
-          v.approveMapHash = hash;
-          localStorage.setItem('approve', 2);
-          v.setApproveStatus(v.account + reward_address, token_address, 'doing');
-        }).on('receipt', (receipt) => {
-          //receipt
-          //console.log(receipt)
-          v.dialogApproving = false
-          v.allowanceMap = true
-          v.approveMapHash = false;
-          v.setApproveStatus(v.account + reward_address, token_address, false);
-          let timer = setInterval(() => {
-            v.checkMapApproved(timer)
-          }, 1000);
-          resolve(true);
-        }).on('error', (receipt) => {
-          //receipt
-          localStorage.removeItem(v.account + reward_address)
-          v.approveMapHash = false;
           v.dialogApproving = false
           //console.log(receipt)
           resolve(false);

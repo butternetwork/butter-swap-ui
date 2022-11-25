@@ -5,7 +5,7 @@ const { keyStores } = nearAPI;
 
 export default
     {
-        baseUrl: 'http://bridge-api.maplabs.io/',// 生产接口请求地址
+        baseUrl: 'https://omniscan-api-testnet.mapscan.io/',// 生产接口请求地址
 
         tokenCoin: "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//默认链的默认代币地址
         mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址

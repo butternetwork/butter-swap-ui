@@ -1,5 +1,5 @@
 export default {
-    baseUrl: 'http://bridge-api.maplabs.io/',// 生产接口请求地址
+    baseUrl: 'https://omniscan-api-testnet.mapscan.io/',// 生产接口请求地址
     // baseUrl: 'http://18.139.224.21:8201',// 测试接口请求地址
 
     //切换测试网    需要修改  action/index.js   main.js   header home

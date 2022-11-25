@@ -4,10 +4,8 @@ import http from './http'
 //接口方法定义
 let requests = {
     getSubBrigge :(params) => http.post('/api/subBridge', params),//交易成功后发送
-    historyList :(params) => http.post('/api/queryHistory', params),//查看历史记录
-    historyDetail :(params) => http.post('/api/queryBridgeInfo', params),//查看历史记录详情
-    chainList :(params) => http.post('/api/queryChainList', params),//链列表
-    tokenList :(params) => http.post('/api/queryTokenList', params),//Token列表
+    historyList :(params) => http.get('/api/queryBridgeHistoryByAddress', params),//查看历史记录
+    historyDetail :(params) => http.get('/api/queryBridgeInfoById', params),//查看历史记录详情
     undoneTransfer :(params) => http.get('/api/queryUndoneTransfer', params),//查询未完成的交易列表
 }
 Vue.prototype.$http = requests;
