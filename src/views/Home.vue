@@ -25,7 +25,7 @@
       </div>
       <div class="bridge-switch" v-show="!chainSuccess">
         <img src="../assets/warn-two.png"/>
-        <span>You must switch <span style="color:#e44e3a;padding-left: 0">{{ chainFrom.chainName }}</span>  to begin the transfer</span>
+        <span>You must connect to your wallet to begin transfer</span>
       </div>
       <div class="bridge-content">
         <!--              tranfer-->
