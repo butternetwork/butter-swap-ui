@@ -39,40 +39,39 @@ input {
 
 
 #app {
-  /*width: 100%;*/
-  /*height: 100vh;*/
-  /*background-color: #f8f8f8;*/
-  color: #333333;
+  color: #ffffff;
   font-family: 'productRegular';
   width: 100%;
   height: 100%;
-  background: url("assets/home-bg.png") no-repeat;
-  background-size: 100% 100%;
-  background-attachment:fixed;
-  min-height: 100vh
+  background: #1b2025;
+  min-height: 100vh;
+  /*background: #1b2025 url("assets/home-bg.png")  no-repeat right top;*/
+  /*background-size: 100% 100%;*/
+  /*background-attachment:fixed;*/
+  /*background-color:;*/
 }
 ::-webkit-input-placeholder {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
   color: #84868B;
   line-height: 28px;
-  padding-left: 10px;
+  /*padding-left: 10px;*/
   font-family: 'productRegular';
 }
 ::-moz-placeholder {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 600;
   color: #84868B;
   line-height: 28px;
-  padding-left: 10px;
+  /*padding-left: 10px;*/
   font-family: 'productRegular';
 } /* ie */
 input:-moz-placeholder {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 600;
   color: #84868B;
   line-height: 28px;
-  padding-left: 10px;
+  /*padding-left: 10px;*/
   font-family: 'productRegular';
 }
 </style>

@@ -36,7 +36,7 @@ Vue.prototype.$copyObject=(data)=>{
     return [];
   }
 }
-Vue.prototype.$formatAddress =(address,length=4)=>{
+Vue.prototype.$formatAddress =(address,length=6)=>{
   if (address && address.length > length*2) {
     return `${address.substring(0, length)}...${address.substring(address.length - length, address.length)}`
   }

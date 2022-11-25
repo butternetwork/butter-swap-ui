@@ -252,9 +252,9 @@ export default {
   width: 130px;
   height: 40px;
   border-radius: 10px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  color: #b27100;
-  background: white;
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  color: #f6d536;
+  background: #1b2025;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -268,9 +268,9 @@ export default {
   width: 130px;
   height: 40px;
   border-radius: 10px;
-  background-color: #b27100;
+  background-color: #f6d536;
   font-weight: bold;
-  color: white;
+  color: #1a1b20;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -305,13 +305,12 @@ export default {
   height: 40px;
   border-radius: 7px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  background-color: var(--white);
+  background-color: #f6d536;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: white;
   span {
     width: 4px;
     height: 4px;
@@ -328,9 +327,9 @@ export default {
   width: 130px;
   margin-top: 5px;
   border-radius: 7px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  background-color: rgb(27, 32, 37);
   padding: 17px 0;
-  background: white;
 }
 
 .header-many-tab-item {
@@ -343,8 +342,8 @@ export default {
 }
 .header-many-tab-item:hover {
   margin: 0 5px;
-  background: rgba(255, 209, 79, 0.1);
-  color: #ffd14f;
+  background-color: rgb(246, 213, 54);
+  color: #1b2025;
   border-radius: 5px;
 }
 
@@ -352,12 +351,12 @@ export default {
 
 .header {
   width: 100%;
-  height: 123px;
-  max-height: 123px;
-  background: url("../assets/header/header-bg.png")no-repeat;
-  background-size:100% 100%;
+  //height: 123px;
+  //background: #1b2025;
+  //background: url("../assets/header/header-bg.png")no-repeat;
+  //background-size:100% 100%;
   position: relative;
-  //height: 81px;
+  height: 81px;
 }
 
 .header-container {
@@ -385,13 +384,13 @@ export default {
   width: 35px;
   height: 16px;
   border-radius: 3px;
-  background-color: white;
+  background-color: #ffe094;
   font-size: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #c58e2d;
+  color: #000000;
 }
 
 
@@ -453,14 +452,14 @@ export default {
   width: 162px;
   height: 40px;
   border-radius: 7px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  background-color: rgb(27, 32, 37);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   font-size: 13px;
   font-weight: 500;
-  background: white;
   img {
     margin-right: 9px;
     margin-left: 4px;
@@ -520,8 +519,6 @@ export default {
   .header {
     width: 100%;
     height: 123px;
-    background: url("../assets/header/header-bg-h5.png")no-repeat;
-    background-size:100% auto;
   }
 
 
@@ -565,6 +562,11 @@ export default {
   .header-left {
     display: flex;
     height: 40px;
+  }
+
+  .header-many-icon {
+    width: 35px;
+    height: 37px;
   }
 
 

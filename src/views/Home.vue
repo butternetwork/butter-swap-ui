@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <div class="home-bg"></div>
 
     <Header @listenTab="actionEmitHeader" :loadingHistory="historyLoading" @exit="actionEixt"/>
 
@@ -30,37 +31,41 @@
         <!--              tranfer-->
         <div v-show="showTab==0">
           <!--                tran-from-->
-          <div class="tran-from">
-            <div class="tran-from-left">
-              <span>From</span>
+          <div class="tranfer-from">
+            <div class="tran-from">
+              <div class="tran-from-left">
+                <span>From</span>
+              </div>
+              <div class="tran-from-right">Source Chain</div>
+            </div>
+            <!--                send-->
+            <div class="tran-send">
+              <div class="tran-send-top">
+                <span class="tran-send-balance" @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
+                <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
+                       placeholder="0.0"/>
+                <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
+                  <span>Vault:</span>
+                  <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
+                  <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
+                </div>
+              </div>
+              <div class="tran-send-bottom">
               <div @click="actionChain(2)" class="tran-from-btn">
-                <!--                  <div class="tran-from-btn">-->
-                <img :src="chainFrom.chainLogo"/>
-                <span>{{ chainFrom.chainName }}</span>
-                <img src="../assets/arrow-bottom-black.png"/>
+                <div class="tran-send-btn-left">
+                  <img :src="chainFrom.chainLogo"/>
+                  <span>{{ chainFrom.chainName }}</span>
+                </div>
+                <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
               </div>
-            </div>
-            <div class="tran-from-right">Source Chain</div>
-          </div>
-          <!--                send-->
-          <div class="tran-send">
-            <div class="tran-send-top">
-              <span>Sending Amount:</span>
-              <span @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
-            </div>
-            <div class="tran-send-bottom">
-              <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
-                     placeholder="0.0"/>
               <div @click="actionOpenToken()" class="tran-send-btn">
-                <img :src="selectToken.logo"/>
-                <span>{{ selectToken.symbol }}</span>
-                <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-black.png"/>
+                <div class="tran-send-btn-left">
+                  <img :src="selectToken.logo"/>
+                  <span>{{ selectToken.symbol }}</span>
+                </div>
+                <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
               </div>
             </div>
-            <div v-show="showFromVault" class="tran-send-vault">
-              <span>Vault:</span>
-              <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
-              <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
             </div>
           </div>
           <!--                change-->
@@ -68,59 +73,61 @@
             <img @click="actionChangeChain()" src="../assets/change.png"/>
           </div>
           <!--                tran-to-->
-          <div class="tran-from tran-to">
-            <div class="tran-from-left">
-              <span>To  </span>
-              <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
-                <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
-                <img :src="chainTo.chainLogo"/>
-                <span>{{ chainTo.chainName }}</span>
-                <img src="../assets/arrow-bottom-black.png"/>
+          <div class="tranfer-from tran-to">
+            <div class="tran-from">
+              <div class="tran-from-left">
+                <span>To  </span>
+              </div>
+              <div class="tran-from-right">Destination Chain</div>
+            </div>
+            <div class="tran-send">
+              <div class="tran-send-top">
+                <span class="tran-send-balance" @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
+                <div id="tran-send-amount" class="tran-receiveAmount">
+                  <span v-if="receivedAmountLoading"> <img style="width:30px" src="../assets/loading2.gif"/></span>
+                  <span v-else>{{ receivedAmount }}</span>
+                </div>
+              </div>
+              <div class="tran-send-bottom">
+                <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
+                  <div class="tran-send-btn-left">
+                    <img :src="chainTo.chainLogo"/>
+                    <span>{{ chainTo.chainName }}</span>
+                  </div>
+                  <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
+                </div>
+                <span class="tran-send-bottom-address">Received Address:</span>
               </div>
             </div>
-            <div class="tran-from-right">Destination Chain</div>
-          </div>
-          <div class="tran-send">
-            <div class="tran-send-top">
-              <span>Receiving Amount:</span>
-              <span>Received Address:</span>
-            </div>
-            <div id="tran-send-amount" class="tran-send-bottom">
-              <span v-if="receivedAmountLoading"> <img style="width:30px" src="../assets/loading2.gif"/></span>
-              <span v-else>{{ receivedAmount }}</span>
-              <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
+            <div class="tran-vault-address">
+              <div v-show="showToVault && !showAddress" class="tran-send-vault">
+                <span>Vault:</span>
+                <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
+                <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
+
+              </div>
+              <div v-show="!showAddress" @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                 <span class="tran-send-btn-address">{{ sortAddress }}</span>
                 <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
               </div>
-            </div>
-            <div v-show="showToVault" class="tran-send-vault">
-              <span>Vault:</span>
-              <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
-              <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
-
-            </div>
-            <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
-              <div class="tran-send-address-left">
-                <span>Received Address:</span>
-                <img src="../assets/address.png"/>
-              </div>
-              <div class="tran-send-address-input">
-                <input v-model="allAddress" placeholder="Please enter the address"/>
-                <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
+              <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
+                <!--                  <div class="tran-send-address-left">-->
+                <!--                    <span>Received Address:</span>-->
+                <!--                    <img src="../assets/address.png"/>-->
+                <!--                  </div>-->
+                <div class="tran-send-address-input">
+                  <input v-model="allAddress" placeholder="Please enter the address"/>
+                  <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
+                </div>
               </div>
             </div>
-          </div>
-<!--          <div v-show="receivedAmountLoading" class="tran-send tran-send-loading">-->
-<!--            <img style="width:21px" src="../assets/loading2.gif"/>-->
-<!--            <span>Fetching best price...</span>-->
-<!--          </div>-->
-          <!--                  余额不足提醒-->
-          <div v-show="showInsuffcientBalance" class="tran-insuff">
-            <img src="../assets/warn-two.png"/>
-            <span>Insufficient balance</span>
-          </div>
-          <!--                connect-->
-          <div class="tran-connect">
+            <!--                  余额不足提醒-->
+            <div v-show="showInsuffcientBalance" class="tran-insuff">
+              <img src="../assets/warn-two.png"/>
+              <span>Insufficient balance</span>
+            </div>
+            <!--                connect-->
+            <div class="tran-connect">
             <button v-if="!allowance && !approveHash && chainFrom.chainName!=='NEAR' "
                     :class="chainSuccess==false ? 'tran-connect-approve' :''" @click="actionApprove()">Approve
             </button>
@@ -141,124 +148,8 @@
               Transfering... <img src="../assets/loading.gif"/>
             </button>
           </div>
-        </div>
-
-        <!--                            nft-->
-        <div v-show="showTab==2">
-          <!--                tran-from-->
-          <div class="tran-from">
-            <div class="tran-from-left">
-              <span>From</span>
-              <div @click="actionChain(0)" class="tran-from-btn">
-                <!--                  <div class="tran-from-btn">-->
-                <img :src="chainFrom.chainLogo"/>
-                <span>111</span>
-                <img src="../assets/arrow-bottom-red.png"/>
-              </div>
-            </div>
-            <div class="tran-from-right">Source Chain</div>
-          </div>
-          <!--          send nft-->
-          <div class="nft-send">
-            <div class="nft-send-top">
-              <span>Sending NFT :</span>
-              <span>2 NFTs</span>
-            </div>
-            <!--                  card-->
-            <div class="nft-card">
-              <div class="nft-card-left">
-                <img src="../assets/nft/card.png"/>
-              </div>
-              <div class="nft-card-right">
-                <div class="nft-card-line"></div>
-                <div class="nft-card-title">Non-Fungible Baby (NFB)</div>
-                <div class="nft-card-icon">
-                  <div class="nft-card-copy">
-                    <img src="../assets/nft/copy.png"/>
-                  </div>
-                  <div class="nft-card-copy">
-                    <img src="../assets/nft/forward.png"/>
-                  </div>
-                </div>
-                <div class="nft-send-text">
-                  Huge thanks to our 1st-month supporters,loneliness fades away with you accompany by.
-                </div>
-              </div>
-            </div>
-
-            <!--                  choose-->
-            <div @click="dialogNft=true" class="tran-from-btn tran-from-btn-nft">
-              <div class="tran-from-nft-img">
-                <img :src="selectNFT.img"/>
-                <span>{{ selectNFT.name }}</span>
-                <span>{{ selectNFT.id }}</span>
-              </div>
-
-              <img src="../assets/arrow-bottom-red.png"/>
-            </div>
-
-          </div>
-
-
-          <!--                change-->
-          <div class="tran-change">
-            <img @click="actionChangeChain()" src="../assets/change.png"/>
-          </div>
-          <!--                tran-to-->
-          <div class="tran-from tran-to">
-            <div class="tran-from-left">
-              <span>To  </span>
-              <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
-                <!--                  <div style="margin-left: 28px" class="tran-from-btn">-->
-                <img :src="chainTo.chainLogo"/>
-                <span>{{ chainTo.chainName }}</span>
-                <img src="../assets/arrow-bottom-red.png"/>
-              </div>
-            </div>
-            <div class="tran-from-right">Destination Chain</div>
-          </div>
-          <div class="tran-send">
-            <div class="tran-send-top">
-              <span>Received Amount:</span>
-              <span>Received Address:</span>
-            </div>
-            <div class="tran-send-bottom">
-              <span>{{ receivedAmount }}</span>
-              <!--                  <span>{{ receivedAmount }}</span>-->
-              <div @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
-                <span class="tran-send-btn-address">{{ sortAddress }}</span>
-                <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/arrow-bottom-black.png"/>
-              </div>
-            </div>
-            <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
-              <div class="tran-send-address-left">
-                <span>Received Address:</span>
-                <img src="../assets/address.png"/>
-              </div>
-              <div class="tran-send-address-input">
-                <input v-model="allAddress" placeholder="Please enter the address"/>
-                <img v-if="allAddress" @click.stop="getInputAddress()" src="../assets/success.png"/>
-                <img v-else src="../assets/success-gray.png"/>
-              </div>
-            </div>
-          </div>
-          <!--                connect-->
-          <div class="tran-connect">
-            <button v-if="!allowance && !approveHash && allowanceMap" @click="actionApprove()">Approve</button>
-            <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
-              Approving... <img src="../assets/loading.gif"/>
-            </button>
-            <button v-if="!allowanceMap && !approveMapHash" @click="actionMapApprove()">Approve MAP</button>
-            <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">
-              Approving... <img src="../assets/loading.gif"/>
-            </button>
-            <button v-if="allowance && !transferBtn && allowanceMap" @click="actionTrans()">Transfer</button>
-            <button v-if="allowance && transferBtn" class="tran-connect-approve">
-              Transfering... <img src="../assets/loading.gif"/>
-            </button>
           </div>
         </div>
-
         <!--                history-->
         <div v-show="showTab==1" class="">
           <!--                  pc-->
@@ -1262,14 +1153,14 @@ export default {
 
       //余额不足时 input字体颜色  Transfer按钮颜色  余额不足提醒
       if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
-        input.style.color = '#ffbc00'
+        input.style.color = '#f6d536'
         this.showInsuffcientBalance = true
         transfer.className = 'tran-connect-approve'
         this.showFee = false
       } else {
         this.showFee = true
         this.actionGasFee()
-        input.style.color = 'black'
+        input.style.color = '#ffffff'
         this.showInsuffcientBalance = false
         transfer.className = ''
       }
@@ -2399,8 +2290,8 @@ export default {
         }
       }
 
-      let addressCss = document.getElementById('tran-send-amount')
-      addressCss.style.display = 'none'
+      // let addressCss = document.getElementById('tran-send-amount')
+      // addressCss.style.display = 'none'
     },
 
     //输入地址填写
