@@ -46,8 +46,14 @@
                        placeholder="0.0"/>
                 <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
                   <span>Vault:</span>
-                  <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
-                  <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
+                  <div v-if="vaultBalanceLoading">
+                    <img style="width:30px" src="../assets/loading2.gif"/>
+                  </div>
+                  <div v-else>
+                    <span v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
+                    <span v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
+                  </div>
+
                 </div>
               </div>
               <div class="tran-send-bottom">
@@ -102,9 +108,13 @@
             <div class="tran-vault-address">
               <div v-show="showToVault && !showAddress" class="tran-send-vault">
                 <span>Vault:</span>
-                <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
-                <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
-
+                <div v-if="vaultBalanceLoading">
+                  <img style="width:30px" src="../assets/loading2.gif"/>
+                </div>
+                <div v-else>
+                  <span v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
+                  <span v-else>{{ toVault }} {{ selectToken.symbol }}</span>
+                </div>
               </div>
               <div v-show="!showAddress" @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
                 <span class="tran-send-btn-address">{{ sortAddress }}</span>
@@ -691,6 +701,7 @@ export default {
   components: {Footer, Header},
   data() {
     return {
+      vaultBalanceLoading:true,
       error:true,//是否在链上链接
       receivedAmountLoading:false,
       ReceivedAmount:0,
@@ -1953,7 +1964,7 @@ export default {
         v.historyDetailList = result.data.info
         v.historyDetailList.sending = v.historyDetailList.amount
         // v.historyDetailList.sending = new Decimal(v.historyDetailList.amount).div(Math.pow(10, v.historyDetailList.fromDecimal))
-        v.historyDetailList.receiving = v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) : null
+        v.historyDetailList.receiving = v.historyDetailList.inAmount ? v.historyDetailList.inAmount : null
         //高度from
         if (v.historyDetailList.confirmHeight) {
           v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
@@ -2009,7 +2020,7 @@ export default {
         v.historyDetailList = result.data.info
 
         v.historyDetailList.sending = v.historyDetailList.amount
-        v.historyDetailList.receiving = v.historyDetailList.receiving ? new Decimal(v.historyDetailList.receiving).div(Math.pow(10, v.historyDetailList.receiveDecimal)) : null
+        v.historyDetailList.receiving = v.historyDetailList.inAmount ? v.historyDetailList.inAmount : null
         //高度from
         if (v.historyDetailList.confirmHeight) {
           v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
@@ -2722,6 +2733,7 @@ export default {
     async getAllData() {
       console.log('window.ethereum.chainId',window.ethereum.chainId)
       this.isLoadingAllData = true;
+      this.vaultBalanceLoading = true
       this.sendAmount = ''
       let address = await this.$store.getters.getAddress;
       if (!address) {
@@ -2774,6 +2786,7 @@ export default {
       this.actionStatus()
       this.isLoadingAllData = false;
       await this.actionVaultBalance()
+      this.vaultBalanceLoading = false
       this.actionInputFont()
       if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
       }else  {
