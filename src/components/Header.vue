@@ -236,7 +236,7 @@ export default {
 
 //tansfer
 .header-middle {
-  margin-left: 12%;
+  margin-left: 10%;
   font-size: 16px;
   color: #333;
   display: flex;
