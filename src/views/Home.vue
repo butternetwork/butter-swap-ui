@@ -1316,7 +1316,7 @@ export default {
 
       this.selectToken.symbol = item.symbol
       this.selectToken.decimals = item.decimals
-      this.selectToken.url = item.logo
+      this.selectToken.logo = item.logo
       this.selectToken.address = item.address
       this.selectToken.isToken = item.isToken
       this.selectToken.isNative = item.isNative
