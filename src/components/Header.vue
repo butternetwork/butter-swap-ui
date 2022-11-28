@@ -185,8 +185,36 @@ export default {
       // let chainId = this.$store.getters.accountId;
       this.$store.dispatch('connect');
     },
-    actionNetwork() {
-      this.$store.dispatch('switchChain',config.map.chainHex);
+    async actionNetwork() {
+      const provider = this.$store.getters.provider;
+      let chainId = config.map.chainHex
+      if (provider) {
+        try {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: chainId }]
+          });
+          return true;
+        } catch (error) {
+          try {
+            let params = {chainId}
+            params.rpcUrls = [config.map.rpc];
+            params.chainName = config.map.chainName;
+            console.log('params',params)
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [params]
+            });
+            return true;
+          } catch (error) {
+            console.error('Failed to setup the network in Metamask:', error);
+            return false;
+          }
+        }
+      } else {
+        console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
+        return false;
+      }
     },
     goMap() {
       window.open('http://18.139.224.21:7001', '_blank')

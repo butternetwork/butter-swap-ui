@@ -27,6 +27,8 @@ export default {
     map: {
         chainId: '212',
         chainHex: '0xd4',
+        rpc:"https://testnet-rpc.maplabs.io",
+        chainName:"MAP Testnet"
     },
     polygon:{
         chainId: '137',

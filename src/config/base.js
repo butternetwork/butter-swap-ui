@@ -25,14 +25,20 @@ export default
             chainHex: '0x61',
         },
         map: {
-            chainId: '22776',
-            chainHex: '0x58f8',
+            chainId: '212',
+            chainHex: '0xd4',
+            rpc:"https://testnet-rpc.maplabs.io",
+            chainName:"MAP Testnet"
         },
+        polygon:{
+            chainId: '137',
+            chainHex: '0x89',
+        },
+
         near:{
             chainId: '5566818579631833089',
             chainHex: '0x4d41500100000001',
         },
-
 
         defaultChainFrom:'34434',
         defaultChainTo:'22776',
