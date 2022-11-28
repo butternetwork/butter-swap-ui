@@ -41,7 +41,7 @@
             <!--                send-->
             <div class="tran-send">
               <div class="tran-send-top">
-                <span class="tran-send-balance" @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
+                <span class="tran-send-balance" style="cursor: pointer">Max: <span @click="actionMaxBalance()">{{ balanceZ }}</span><img @click="actionTokenList()"  src="../assets/refresh.png"/></span>
                 <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
                        placeholder="0.0"/>
                 <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
@@ -50,7 +50,7 @@
                     <img style="width:30px" src="../assets/loading2.gif"/>
                   </div>
                   <div v-else>
-                    <span class="font-yellow" v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainTo.chainName}}</span>
+                    <span class="font-yellow" v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainFrom.chainName}}</span>
                     <span class="font-yellow" v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
                   </div>
 
@@ -91,6 +91,7 @@
                 <span class="tran-send-balance" @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
                 <div id="tran-send-amount" class="tran-receiveAmount">
                   <span v-if="receivedAmountLoading"> <img style="width:30px" src="../assets/loading2.gif"/></span>
+                  <span v-else-if="receivedAmount<0">Amount is less than fee</span>
                   <span v-else>{{ receivedAmount }}</span>
                 </div>
               </div>
@@ -112,7 +113,7 @@
                   <img style="width:30px" src="../assets/loading2.gif"/>
                 </div>
                 <div v-else>
-                  <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainFrom.chainName}}</span>
+                  <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainTo.chainName}}</span>
                   <span class="font-yellow" v-else>{{ toVault }} {{ selectToken.symbol }}</span>
                 </div>
               </div>
@@ -144,12 +145,6 @@
             <button v-if="!allowance &&  approveHash" class="tran-connect-approve">
               Approving... <img src="../assets/loading.gif"/>
             </button>
-<!--            <button v-if="!allowanceMap && !approveMapHash" :class="chainSuccess==false ? 'tran-connect-approve' :''"-->
-<!--                    @click="actionMapApprove()">Approve MAP-->
-<!--            </button>-->
-<!--            <button v-if="!allowanceMap &&  approveMapHash" class="tran-connect-approve">-->
-<!--              Approving... <img src="../assets/loading.gif"/>-->
-<!--            </button>-->
             <button v-if="allowance && !transferBtn"
                     :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="actionTrans()">
               Transfer
@@ -165,16 +160,15 @@
           <!--                  pc-->
           <div class="history">
             <div class="history-title">
-              History
-              <!--                      <img v-show="historyLoading && historyLoading>0" class="loading-icon" src="../assets/dialog/loading.png"/>-->
+              History<img @click="actionHistory()" src="../assets/refresh.png"/>
             </div>
             <div style="min-height: 300px">
-              <div v-show="historyList" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
+              <div v-show="historyList && chainSuccess" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
                    :key="index"
                    class="history-list history-lists">
                 <div class="history-tops">
                   <div class="history-tops-icon">
-                    <img :src="item.fromLogo"/>
+                    <img :src="item.sourceChain.chainImg"/>
                   </div>
                   <div class="history-tops-from">
                     <div class="history-top-left">
@@ -191,7 +185,7 @@
                 </div>
                 <div class="history-tops">
                   <div class="history-tops-icon">
-                    <img :src="item.toLogo"/>
+                    <img :src="item.destinationChain.chainImg"/>
                   </div>
                   <div class="history-tops-from">
                     <div class="history-top-left">
@@ -212,10 +206,10 @@
                     <span>Complete</span>
                     <img src="../assets/arrow-right-write.png"/>
                   </div>
-                  <div v-else-if="item.state==998" class="history-status">
-                    <span>Failed</span>
-                    <img src="../assets/arrow-right-write.png"/>
-                  </div>
+<!--                  <div v-else-if="item.state==998" class="history-status">-->
+<!--                    <span>Failed</span>-->
+<!--                    <img src="../assets/arrow-right-write.png"/>-->
+<!--                  </div>-->
                   <div v-else class="history-status history-status-cancel">
                     <span>Processing</span>
                     <img src="../assets/arrow-right-write.png"/>
@@ -226,7 +220,7 @@
             </div>
 
             <div>
-              <div v-if="historyList && historyList.length>0" class="home-page">
+              <div v-if="chainSuccess && historyList && historyList.length>0" class="home-page">
                 <div :class="currentPage==1?'btn-pre':'btn-next'" @click="requestHistory(false)" class="">
                   <button>Previous</button>
                 </div>
@@ -328,7 +322,21 @@
             </div> -->
           <div class="bridge-rate-content-item">
             <div class="bridge-rate-left">
-              Fee<img src="../assets/error.png"/>
+              Fee
+              <div class="bridge-rate-detail">
+                <div v-show="showFeeDetail" class="bridge-rate-detail-top">
+                  <span>
+                    The Base Fee: {{gasFeeVue}} {{selectToken.symbol}}<br>
+<!--                    The Protocol Fee: 0 USDC<br>-->
+
+                    Base Fee is used to cover the gas cost for sending your transfer on the destination chain.<br>
+
+                    Protocol Fee is charged proportionally to your transfer amount. Protocol Fee is paid to Butter Bridge LPs.
+                  </span>
+                  <img style="cursor: pointer" src="../assets/arrow-bottom-write.png"/>
+                </div>
+                <img @mouseover="showFeeDetail=true" @mouseout="showFeeDetail=false" src="../assets/error.png"/>
+              </div>
             </div>
             <div v-if="receivedAmountLoading" class="bridge-rate-right bridge-rate-right-loading">
               <img style="width:25px" src="../assets/loading2.gif"/>
@@ -432,7 +440,7 @@
           <div class="dialog-trans-detail">
             <div class="dialog-trans-detail-left">Sending</div>
             <div class="dialog-trans-detail-right">
-              <span>{{ historyDetailList.sending }} {{ historyDetailList.coin }}</span>
+              <span>{{ historyDetailList.amount }} {{ historyDetailList.tokenSymbol }}</span>
               <span>{{ historyDetailList.from }}</span>
             </div>
           </div>
@@ -440,9 +448,8 @@
           <div class="dialog-trans-detail">
             <div class="dialog-trans-detail-left">Receiving</div>
             <div class="dialog-trans-detail-right">
-                            <span v-if="historyDetailList.receiving">{{ historyDetailList.receiving }}  {{
-                                historyDetailList.coin
-                              }}</span>
+              <span v-if="historyDetailList.inAmount">
+                {{ historyDetailList.inAmount }}  {{historyDetailList.tokenSymbol }}</span>
               <span v-else>Processing</span>
               <span>{{ historyDetailList.to }}</span>
             </div>
@@ -451,12 +458,9 @@
           <div class="dialog-trans-detail">
             <div class="dialog-trans-detail-left">Fee</div>
             <div class="dialog-trans-detail-right">
-                                  <span v-if="historyDetailList.receiving"
-                                        class="dialog-trans-detail-fee">{{
-                                      historyDetailList.sending - historyDetailList.receiving
-                                    }}  {{
-                                      historyDetailList.coin
-                                    }}</span>
+              <span v-if="historyDetailList.inAmount" class="dialog-trans-detail-fee">
+                {{historyDetailList.fee }}  {{historyDetailList.tokenSymbol }}
+              </span>
               <span v-else>Processing</span>
             </div>
           </div>
@@ -467,35 +471,28 @@
               <!--                    from-->
               <div class="dia-trans">
                 <div class="dia-trans-top">
-                  <img v-if="historyDetailList.confirmHeight>0" src="../assets/dialog/success-red.png"/>
+                  <img v-if="historyDetailList.state==0 || historyDetailList.state===1 || historyDetailList.state===2" src="../assets/dialog/success-red.png"/>
                   <img v-else src="../assets/dialog/success-write.png"/>
                   <div class="dia-trans-top-icon">
                     <img :src="fromLogo"/>
-                    <span>{{ historyDetailList.fromChainName }}</span>
+                    <span>{{ historyDetailList.fromChain ? historyDetailList.fromChain.chainName :null }}</span>
+                    <img @click="goEth()" src="../assets/dialog/send.png"/>
                   </div>
                 </div>
                 <div class="dia-trans-bottom dia-trans-bottoms">
                   <div>
-                    <img v-if="historyDetailList.confirmHeight==6" class="dia-trans-bottom-arrow"
+                    <img v-if="historyDetailList.state===0 || historyDetailList.state===1 || historyDetailList.state===2" class="dia-trans-bottom-arrow"
                          src="../assets/dialog/line-red.png"/>
                     <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
-                  </div>
-                  <div class="dia-trans-bottom-progress">
-                                        <span @click="goEth()">{{ historyDetailList.confirmHeight }}/6 confirmed <img
-                                            src="../assets/dialog/send.png"/> </span>
-                    <div class="dia-transStatus-content-bottom">
-                      <div class="dia-transStatus-content-bottom-bg"
-                           :style="{width:historyDetailList.confirmHeight/6*100+'%'}"></div>
-                    </div>
                   </div>
                 </div>
               </div>
               <!--                    relayer-->
-              <div v-show="historyDetailList.fromChainId!=22776 && historyDetailList.toChainId!=22776"
+              <div v-show="historyDetailList.fromChain && parseInt(historyDetailList.fromChain.chainId)!= parseInt(mapChainId) && historyDetailList.fromChain && parseInt(historyDetailList.toChain.chainId)!= parseInt(mapChainId)"
                    class="dia-trans dia-trans-two">
                 <div class="dia-trans-top">
                   <div>
-                    <img v-if="historyDetailList.relayerConfirmHeight>0" src="../assets/dialog/success-red.png"/>
+                    <img v-if="historyDetailList.state===2 || historyDetailList.state===1 " src="../assets/dialog/success-red.png"/>
                     <img v-else src="../assets/dialog/success-write.png"/>
                   </div>
                   <div class="dia-trans-top-icon">
@@ -505,17 +502,14 @@
                 </div>
                 <div class="dia-trans-bottom dia-trans-bottoms">
                   <div>
-                    <img v-if="historyDetailList.relayerConfirmHeight==6" class="dia-trans-bottom-arrow"
+                    <img v-if="historyDetailList.state===2 || historyDetailList.state===1" class="dia-trans-bottom-arrow"
                          src="../assets/dialog/line-red.png"/>
                     <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
                   </div>
                   <div class="dia-trans-bottom-progress">
-                                  <span @click="goMap()">{{ historyDetailList.relayerConfirmHeight }}/6 confirmed <img
-                                      style="width: 12px" src="../assets/dialog/send.png"/> </span>
-                    <div class="dia-transStatus-content-bottom">
-                      <div class="dia-transStatus-content-bottom-bg"
-                           :style="{width:historyDetailList.relayerConfirmHeight/6*100+'%'}"></div>
-                    </div>
+                    <span @click="goMap()">
+                      <img style="width: 12px" src="../assets/dialog/send.png"/>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -523,54 +517,26 @@
               <div class="dia-trans dia-trans-two">
                 <div class="dia-trans-top">
                   <div>
-                    <img v-if="historyDetailList.transferInHeight>0" src="../assets/dialog/success-red.png"/>
+                    <img v-if="historyDetailList.state===1" src="../assets/dialog/success-red.png"/>
                     <img v-else src="../assets/dialog/success-write.png"/>
                   </div>
                   <div class="dia-trans-top-icon">
                     <img :src="toLogo"/>
-                    <span>{{ historyDetailList.toChainName }}</span>
+                    <span>{{ historyDetailList.toChain ? historyDetailList.toChain.chainName : null }}</span>
+                    <img @click="goToScan()" src="../assets/dialog/send.png"/>
                   </div>
                 </div>
                 <div class="dia-trans-bottom dia-trans-bottoms">
                   <div>
-                    <img v-if="historyDetailList.transferInHeight==6" class="dia-trans-bottom-arrow"
+                    <img v-if="historyDetailList.state===1" class="dia-trans-bottom-arrow"
                          src="../assets/dialog/line-red.png"/>
                     <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
                   </div>
-                  <div class="dia-trans-bottom-progress">
-                                        <span @click="goToScan()">{{
-                                            historyDetailList.transferInHeight
-                                          }}/6 confirmed <img
-                                              style="width: 12px"
-                                              src="../assets/dialog/send.png"/> </span>
-                    <div class="dia-transStatus-content-bottom">
-                      <div class="dia-transStatus-content-bottom-bg"
-                           :style="{width:historyDetailList.transferInHeight/6*100+'%'}"></div>
-                    </div>
-                  </div>
                 </div>
               </div>
-              <!--   <div class="dia-trans dia-trans-two">
-                               <div class="dia-trans-top">
-                                 <img src="../assets/dialog/success-write.png"/>
-                                 <div class="dia-trans-top-icon">
-                                   <img src="../assets/polygon.png"/>
-                                   <span>Polygon (Matic)</span>
-                                 </div>
-                               </div>
-                               <div class="dia-trans-bottom">
-                                 <img src="../assets/dialog/line-write.png"/>
-                                 <div class="dia-trans-bottom-progress">
-                                   <span>0/12 confirmed</span>
-                                   <div class="dia-transStatus-content-bottom">
-                                     <div class="dia-transStatus-content-bottom-bg" :style="{width:'0'+'%'}"></div>
-                                   </div>
-                                 </div>
-                               </div>
-                             </div> -->
               <div class="dia-trans dia-trans-three">
                 <div class="dia-trans-top">
-                  <img v-if="historyDetailList.confirmHeight==6 && historyDetailList.transferInHeight==6"
+                  <img v-if="historyDetailList.state===1"
                        src="../assets/dialog/success-red.png"/>
                   <img v-else src="../assets/dialog/success-write.png"/>
                   <div class="dia-trans-top-icon">
@@ -701,6 +667,8 @@ export default {
   components: {Footer, Header},
   data() {
     return {
+      showFeeDetail:false,
+      mapChainId:config.map.chainId,
       vaultBalanceLoading:true,
       error:true,//是否在链上链接
       receivedAmountLoading:false,
@@ -824,7 +792,7 @@ export default {
 
   watch: {
     sendAmount() {
-      this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
+      // this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
       if (this.sendAmount > 0) {
         this.showFee = true
       } else {
@@ -942,6 +910,7 @@ export default {
   },
 
   methods: {
+
     //退出
     async actionEixt(data) {
       if (data == false) {
@@ -1096,23 +1065,23 @@ export default {
     },
     //到eth浏览器
     goEth() {
-      if (this.historyDetailList.confirmHeight > 0) {
-        window.open(`${this.fromHref}tx/${this.historyDetailList.fromHash}`, '_blank')
+      if (this.historyDetailList.state === 0 || this.historyDetailList.state === 1 || this.historyDetailList.state === 2) {
+        window.open(`${this.historyDetailList.fromChain.scanUrl}tx/${this.historyDetailList.sourceHash}`, '_blank')
       }
 
     },
 
     //到map浏览器
     goMap() {
-      if (this.historyDetailList.relayerConfirmHeight > 0) {
-        window.open(`https://makalu.mapscan.io/tx/${this.historyDetailList.relayerHash}`, '_blank')
+      if (this.historyDetailList.state === 2 || this.historyDetailList.state === 1) {
+        window.open(`${this.historyDetailList.relayerChain.scanUrl}/tx/${this.historyDetailList.relayerHash}`, '_blank')
       }
     },
 
     //到To地址
     goToScan() {
-      if (this.historyDetailList.transferInHeight > 0) {
-        window.open(`${this.toHref}tx/${this.historyDetailList.transferInHash}`, '_blank')
+      if (this.historyDetailList.state === 1) {
+        window.open(`${this.historyDetailList.toChain.scanUrl}tx/${this.historyDetailList.toHash}`, '_blank')
       }
     },
 
@@ -1159,11 +1128,14 @@ export default {
       let input = document.getElementById('tran-send-bottom-red')
 
       //余额不足时 input字体颜色  Transfer按钮颜色  余额不足提醒
-      if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0) {
+      this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
+      console.log('this.receivedAmount',this.receivedAmount.toFixed())
+      if (new Decimal(this.sendAmount).sub(new Decimal(this.balanceZ)) > 0 || this.receivedAmount<0) {
         input.style.color = '#f6d536'
         this.showInsuffcientBalance = true
+        this.actionGasFee()
         transfer.className = 'tran-connect-approve'
-        this.showFee = false
+        // this.showFee = false
       } else {
         this.showFee = true
         this.actionGasFee()
@@ -1197,10 +1169,17 @@ export default {
           amount.toFixed().toString(),
           provider
       );
-      console.log('amount',fee.amount)
+      console.log('amount',fee,fee.amount)
 
       this.gasFeeVue = new Decimal(fee.amount).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
       this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
+      // if (this.receivedAmount <0 ) {
+      //   this.receivedAmount = 'Amount is less than fee'
+      // }
+      // else {
+      //   this.receivedAmount =  new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
+      // }
+
       this.receivedAmountLoading = false
       console.log('gasFeeVue fee', this.gasFeeVue);
       console.log('approve', this.allowance, this.transferBtn);
@@ -1492,6 +1471,17 @@ export default {
         return
       }
 
+      console.log('this.toVault.isMintable',this.toVault, Object.prototype.toString.call(this.toVault) === '[object Object]')
+      if (Object.prototype.toString.call(this.toVault) === '[object Object]') {
+
+      }
+      else {
+        if (this.toVault && new Decimal(this.toVault).sub(new Decimal(this.sendAmount))<0) {
+          v.$toast('Insufficient balance')
+          return
+        }
+      }
+
       const bridge = new ButterBridge();
 
       v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, v.selectToken.decimals)).toString()
@@ -1628,7 +1618,7 @@ export default {
             v.dialogTransing = false
           });
           this.getAllData()
-          this.actionTimerHistory()
+          // this.actionTimerHistory()
 
 
 
@@ -1906,7 +1896,6 @@ export default {
 
 
         let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId.toString())
-        let tokenTo = ID_TO_SUPPORTED_TOKEN(toChainId.toString())
 
 
         for (let i = 0; i < tokens.length; i++) {
@@ -1922,21 +1911,12 @@ export default {
           }
 
         }
-
-        for (let i = 0; i < tokenTo.length; i++) {
-          let token = tokenTo[i];
-          if (fromSymobl === token.symbol) {
-            toDecimal = token.decimal
-            // console.log(token.decimal)
-          }
-        }
-
         //余额
         newObject.amount = parseFloat(new Decimal(item.amount).div(Math.pow(10, fromDecimal)).toFixed(6))
 
         //转到对应链的余额
         if (item.inAmount) {
-          newObject.inAmount = parseFloat(new Decimal(item.inAmount).div(Math.pow(10, toDecimal)).toFixed(6))
+          newObject.inAmount = parseFloat(new Decimal(item.inAmount).div(Math.pow(10, item.destinationToken.decimal)).toFixed(6))
         } else {
           newObject.inAmount = 'Processing'
         }
@@ -1962,10 +1942,12 @@ export default {
       // //console.log(result)
       if (result.code == 200) {
         v.historyDetailList = result.data.info
-        v.historyDetailList.sending = v.historyDetailList.amount
-        // v.historyDetailList.sending = new Decimal(v.historyDetailList.amount).div(Math.pow(10, v.historyDetailList.fromDecimal))
-        v.historyDetailList.receiving = v.historyDetailList.inAmount ? v.historyDetailList.inAmount : null
-        //高度from
+        v.historyDetailList.amount = v.historyDetailList.amount  ? v.historyDetailList.amount : null
+        v.historyDetailList.inAmount = v.historyDetailList.inAmount ? v.historyDetailList.inAmount : null
+
+        console.log('v.historyDetailList.inAmount',v.historyDetailList.fromChain.chainId)
+
+        //高度fromz
         if (v.historyDetailList.confirmHeight) {
           v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
         } else {
@@ -1988,25 +1970,25 @@ export default {
 
 
         //链接
-        v.chainList.forEach(item => {
-          // console.log('item', item)
-          if (v.historyDetailList.fromChainId == item.chainId) {
-            v.fromHref = item.scanUrl
-            // console.log(v.fromHref, 'fromHref')
-          }
-          if (v.historyDetailList.toChainId == item.chainId) {
-            v.toHref = item.scanUrl
-            // console.log(v.toHref, 'toHref')
-          }
-
-        })
+        // v.chainList.forEach(item => {
+        //   // console.log('item', item)
+        //   if (v.historyDetailList.fromChainId == item.chainId) {
+        //     v.fromHref = item.scanUrl
+        //     // console.log(v.fromHref, 'fromHref')
+        //   }
+        //   if (v.historyDetailList.toChainId == item.chainId) {
+        //     v.toHref = item.scanUrl
+        //     // console.log(v.toHref, 'toHref')
+        //   }
+        //
+        // })
 
 
       }
 
-      v.setTimeHistory = setInterval(() => {
-        v.refersHistoryDetail()
-      }, 2000)
+      // v.setTimeHistory = setInterval(() => {
+      //   v.refersHistoryDetail()
+      // }, 2000)
       // //console.log(v.setTimeHistory)
 
     },
@@ -2118,11 +2100,6 @@ export default {
         if (this.selectChain==0) {
           this.chainTo = this.chainFrom
         }
-        if (item.chainName === this.chainTo.chainName) {
-          this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
-          return;
-        }
-
         let nearAccount = await near.asyncNearWallet()
         v.account= nearAccount.currentUser.accountId
         console.log(' v.account', v.account)
@@ -2188,7 +2165,7 @@ export default {
             let chains = this.$store.getters.getChains;
             let chain = chains[chainId];
             params.rpcUrls = [item.rpc];
-            params.chainName = chain.name;
+            params.chainName = item.chainName;
             console.log('params',params)
             await provider.request({
               method: 'wallet_addEthereumChain',

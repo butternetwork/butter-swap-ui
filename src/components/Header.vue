@@ -20,7 +20,10 @@
 
       <div class="header-right">
         <div id="header-chain-content"  class="header-connect">
-          <span class="header-error" v-if="error" @click="actionNetwork()">{{ $t('Network Error') }}</span>
+          <span class="header-error" v-if="error" @click="actionNetwork()">
+            <span>Network Error</span>
+            <span>Click to switch</span>
+          </span>
           <div v-else><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
         </div>
 
@@ -470,10 +473,17 @@ export default {
   height: 40px;
   border-radius: 8px;
   text-align: center;
-  line-height: 40px;
   border: solid 1px #E44E3A;
   background: #E44E3A;
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  span:nth-child(2) {
+    font-size: 12px;
+    padding-top: 2px;
+  }
 }
 
 .header-intall {
