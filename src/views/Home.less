@@ -219,6 +219,8 @@
 
 
       .header-middle {
+        position: relative;
+        z-index: 1;
         margin-top: 20px;
         margin-bottom: 10px;
         font-size: 14px;
@@ -241,9 +243,10 @@
         align-items: center;
         justify-content: center;
         font-family: 'productBold';
-        background-color: rgb(246, 213, 54);
-        color: rgb(26, 27, 32);
+        background-color: #1b2025;
+        color: rgb(246, 213, 54);
         transition: border-color .3s cubic-bezier(.645,.045,.355,1);
+        border: solid 1px rgba(255, 255, 255, 0.4);
       }
 
       .header-middle-tran-active {
@@ -251,9 +254,9 @@
         height: 35px;
         border-radius: 10px;
         border: solid 1px rgba(255, 255, 255, 0.4);
-        background-color: rgb(27, 32, 37);
+        background-color: rgb(246, 213, 54);
+        color: rgb(26, 27, 32);
         font-weight: bold;
-        color: rgb(246, 213, 54);
         font-family: 'productBold';
         display: flex;
         flex-direction: row;
