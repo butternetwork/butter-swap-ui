@@ -17,7 +17,7 @@ class Connector {
 
     initWeb3Modal() {
         const uauthOptions = {
-            clientID: "1bafecad-bed6-4d30-9157-70ff56228eef",
+            clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",
             redirectUri: "https://test-bridge.butternetwork.io",
             scope: "openid wallet"
         };
