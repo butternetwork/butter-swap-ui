@@ -1895,7 +1895,20 @@ export default {
         }
 
 
+
+
         let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId.toString())
+        let tokenTo = ID_TO_SUPPORTED_TOKEN[toChainId.toString()]
+
+        console.log('tokenTo',tokenTo)
+
+        for (let i = 0; i < tokenTo.length; i++) {
+          let token = tokenTo[i];
+          if (fromSymobl === token.symbol) {
+            toDecimal = token.decimal
+            // console.log(token.decimal)
+          }
+        }
 
 
         for (let i = 0; i < tokens.length; i++) {
@@ -1916,7 +1929,7 @@ export default {
 
         //转到对应链的余额
         if (item.inAmount) {
-          newObject.inAmount = parseFloat(new Decimal(item.inAmount).div(Math.pow(10, item.destinationToken.decimal)).toFixed(6))
+          newObject.inAmount = parseFloat(new Decimal(item.inAmount).div(Math.pow(10, toDecimal)).toFixed(6))
         } else {
           newObject.inAmount = 'Processing'
         }
