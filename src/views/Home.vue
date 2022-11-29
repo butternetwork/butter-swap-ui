@@ -41,7 +41,10 @@
             <!--                send-->
             <div class="tran-send">
               <div class="tran-send-top">
-                <span class="tran-send-balance" style="cursor: pointer">Max: <span @click="actionMaxBalance()">{{ balanceZ }}</span><img @click="actionTokenList()"  src="../assets/refresh.png"/></span>
+                <span class="tran-send-balance" style="cursor: pointer">
+                  Max: <span @click="actionMaxBalance()">{{ balanceZ }}</span>
+                  <img @click="actionTokenList()"  src="../assets/refresh.png"/>
+                </span>
                 <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
                        placeholder="0.0"/>
                 <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
@@ -88,7 +91,7 @@
             </div>
             <div class="tran-send">
               <div class="tran-send-top">
-                <span class="tran-send-balance" @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>
+<!--                <span class="tran-send-balance" @click="actionMaxBalance()" style="cursor: pointer">Max: {{ balanceZ }}</span>-->
                 <div id="tran-send-amount" class="tran-receiveAmount">
                   <span v-if="receivedAmountLoading"> <img style="width:30px" src="../assets/loading2.gif"/></span>
                   <span v-else-if="receivedAmount<0">Amount is less than fee</span>
@@ -325,14 +328,16 @@
               Fee
               <div class="bridge-rate-detail">
                 <div v-show="showFeeDetail" class="bridge-rate-detail-top">
-                  <span>
-                    The Base Fee: {{gasFeeVue}} {{selectToken.symbol}}<br>
-<!--                    The Protocol Fee: 0 USDC<br>-->
-
-                    Base Fee is used to cover the gas cost for sending your transfer on the destination chain.<br>
-
-                    Protocol Fee is charged proportionally to your transfer amount. Protocol Fee is paid to Butter Bridge LPs.
-                  </span>
+                  <div class="bridge-rate-detail-text">
+                    <span>Total Fee: {{gasFeeVue}} {{selectToken.symbol}}.</span>
+                    <span v-if="bridgeFee && bridgeFee.highest===bridgeFee.lowest">Fixed rate of {{gasFeeVue}}  {{selectToken.symbol}}.</span>
+                    <span v-else-if="bridgeFee && bridgeFee.highest!==bridgeFee.lowest">{{parseFloat(bridgeFee.rate)/100}}% of total value transferred, minimum {{bridgeFee.lowest}}  {{selectToken.symbol}}, maximum {{bridgeFee.highest}}  {{selectToken.symbol}}.</span>
+                    <span>The Relayer Fee: {{feeDistribution ? parseFloat(feeDistribution.relayer)/100 : 0}}%.</span>
+                    <span> Relayer Fee is used to cover the gas cost on the destination chain.</span>
+                    <span v-show="feeDistribution">LP Fee: {{feeDistribution ? parseFloat(feeDistribution.lp)/100 : 0}}% .</span>
+                    <span>LP fee is paid to Butter Bridge LPs.</span>
+                    <span v-show="feeDistribution">Protocol Fee: {{feeDistribution ? parseFloat(feeDistribution.protocol)/100 : 0}}%.</span>
+                  </div>
                   <img style="cursor: pointer" src="../assets/arrow-bottom-write.png"/>
                 </div>
                 <img @mouseover="showFeeDetail=true" @mouseout="showFeeDetail=false" src="../assets/error.png"/>
@@ -647,7 +652,7 @@ import near from '@/config/near'
 import Web3 from 'web3'
 
 //sdk
-import {getBridgeFee, getVaultBalance} from "butterjs-sdk/dist/core/tools/dataFetch";
+import {getBridgeFee, getVaultBalance,getDistributeRate} from "butterjs-sdk/dist/core/tools/dataFetch";
 import { SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/constants/supported_tokens.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
@@ -693,6 +698,8 @@ export default {
       chainSuccess: false,//当前选择链和当前链是否一致
       gasFee: 0,//gas费
       gasFeeVue: 0,//gas费页面显示
+      feeDistribution:null,//fee
+      bridgeFee:null,//fee
       pageSize: 3, //每页显示数量
       pageNum: 1, //共几页
       currentPage: 1,//默认当前显示第一页
@@ -1161,7 +1168,9 @@ export default {
 
       let amount = new Decimal(this.sendAmount).mul(Math.pow(10, this.selectToken.decimals))
 
-      console.log('amount',this.chainTo.chainId,tokenDetail,amount.toFixed().toString(),provider)
+      const feeRate  = await getDistributeRate(config.map.chainId.toString())
+      this.feeDistribution = feeRate
+      console.log('feeRate',feeRate)
 
       const fee = await getBridgeFee(
           tokenDetail,
@@ -1170,39 +1179,16 @@ export default {
           provider
       );
       console.log('amount',fee,fee.amount)
-
+      console.log('feeRate',fee.feeRate)
+      this.bridgeFee = fee.feeRate
+      this.bridgeFee.lowest = new Decimal(this.bridgeFee.lowest).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
+      this.bridgeFee.highest = new Decimal(this.bridgeFee.highest).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
       this.gasFeeVue = new Decimal(fee.amount).div(new Decimal(Math.pow(10, this.selectToken.decimals))).toFixed()
       this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
-      // if (this.receivedAmount <0 ) {
-      //   this.receivedAmount = 'Amount is less than fee'
-      // }
-      // else {
-      //   this.receivedAmount =  new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
-      // }
-
       this.receivedAmountLoading = false
       console.log('gasFeeVue fee', this.gasFeeVue);
       console.log('approve', this.allowance, this.transferBtn);
 
-
-      // return
-
-
-      // let web3 = await this.$client(this.chainIdHex);
-      //
-      // let contractAddress = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(this.chainFrom.chainId)]
-      //
-      // let contract = new web3.eth.Contract(mapAbi,contractAddress)
-      // // let contract = new web3.eth.Contract(mapAbi, this.chainFrom.contract)
-      //
-      // let gas = await contract.methods.chainGasFee(this.chainTo.chainId).call();
-      // console.log('gas',gas)
-      // this.gasFee = gas
-      // try {
-      //   this.gasFeeVue = new Decimal(gas).div(new Decimal(Math.pow(10, 18)))
-      // } catch (e) {
-      //   this.gasFeeVue = '0';
-      // }
     },
 
     //交换链
@@ -2776,6 +2762,7 @@ export default {
       this.actionStatus()
       this.isLoadingAllData = false;
       await this.actionVaultBalance()
+      await this.actionGasFee()
       this.vaultBalanceLoading = false
       this.actionInputFont()
       if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
