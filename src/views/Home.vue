@@ -1861,11 +1861,11 @@ export default {
           toLogo: '',
           toChainName: ''
         }
-        let fromChainId = item.sourceChainId
-        let toChainId = item.destinationChainId
+        let fromChainId = item.fromChainId
+        let toChainId = item.destinationChain.chainId
         let fromDecimal
         let toDecimal
-        let fromSymobl
+        let fromSymobl = this.selectToken.symbol
 
         console.log('fromChainId',fromChainId)
 
@@ -1883,15 +1883,15 @@ export default {
 
 
 
-        let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId.toString())
-        let tokenTo = ID_TO_SUPPORTED_TOKEN[toChainId.toString()]
+        let tokens = ID_TO_SUPPORTED_TOKEN(fromChainId)
+        let tokenTo = ID_TO_SUPPORTED_TOKEN(toChainId)
 
         console.log('tokenTo',tokenTo)
 
         for (let i = 0; i < tokenTo.length; i++) {
           let token = tokenTo[i];
           if (fromSymobl === token.symbol) {
-            toDecimal = token.decimal
+            toDecimal = token.decimals
             // console.log(token.decimal)
           }
         }
@@ -1910,8 +1910,9 @@ export default {
           }
 
         }
+        console.log('fromDecimal',fromDecimal,toDecimal)
         //余额
-        newObject.amount = parseFloat(new Decimal(item.amount).div(Math.pow(10, fromDecimal)).toFixed(6))
+        newObject.amount = parseFloat(new Decimal(item.amount).div(Math.pow(10, item.sourceToken.decimal)).toFixed(6))
 
         //转到对应链的余额
         if (item.inAmount) {

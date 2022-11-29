@@ -20,11 +20,11 @@
 
       <div class="header-right">
         <div id="header-chain-content"  class="header-connect">
-          <span class="header-error" v-if="error" @click="actionNetwork()">
+          <span class="header-error" v-if="error&&exitConntet" @click="actionNetwork()">
             <span>Network Error</span>
             <span>Click to switch</span>
           </span>
-          <div v-else><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
+          <div v-else-if="exitConntet&&!error"><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
         </div>
 
         <div class="header-connect">
