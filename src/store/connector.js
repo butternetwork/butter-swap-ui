@@ -60,10 +60,11 @@ class Connector {
         UAuthWeb3Modal.registerWeb3Modal(web3modal);
         this.web3modal = web3modal;
 
-        new UAuthSPA(uauthOptions).user().then(user=>{
-            store.commit('setAddress', user.sub);
-            console.log("User information:", user)
-        }).catch()
+        console.log('==================================')
+        // new UAuthSPA(uauthOptions).user().then(user=>{
+        //     store.commit('setAddress', user.sub);
+        //     console.log("User information:", user)
+        // }).catch()
 
     }
 

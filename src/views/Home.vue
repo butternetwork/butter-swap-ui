@@ -1014,14 +1014,14 @@ export default {
         v.toVault = vaultsFrom
       }
       else  {
-        v.toVault = new Decimal(vaultsFrom.balance).div(Math.pow(10,v.selectToken.decimals))
+        v.toVault = new Decimal(vaultsFrom.balance).div(Math.pow(10,vaultsFrom.token.decimals)).toFixed(6)
       }
 
       if (vaultsTo && vaultsTo.isMintable) {
         v.fromVault = vaultsTo
       }
       else  {
-        v.fromVault = new Decimal(vaultsTo.balance).div(Math.pow(10,v.selectToken.decimals))
+        v.fromVault = new Decimal(vaultsTo.balance).div(Math.pow(10,v.selectToken.decimals)).toFixed(6)
       }
 
       console.log('  v.FromVault',  vaultsFrom, vaultsTo )
