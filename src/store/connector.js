@@ -17,10 +17,15 @@ class Connector {
 
     initWeb3Modal() {
         const uauthOptions = {
-            clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",
-            redirectUri: "https://test-bridge.butternetwork.io",
+            clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
+            redirectUri: "https://test-bridge.butternetwork.io",//http://localhost:8080
             scope: "openid wallet"
         };
+        // const uauthOptions = {
+        //     clientID: "e22e8fc1-04da-4ecc-89de-c446854294d2",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
+        //     redirectUri: "http://localhost:8080/",//http://localhost:8080
+        //     scope: "openid wallet"
+        // };
 
         const providerOptions = {
             cacheProvider: true,
@@ -54,6 +59,12 @@ class Connector {
         });
         UAuthWeb3Modal.registerWeb3Modal(web3modal);
         this.web3modal = web3modal;
+
+        new UAuthSPA(uauthOptions).user().then(user=>{
+            store.commit('setAddress', user.sub);
+            console.log("User information:", user)
+        }).catch()
+
     }
 
     async connect() {
