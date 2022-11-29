@@ -16,16 +16,16 @@ class Connector {
     }
 
     initWeb3Modal() {
-        const uauthOptions = {
-            clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
-            redirectUri: "https://test-bridge.butternetwork.io",//http://localhost:8080
-            scope: "openid wallet"
-        };
         // const uauthOptions = {
-        //     clientID: "e22e8fc1-04da-4ecc-89de-c446854294d2",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
-        //     redirectUri: "http://localhost:8080/",//http://localhost:8080
+        //     clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
+        //     redirectUri: "https://test-bridge.butternetwork.io",//http://localhost:8080
         //     scope: "openid wallet"
         // };
+        const uauthOptions = {
+            clientID: "e22e8fc1-04da-4ecc-89de-c446854294d2",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
+            redirectUri: "http://localhost:8080/",//http://localhost:8080
+            scope: "openid wallet"
+        };
 
         const providerOptions = {
             cacheProvider: true,
@@ -60,7 +60,7 @@ class Connector {
         UAuthWeb3Modal.registerWeb3Modal(web3modal);
         this.web3modal = web3modal;
 
-        console.log('==================================')
+        console.log('qqqqqqqqqqqqqqqqq')
         // new UAuthSPA(uauthOptions).user().then(user=>{
         //     store.commit('setAddress', user.sub);
         //     console.log("User information:", user)
@@ -70,9 +70,23 @@ class Connector {
 
     async connect() {
 
+        const uauthOptions = {
+            clientID: "e22e8fc1-04da-4ecc-89de-c446854294d2",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
+            redirectUri: "http://localhost:8080/",//http://localhost:8080
+            scope: "openid wallet"
+        };
+
+        // new UAuthSPA(uauthOptions).user().then(user=>{
+        //     store.commit('setAddress', user.sub);
+        //     console.log("User information:", user)
+        // }).catch()
+
+        console.log('==================================')
+
         try {
             this.provider = await this.web3modal.connect();
             const web3 = new Web3(this.provider);
+            console.log('this.provider',this.provider)
             const info = await Promise.all([web3.eth.getAccounts(), web3.eth.getChainId()]);
             Vue.prototype.$web3 = web3;
             Vue.prototype.$client = () => {
@@ -82,6 +96,10 @@ class Connector {
             this.accountChanged(info[0]);
             this.chainChanged(info[1]);
             this.addListener();
+            new UAuthSPA(uauthOptions).user().then(user=>{
+                // this.accountChanged(user.sub)
+                console.log("User information:", user.sub)
+            }).catch()
             return {
                 account: info[0][0],
                 chainId: info[1],
