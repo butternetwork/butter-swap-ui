@@ -30,7 +30,11 @@
         <div class="header-connect">
           <div v-if="exitConntet"  @mouseover="showLogOut=true" @mouseleave="showLogOut=false" class="header-connect-content" id="connect-btn">
             <span @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-if="address" class="header-intall header-intalls">
-            <img src="../assets/header/butter-logo.png"/>{{ $formatAddress(address) }}<span class="header-address-round"></span></span>
+                <img src="../assets/header/butter-logo.png"/>
+                <span v-if="domainName" >{{ $formatAddress(domainName) }}</span>
+                <span v-else>{{ $formatAddress(address) }}</span>
+                <span class="header-address-round"></span>
+            </span>
             <span v-else @click="actionConnect()" class="header-intall" >Connect Wallet</span>
             <span id="logoutBtn" @click.prevent.stop="actionLogOut()" @mouseover="showLogOut=true" @mouseleave="showLogOut=false" v-show="showLogOut" class="header-intall header-intalls header-logout">Logout</span>
           </div>
@@ -78,6 +82,7 @@ export default {
       chain: null,
       exitConntet:false,
       showLogOut:false,//显示退出
+      domainName:null,
     }
   },
   computed: {
@@ -141,10 +146,13 @@ export default {
         await this.$store.dispatch('connect')
         // this.$emit("exit",true)
         // localStorage.setItem('exit',true)
-
+        let username = localStorage.getItem('userDomain')
+        this.domainName = username
+        console.log('username',username)
         let chain= document.getElementById('header-chain-content')
         chain.style.visibility='visible'
         this.exitConntet =  true
+
       } catch (e) {
         console.error(e);
       }
@@ -159,6 +167,8 @@ export default {
         this.showLogOut = false
         this.$store.commit("setAddress","");
         this.exitConntet =  false
+        this.domainName = localStorage.getItem('userDomainn')
+        console.log('domainName',this.domainName)
       }
       else  {
         if (connector.web3modal.cachedProvider) {
@@ -220,7 +230,7 @@ export default {
       }
     },
     goMap() {
-      window.open('http://18.139.224.21:7001', '_blank')
+      window.open('https://test-bridge.butternetwork.io', '_blank')
     },
     async matchChain() {
       let chainId = await this.$store.getters.getChainId;

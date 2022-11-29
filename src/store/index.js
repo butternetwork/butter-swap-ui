@@ -113,7 +113,8 @@ const store = new Vuex.Store({
                 account,
                 chainId
             } = await connector.connect();
-            console.log(account, chainId);
+            // store.commit("setAddress",account);
+            console.log('account',account, chainId);
         },
         logout(store, payload) {
             store.commit('setAddress', '');
