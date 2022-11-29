@@ -96,10 +96,10 @@ class Connector {
             this.accountChanged(info[0]);
             this.chainChanged(info[1]);
             this.addListener();
-            new UAuthSPA(uauthOptions).user().then(user=>{
-                // this.accountChanged(user.sub)
-                console.log("User information:", user.sub)
-            }).catch()
+            // new UAuthSPA(uauthOptions).user().then(user=>{
+            //     // this.accountChanged(user.sub)
+            //     console.log("User information:", user.sub)
+            // }).catch()
             return {
                 account: info[0][0],
                 chainId: info[1],
