@@ -205,6 +205,8 @@ export default {
         v.account= nearAccount.currentUser.accountId
         this.chainIdNumber = item.chainId
         this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+        chainId = config.near.chainId.toString()
+
         this.chainFrom = JSON.parse(JSON.stringify(item));
         this.showSelectChain = false
         this.$router.push(`/home?sourceNetwork=${this.chainFrom.symbol}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)

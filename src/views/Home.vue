@@ -1247,9 +1247,9 @@ export default {
       console.log('target token', tokenCandidates);
 
       let tokenList = this.$copyObject(tokenCandidates);
-      let selectTokens = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber.toString()));
-      let formTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainIdNumber.toString()));
-      let toTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId));
+      let selectTokens = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString()));
+      let formTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString()));
+      let toTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId.toString()));
 
       if (!formTokenList || !toTokenList || formTokenList.length === 0 || toTokenList.length === 0) {
         this.tokenList = [];
