@@ -2434,7 +2434,8 @@ export default {
         return;
       }
       let v = this
-      console.log('this.chainIdNumber',this.chainIdNumber)
+
+      console.log('this.chainFrom.chainId.toString()',this.chainFrom,this.chainFrom.chainId.toString())
       this.tokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
       // console.log(' this.tokenList', this.tokenList,ID_TO_SUPPORTED_TOKEN(this.chainIdNumber))
 

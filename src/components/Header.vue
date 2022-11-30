@@ -321,10 +321,10 @@ export default {
       }
 
       if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-        if (query.sourceNetwork == 'BSC') {
-          query.destNetwork = 'MAP';
-        } else {
+        if (query.sourceNetwork == 'MAP') {
           query.destNetwork = 'BSC';
+        } else {
+          query.destNetwork = 'MAP';
         }
       }
 
@@ -845,9 +845,7 @@ export default {
   .header-error {
     width: 100px;
     height: 35px;
-    line-height: 35px;
     font-size: 12px;
-    line-height: 35px;
     text-align: center;
   }
 
@@ -876,11 +874,12 @@ export default {
 
   .header-beta {
     margin-top: 0;
+    margin-left: 5px;
   }
 
 
   .header-intalls {
-    width: 120px;
+    width: 105px;
   }
   .header-many {
 
