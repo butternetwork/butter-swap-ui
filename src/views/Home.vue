@@ -97,42 +97,49 @@
                   <span v-else-if="receivedAmount<0">Amount is less than fee</span>
                   <span v-else>{{ receivedAmount }}</span>
                 </div>
+                <div v-show="showToVault" class="tran-send-vault">
+                  <span>Vault:</span>
+                  <div v-if="vaultBalanceLoading">
+                    <img style="width:30px" src="../assets/loading2.gif"/>
+                  </div>
+                  <div v-else>
+                    <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainTo.chainName}}</span>
+                    <span class="font-yellow" v-else>{{ toVault }} {{ selectToken.symbol }}</span>
+                  </div>
+                </div>
               </div>
               <div class="tran-send-bottom">
-                <div @click="actionChain(1)" style="margin-left: 28px" class="tran-from-btn">
+                <div @click="actionChain(1)" class="tran-from-btn">
                   <div class="tran-send-btn-left">
                     <img :src="chainTo.chainLogo"/>
                     <span>{{ chainTo.chainName }}</span>
                   </div>
                   <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
                 </div>
-                <span class="tran-send-bottom-address">Received Address:</span>
+                <div class="tran-send-btn">
+                  <div class="tran-send-btn-left">
+                    <img :src="selectToken.logo"/>
+                    <span>{{ selectToken.symbol }}</span>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="tran-vault-address">
-              <div v-show="showToVault && !showAddress" class="tran-send-vault">
-                <span>Vault:</span>
-                <div v-if="vaultBalanceLoading">
-                  <img style="width:30px" src="../assets/loading2.gif"/>
-                </div>
-                <div v-else>
-                  <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainTo.chainName}}</span>
-                  <span class="font-yellow" v-else>{{ toVault }} {{ selectToken.symbol }}</span>
-                </div>
+
+            </div>
+          </div>
+            <div class="tran-send-btn tran-send-btns">
+              <span class="tran-send-btns-received">Received Address:</span>
+              <div class="tran-send-address-input">
+                <input v-model="allAddress" placeholder="Please enter the address"/>
               </div>
-              <div v-show="!showAddress" @click.stop="actionShowAddress()" class="tran-send-btn tran-send-btns">
-                <span class="tran-send-btn-address">{{ sortAddress }}</span>
-                <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
-              </div>
-              <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
-                <!--                  <div class="tran-send-address-left">-->
-                <!--                    <span>Received Address:</span>-->
-                <!--                    <img src="../assets/address.png"/>-->
-                <!--                  </div>-->
-                <div class="tran-send-address-input">
-                  <input v-model="allAddress" placeholder="Please enter the address"/>
-                  <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
-                </div>
+<!--              <span class="tran-send-btn-address">{{ sortAddress }}</span>-->
+              <img class="tran-send-arrow-icon tran-send-arrow-icons" src="../assets/edit.png"/>
+            </div>
+            <div @click.stop="showAddress=true" v-show="showAddress" class="tran-send-address">
+              <div class="tran-send-address-input">
+                <input v-model="allAddress" placeholder="Please enter the address"/>
+                <img @click.stop="getInputAddress()" src="../assets/frame-red.png"/>
               </div>
             </div>
             <!--                  余额不足提醒-->
@@ -156,7 +163,7 @@
               Transfering... <img src="../assets/loading.gif"/>
             </button>
           </div>
-          </div>
+
         </div>
         <!--                history-->
         <div v-show="showTab==1" class="">
@@ -432,7 +439,7 @@
       </div>
     </div>
 
-    <!--        交易详情-->
+    <!--        history交易详情-->
     <div v-show="showTranDetail" class="dialog-selectChain">
       <div class="dialog-content dialog-content-trans">
         <div class="dialog-selectChain-title">
@@ -476,28 +483,30 @@
               <!--                    from-->
               <div class="dia-trans">
                 <div class="dia-trans-top">
-                  <img v-if="historyDetailList.state==0 || historyDetailList.state===1 || historyDetailList.state===2" src="../assets/dialog/success-red.png"/>
+                  <img v-if="historyDetailList.sourceHash" src="../assets/dialog/success-red.png"/>
                   <img v-else src="../assets/dialog/success-write.png"/>
                   <div class="dia-trans-top-icon">
                     <img :src="fromLogo"/>
                     <span>{{ historyDetailList.fromChain ? historyDetailList.fromChain.chainName :null }}</span>
-                    <img @click="goEth()" src="../assets/dialog/send.png"/>
                   </div>
                 </div>
                 <div class="dia-trans-bottom dia-trans-bottoms">
                   <div>
-                    <img v-if="historyDetailList.state===0 || historyDetailList.state===1 || historyDetailList.state===2" class="dia-trans-bottom-arrow"
+                    <img v-if="historyDetailList.sourceHash" class="dia-trans-bottom-arrow"
                          src="../assets/dialog/line-red.png"/>
                     <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
+                  </div>
+                  <div @click="goEth()" class="dia-trans-bottom-sourceHash">
+                    {{ $formatAddress(historyDetailList.sourceHash)}}
+                    <img  src="../assets/dialog/send.png"/>
                   </div>
                 </div>
               </div>
               <!--                    relayer-->
-              <div v-show="historyDetailList.fromChain && parseInt(historyDetailList.fromChain.chainId)!= parseInt(mapChainId) && historyDetailList.fromChain && parseInt(historyDetailList.toChain.chainId)!= parseInt(mapChainId)"
-                   class="dia-trans dia-trans-two">
+              <div v-show="historyDetailList.relayerHash" class="dia-trans dia-trans-two">
                 <div class="dia-trans-top">
                   <div>
-                    <img v-if="historyDetailList.state===2 || historyDetailList.state===1 " src="../assets/dialog/success-red.png"/>
+                    <img v-if="historyDetailList.relayerHash" src="../assets/dialog/success-red.png"/>
                     <img v-else src="../assets/dialog/success-write.png"/>
                   </div>
                   <div class="dia-trans-top-icon">
@@ -507,14 +516,14 @@
                 </div>
                 <div class="dia-trans-bottom dia-trans-bottoms">
                   <div>
-                    <img v-if="historyDetailList.state===2 || historyDetailList.state===1" class="dia-trans-bottom-arrow"
+                    <img v-if="historyDetailList.relayerHash" class="dia-trans-bottom-arrow"
                          src="../assets/dialog/line-red.png"/>
                     <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
                   </div>
-                  <div class="dia-trans-bottom-progress">
-                    <span @click="goMap()">
-                      <img style="width: 12px" src="../assets/dialog/send.png"/>
-                    </span>
+
+                  <div v-show="historyDetailList.relayerHash" @click="goMap()" class="dia-trans-bottom-sourceHash">
+                    {{ $formatAddress(historyDetailList.relayerHash)}}
+                    <img  src="../assets/dialog/send.png"/>
                   </div>
                 </div>
               </div>
@@ -522,20 +531,23 @@
               <div class="dia-trans dia-trans-two">
                 <div class="dia-trans-top">
                   <div>
-                    <img v-if="historyDetailList.state===1" src="../assets/dialog/success-red.png"/>
+                    <img v-if="historyDetailList.toHash" src="../assets/dialog/success-red.png"/>
                     <img v-else src="../assets/dialog/success-write.png"/>
                   </div>
                   <div class="dia-trans-top-icon">
                     <img :src="toLogo"/>
                     <span>{{ historyDetailList.toChain ? historyDetailList.toChain.chainName : null }}</span>
-                    <img @click="goToScan()" src="../assets/dialog/send.png"/>
                   </div>
                 </div>
                 <div class="dia-trans-bottom dia-trans-bottoms">
                   <div>
-                    <img v-if="historyDetailList.state===1" class="dia-trans-bottom-arrow"
+                    <img v-if="historyDetailList.toHash" class="dia-trans-bottom-arrow"
                          src="../assets/dialog/line-red.png"/>
                     <img v-else class="dia-trans-bottom-arrow" src="../assets/dialog/line-write.png"/>
+                  </div>
+                  <div v-show="historyDetailList.toHash" @click="goToScan()" class="dia-trans-bottom-sourceHash">
+                    {{ $formatAddress(historyDetailList.toHash)}}
+                    <img  src="../assets/dialog/send.png"/>
                   </div>
                 </div>
               </div>
@@ -674,7 +686,7 @@ export default {
     return {
       showFeeDetail:false,
       mapChainId:config.map.chainId,
-      vaultBalanceLoading:true,
+      vaultBalanceLoading:false,
       error:true,//是否在链上链接
       receivedAmountLoading:false,
       ReceivedAmount:0,
@@ -917,6 +929,11 @@ export default {
   },
 
   methods: {
+    async getSortAddress(hash) {
+        if (hash) {
+          return hash.substr(0, 9) + '...' + hash.substr(hash.length-8,hash.length())
+        }
+    },
 
     //退出
     async actionEixt(data) {
@@ -982,6 +999,7 @@ export default {
     //获取vault
     async actionVaultBalance() {
       let v = this
+      this.vaultBalanceLoading = true
 
       if (v.selectToken.address == null) {
         return;
@@ -1023,6 +1041,8 @@ export default {
       else  {
         v.fromVault = new Decimal(vaultsTo.balance).div(Math.pow(10,v.selectToken.decimals)).toFixed(6)
       }
+
+      this.vaultBalanceLoading = false
 
       console.log('  v.FromVault',  vaultsFrom, vaultsTo )
 
@@ -1072,9 +1092,12 @@ export default {
     },
     //到eth浏览器
     goEth() {
-      if (this.historyDetailList.state === 0 || this.historyDetailList.state === 1 || this.historyDetailList.state === 2) {
-        window.open(`${this.historyDetailList.fromChain.scanUrl}tx/${this.historyDetailList.sourceHash}`, '_blank')
-      }
+        if (this.historyDetailList.fromChain.chainName==='NEAR') {
+          window.open(`${this.historyDetailList.fromChain.scanUrl}transactions/${this.historyDetailList.sourceHash}`, '_blank')
+        }
+        else  {
+          window.open(`${this.historyDetailList.fromChain.scanUrl}tx/${this.historyDetailList.sourceHash}`, '_blank')
+        }
 
     },
 
@@ -1087,7 +1110,10 @@ export default {
 
     //到To地址
     goToScan() {
-      if (this.historyDetailList.state === 1) {
+      if (this.historyDetailList.toChain.chainName==='NEAR') {
+        window.open(`${this.historyDetailList.toChain.scanUrl}transactions/${this.historyDetailList.toHash}`, '_blank')
+      }
+      else  {
         window.open(`${this.historyDetailList.toChain.scanUrl}tx/${this.historyDetailList.toHash}`, '_blank')
       }
     },
@@ -1457,7 +1483,6 @@ export default {
         return
       }
 
-      console.log('this.toVault.isMintable',this.toVault, Object.prototype.toString.call(this.toVault) === '[object Object]')
       if (Object.prototype.toString.call(this.toVault) === '[object Object]') {
 
       }
@@ -1474,9 +1499,12 @@ export default {
 
       console.log('sendAllAmount', v.sendAllAmount)
 
+      this.langToAddress = this.allAddress
+
 
       if (this.langToAddress == '') {
-        this.langToAddress = await this.$store.getters.getAddress
+        this.$toast('Address cannot be empty')
+        return
       }
 
 
@@ -1583,8 +1611,6 @@ export default {
       }
 
 
-
-
       const promiReceipt = receipt.promiReceipt;
       await promiReceipt
           .on('transactionHash', function (hash) {
@@ -1605,178 +1631,6 @@ export default {
           });
           this.getAllData()
           // this.actionTimerHistory()
-
-
-
-      // console.log('statusToken',statusToken)
-
-      return
-
-
-
-          //当前链
-      var chain = v.chainFrom.chain
-      //console.log('chain', chain)
-
-      //当前选择Token
-      var TokenAddress = v.selectToken.address
-      // console.log('TokenAddress', TokenAddress)
-
-      let decimal;
-
-      //通过Token地址获取当前Token的decimal
-      v.tokenList.forEach((i, k) => {
-        if (i.symbol == 'MAP') {
-          v.mapBalance = new Decimal(i.amount).mul(new Decimal(Math.pow(10, 18)))
-        }
-        if (i.address.toLowerCase() == TokenAddress.toLowerCase()) {
-          decimal = i.decimal
-          return
-        }
-      })
-
-
-      var reward_stakeData;
-
-      var transParams;
-
-
-      //输入的金额
-      v.sendAllAmount = new Decimal(v.sendAmount).mul(Math.pow(10, decimal))
-
-      //To的链Id
-      let chainId = this.chainTo.chainId
-
-
-      //调用合约执行
-      let web3 = await this.$client(this.chainIdHex);
-      let reward_contract = new web3.eth.Contract(mapAbi, reward_address)
-
-      var valueFee;
-
-      // console.log(TokenAddress, 'TokenAddress')
-
-      if (this.langToAddress==''){
-        this.langToAddress = await this.$store.getters.getAddress
-      }
-
-      console.log('this.langToAddres',this.langToAddress)
-
-      if (TokenAddress == '0x0000000000000000000000000000000000000000') {
-        reward_stakeData = reward_contract.methods.transferOutNative(this.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-        if (parseInt(v.chainFrom.chainId) == 22776) {
-          valueFee = new Decimal(v.sendAllAmount).add(new Decimal(v.gasFee))
-        } else {
-          valueFee = new Decimal(v.sendAllAmount)
-        }
-        transParams = {
-          from: this.account,
-          to: reward_address,
-          data: reward_stakeData,
-          value: valueFee.toFixed(0)
-        }
-      } else {
-
-        if (v.selectToken.isMint == 1) {
-          reward_stakeData = reward_contract.methods.transferOutTokenBurn(TokenAddress, this.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-          // console.log('reward_stakeData', reward_stakeData)
-          if (parseInt(v.chainFrom.chainId) == 22776) {
-            valueFee = new Decimal(v.gasFee)
-          } else {
-            valueFee = 0
-          }
-          transParams = {
-            from: this.account,
-            to: reward_address,
-            data: reward_stakeData,
-            value: valueFee.toFixed()
-          }
-          // console.log('transParams',transParams)
-        } else {
-          reward_stakeData = reward_contract.methods.transferOutToken(TokenAddress, this.langToAddress, v.sendAllAmount.toFixed(), chainId).encodeABI()
-          if (parseInt(v.chainFrom.chainId) == 22776) {
-            valueFee = new Decimal(v.gasFee)
-          } else {
-            valueFee = 0
-          }
-          transParams = {
-            from: this.account,
-            to: reward_address,
-            data: reward_stakeData,
-            value: valueFee.toFixed()
-          }
-        }
-
-      }
-      // console.log('reward_stakeData', reward_stakeData)
-      // console.log('transParams', transParams)
-
-
-      if (parseInt(v.chainFrom.chainId) == 22776) {
-        if (v.selectToken.address == '0x0000000000000000000000000000000000000000') {
-          // console.log('valueFee', parseInt(valueFee))
-          // console.log('mapBalance', parseInt(v.mapBalance))
-          if (valueFee.comparedTo(v.mapBalance) > 0) {
-            v.$toast('Insufficient balance')
-            return
-          }
-        } else {
-          if (new Decimal(v.gasFee).comparedTo(v.mapBalance) > 0) {
-            v.$toast('Insufficient balance')
-            return
-          }
-        }
-      } else {
-        if (new Decimal(v.gasFee).comparedTo(v.mapBalance) > 0) {
-          v.$toast('Insufficient balance')
-          return
-        }
-      }
-
-
-      //报错
-      var error;
-      try {
-        var gas = await web3.eth.estimateGas(transParams)
-      } catch (e) {
-        // let result = e.message.substring(e.message.indexOf("{"))
-        // error = JSON.parse(result).message
-        v.showErrorMessage = true
-        v.errorMessage = e.message
-        // this.$toast(error)
-      }
-      //console.log('gas', gas)
-      if (error) {
-        return
-      }
-
-      //
-      v.allowance = true
-      v.transferBtn = true
-      const rewardReceipt = await this.$web3.eth.sendTransaction(transParams).on('transactionHash', function (hash) {
-        v.transHash = hash
-        v.transferBtn = true
-        if (v.transHash != null && v.transHash != '') {
-          v.actionSubBridge()
-        }
-        // console.log(`hash`, hash)
-        v.dialogTransing = true
-        // v.$toast('Transaction has send please wait result')
-      }).on('receipt', function (receipt) {
-        //receipt 成功
-        v.transferBtn = false
-        v.dialogTransing = false
-        //console.log(`result`, receipt)
-      }).on('error', function (receipt) {
-        //receipt 失败
-        v.allowance = true
-        v.transferBtn = false
-        v.dialogTransing = false
-        //console.log(`error`, receipt)
-      })
-      // console.log('rewardReceipt', rewardReceipt);
-      this.getAllData()
-      this.actionTimerHistory()
     },
 
     //交易成功后 给后端传数据
@@ -1946,50 +1800,12 @@ export default {
         v.historyDetailList.inAmount = v.historyDetailList.inAmount ? v.historyDetailList.inAmount : null
 
         console.log('v.historyDetailList.inAmount',v.historyDetailList.fromChain.chainId)
-
-        //高度fromz
-        if (v.historyDetailList.confirmHeight) {
-          v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
-        } else {
-          v.historyDetailList.confirmHeight = 0
-        }
-
-        //高度map
-        if (v.historyDetailList.relayerConfirmHeight) {
-          v.historyDetailList.relayerConfirmHeight = (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight) > 6 ? 6 : (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight)
-        } else {
-          v.historyDetailList.relayerConfirmHeight = 0
-        }
-
-        //高度to
-        if (v.historyDetailList.transferInConfirmHeight) {
-          v.historyDetailList.transferInHeight = (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight) > 6 ? 6 : (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight)
-        } else {
-          v.historyDetailList.transferInHeight = 0
-        }
-
-
-        //链接
-        // v.chainList.forEach(item => {
-        //   // console.log('item', item)
-        //   if (v.historyDetailList.fromChainId == item.chainId) {
-        //     v.fromHref = item.scanUrl
-        //     // console.log(v.fromHref, 'fromHref')
-        //   }
-        //   if (v.historyDetailList.toChainId == item.chainId) {
-        //     v.toHref = item.scanUrl
-        //     // console.log(v.toHref, 'toHref')
-        //   }
-        //
-        // })
-
-
       }
 
-      // v.setTimeHistory = setInterval(() => {
-      //   v.refersHistoryDetail()
-      // }, 2000)
-      // //console.log(v.setTimeHistory)
+      v.setTimeHistory = setInterval(() => {
+        v.refersHistoryDetail()
+      }, 3000)
+      //console.log(v.setTimeHistory)
 
     },
 
@@ -2000,33 +1816,10 @@ export default {
       // //console.log(result)
       if (result.code == 200) {
         v.historyDetailList = result.data.info
-
         v.historyDetailList.sending = v.historyDetailList.amount
         v.historyDetailList.receiving = v.historyDetailList.inAmount ? v.historyDetailList.inAmount : null
-        //高度from
-        if (v.historyDetailList.confirmHeight) {
-          v.historyDetailList.confirmHeight = (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight) > 6 ? 6 : (v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)
-        } else {
-          v.historyDetailList.confirmHeight = 0
-        }
-        //高度map
-        if (v.historyDetailList.relayerConfirmHeight) {
-          v.historyDetailList.relayerConfirmHeight = (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight) > 6 ? 6 : (v.historyDetailList.relayerConfirmHeight - v.historyDetailList.relayerHeight)
-        } else {
-          v.historyDetailList.relayerConfirmHeight = 0
-        }
-        //高度to
-        if (v.historyDetailList.transferInConfirmHeight) {
-          v.historyDetailList.transferInHeight = (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight) > 6 ? 6 : (v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight)
-        } else {
-          v.historyDetailList.transferInHeight = 0
-        }
 
-        // if((v.historyDetailList.confirmHeight - v.historyDetailList.fromHeight)>=6 && v.historyDetailList.transferInConfirmHeight - v.historyDetailList.transferInHeight>=6) {
-        //   clearInterval(v.setTimeHistory)
-        //   v.setTimeHistory=null
-        // }
-        if (result.data.state == 1) {
+        if (result.data.info.state == 1) {
           clearInterval(v.setTimeHistory)
           v.setTimeHistory = null
         }
@@ -2094,6 +1887,7 @@ export default {
       let params = {chainId}
       let account = await this.$web3.eth.getAccounts()
 
+      console.log('item.symbol',item.symbol,this.chainFrom.symbol,this.chainTo.symbol)
 
       if (item.symbol== 'NEAR') {
         console.log('item.chainName === this.chainFrom.chainName',item.chainName , this.chainFrom.chainName)
@@ -2108,18 +1902,10 @@ export default {
         this.chainFrom = JSON.parse(JSON.stringify(item));
         this.showSelectChain = false
 
-        // console.log(' this.chainFrom.symbol', this.chainFrom.symbol,this.chainTo.symbol)
-        // this.$store.dispatch('logout')
+        console.log(' this.chainFrom.symbol',this.$route.query, this.chainFrom.symbol,this.chainTo.symbol)
         this.$router.push(`/home?sourceNetwork=${this.chainFrom.symbol}&destNetwork=${this.chainTo.symbol}&ts=${Date.now()}`)
         console.log('query',this.$route.query )
-        this.actionTokenList()
-        // this.actionShowToken()
-        this.actionGasFee()
-        this.actionStatus()
-        this.actionInputFont()
-        this.actionVaultBalance()
-        this.actionApproveOrTransfer()
-            // v.requestData()
+        v.requestData()
         return
       }
 
@@ -2135,55 +1921,95 @@ export default {
         console.log('account[0]',account[0])
         this.$store.commit("setAddress",account[0]);
         this.$store.commit("setChainId",item.chainId);
-        this.chainFrom = JSON.parse(JSON.stringify(item));
+        // this.chainFrom = JSON.parse(JSON.stringify(item));
         this.showSelectChain = false
-
-        console.log('qqqqqqq',account,item.chainId)
-        v.$router.push(`/home?sourceNetwork=${item.symbol}&destNetwork=${v.chainTo.symbol}&ts=${Date.now()}`)
-        this.actionTokenList()
-        // this.actionShowToken()
-        this.actionGasFee()
-        this.actionStatus()
-        this.actionInputFont()
-        this.actionVaultBalance()
-        this.actionApproveOrTransfer()
+        console.log('item.symbol',item.symbol,this.chainFrom.symbol,this.chainTo.symbol)
+        v.$router.push(`/home?sourceNetwork=${this.chainTo.symbol}&destNetwork=${this.chainFrom.symbol}&ts=${Date.now()}`)
         return
       }
 
+
       if (provider) {
         try {
+          let params = {chainId}
+          let method = 'wallet_switchEthereumChain';
+          let chains = this.$store.getters.getChains;
+          let chain = chains[chainId];
+          console.log('chain',chain)
+          if (chain.symbol !== 'ETH') {
+            method = 'wallet_addEthereumChain';
+            params.rpcUrls = [item.rpc];
+            params.chainName = item.chainName;
+          }
           await provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: chainId }]
+            method: method,
+            params: [params]
           });
           this.$store.commit("setAddress",account[0]);
           this.$store.commit("setChainId",item.chainId);
           this.$route.query.sourceNetwork=item.symbol
-          return true;
+          this.showSelectChain=false;
         } catch (error) {
-          try {
-            let chains = this.$store.getters.getChains;
-            let chain = chains[chainId];
-            params.rpcUrls = [item.rpc];
-            params.chainName = item.chainName;
-            console.log('params',params)
-            await provider.request({
-              method: 'wallet_addEthereumChain',
-              params: [params]
-            });
-            this.$store.commit("setAddress",account[0]);
-            this.$store.commit("setChainId",item.chainId);
-            this.$route.query.sourceNetwork=item.symbol
-            return true;
-          } catch (error) {
-            console.error('Failed to setup the network in Metamask:', error);
-            return false;
-          }
+          v.requestData()
+          // try {
+          //   let chains = this.$store.getters.getChains;
+          //   let chain = chains[chainId];
+          //   params.rpcUrls = [item.rpc];
+          //   params.chainName = item.chainName;
+          //   console.log('params',params)
+          //   await provider.request({
+          //     method: 'wallet_addEthereumChain',
+          //     params: [params]
+          //   });
+          //   this.$store.commit("setAddress",account[0]);
+          //   this.$store.commit("setChainId",item.chainId);
+          //   this.$route.query.sourceNetwork=item.symbol
+          //   return true;
+          // } catch (error) {
+          //   this.requestData()
+          //   console.error('Failed to setup the network in Metamask:', error);
+          //   return false;
+          // }
         }
       } else {
         console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
         return false;
       }
+
+      // if (provider) {
+      //   try {
+      //     await provider.request({
+      //       method: 'wallet_switchEthereumChain',
+      //       params: [{ chainId: chainId }]
+      //     });
+      //     this.$store.commit("setAddress",account[0]);
+      //     this.$store.commit("setChainId",item.chainId);
+      //     this.$route.query.sourceNetwork=item.symbol
+      //     return true;
+      //   } catch (error) {
+      //     try {
+      //       let chains = this.$store.getters.getChains;
+      //       let chain = chains[chainId];
+      //       params.rpcUrls = [item.rpc];
+      //       params.chainName = item.chainName;
+      //       console.log('params',params)
+      //       await provider.request({
+      //         method: 'wallet_addEthereumChain',
+      //         params: [params]
+      //       });
+      //       this.$store.commit("setAddress",account[0]);
+      //       this.$store.commit("setChainId",item.chainId);
+      //       this.$route.query.sourceNetwork=item.symbol
+      //       return true;
+      //     } catch (error) {
+      //       console.error('Failed to setup the network in Metamask:', error);
+      //       return false;
+      //     }
+      //   }
+      // } else {
+      //   console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
+      //   return false;
+      // }
 
       // this.$watcher.getProvider().then(async provider => {
       //   let chainId = new Decimal(item.chainId).toHex();
@@ -2532,9 +2358,6 @@ export default {
     //获取链列表
     async actionGetChain() {
         let v = this;
-        // let result = await this.$http.chainList()
-        // if (result.code === 200) {
-        //   this.chainList = result.data.list
         v.chainList = SUPPORTED_CHAIN_LIST
         console.log( v.chainList)
 
@@ -2543,41 +2366,52 @@ export default {
         let query = this.$route.query ? this.$route.query : {}
         let chains = await this.$store.getters.getChains;
         let chain = chains[chainId];
-      console.log('chain',chains,chainId)
+      console.log('chains',chains,chainId)
 
       //刷新
+      console.log('this.selectChain ',this.selectChain )
         if (this.selectChain == -1) {
-          query.sourceNetwork=chain.symbol;
+          console.log('aaaaaaaaaaaaaaaaa')
+          console.log('chain'.chain)
+          if (chain) {
+            query.sourceNetwork=chain.symbol;
+          }else {
+            query.sourceNetwork='MAP';
+          }
         } else
             //切换
         if (this.selectChain == 0) {
+          console.log('bbbbbbbbbbbbbbbb')
           if (!chain) {
-            chain = chains[config.bsc.chainHex];
-            // chain = chains['0x1'];
+            chain = chains[config.map.chainHex];
           }
+
+          console.log(' query.sourceNetwork ',this.chainFrom.symbol, this.chainTo.symbol)
+          console.log(' query.sourceNetwork ',query.sourceNetwork , query.destNetwork)
+
           let temp = query.sourceNetwork;
+          console.log(' query.sourceNetwork ', chain.symbol, temp)
           query.sourceNetwork = chain.symbol;
           query.destNetwork = temp;
+
+
         } else
             //from
         if (this.selectChain == 2) {
+          console.log('cccccccccccccc')
           query.sourceNetwork = chain.symbol;
         }
 
+      console.log('query.destNetwork',query.destNetwork)
+
         if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-          if (query.sourceNetwork == 'BSC') {
-            query.destNetwork = 'MAP';
-          } else {
+          console.log('query.destNetwork',query.destNetwork)
+          if (query.sourceNetwork == 'MAP') {
             query.destNetwork = 'BSC';
+          } else {
+            query.destNetwork = 'MAP';
           }
         }
-        // if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-        //   if (query.sourceNetwork == 'MAP') {
-        //     query.destNetwork = 'ETH';
-        //   } else {
-        //     query.destNetwork = 'MAP';
-        //   }
-        // }
 
         this.showSelectChain=false;
         this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
@@ -2693,8 +2527,8 @@ export default {
 
     //判断当前链跟选择的from链是否一致
     async actionChainSuccess() {
-      console.log('chainSuccess',this.chainFrom.chainId.toString(),this.chainIdNumber)
       this.chainSuccess = this.chainFrom.chainId.toString() == this.chainIdNumber;
+      console.log('chainSuccess',this.chainFrom.chainId.toString(),this.chainIdNumber)
     },
 
     //provider
@@ -2710,7 +2544,6 @@ export default {
     async getAllData() {
       console.log('window.ethereum.chainId',window.ethereum.chainId)
       this.isLoadingAllData = true;
-      this.vaultBalanceLoading = true
       this.sendAmount = ''
       let address = await this.$store.getters.getAddress;
       if (!address) {
@@ -2722,7 +2555,9 @@ export default {
 
       this.account = address;
       this.sortAddress = this.$formatAddress(address);
+      this.allAddress= address
       let chainId = await this.$store.getters.getChainId;
+      console.log('chainId',chainId)
       this.chainIdHex = new Decimal(chainId).toHex();
       this.chainIdNumber = new Decimal(chainId).toNumber();
 
@@ -2736,6 +2571,7 @@ export default {
         chain = null;
         this.error = true;
         this.isLoadingAllData = false;
+        this.chainSuccess = false
         return
       }
 
@@ -2743,7 +2579,6 @@ export default {
 
       ///当前链是NEAR链
       if (this.$route.query.sourceNetwork==='NEAR') {
-        console.log('111111')
         let nearAccount = await near.asyncNearWallet()
         this.account= nearAccount.currentUser.accountId
         console.log(' v.account', this.account)
@@ -2755,16 +2590,15 @@ export default {
         this.transferBtn = false
         this.allowanceMap = true
         this.approveHash = ''
+        this.allAddress= ''
       }
       await this.actionGetChain()
       await this.actionTokenList()
-      // await this.actionShowToken()
       await this.actionChainSuccess()
       this.actionStatus()
       this.isLoadingAllData = false;
       await this.actionVaultBalance()
       await this.actionGasFee()
-      this.vaultBalanceLoading = false
       this.actionInputFont()
       if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
       }else  {

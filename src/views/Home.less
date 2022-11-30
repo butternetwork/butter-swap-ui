@@ -307,7 +307,7 @@
 
       .bridge-content {
         width: 570px;
-        max-width: 558px;
+        max-width: 570px;
         min-height: 578px;
         border-radius: 40px;
         background-color: rgb(27, 32, 37);
@@ -548,8 +548,8 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        width: 60%;
-        padding-top: 14px;
+        width: 100%;
+        padding-top: 35px;
         text-align: left;
         font-size: 12px;
         color: rgba(255, 255, 255,0.5);
@@ -597,8 +597,18 @@
       }
 
       .tran-send-btns {
+        cursor: default;
+        border: 0;
+        border-radius: 10px;
+        width: 100%;
         margin-top: 10px;
-        padding: 11px 16px 12px 10px;
+        padding: 11px 12px 12px 10px;
+        background-color: rgba(255, 255, 255,0.06);
+      }
+
+      .tran-send-btns-received {
+        padding-left: 0 !important;
+        padding-right: 5px !important;
       }
 
       .tran-send-btn-address {
@@ -722,7 +732,7 @@
       }
 
       .tran-send-address-input {
-        width: 100%;
+        width: 72%;
         height: 35px;
         box-sizing: border-box;
         display: flex;
@@ -735,8 +745,7 @@
           border-radius: 100px;
           color: white;
           font-size: 14px;
-          background: #1b2025;
-          padding-left: 13px;
+          background: none;
         }
 
         ::-webkit-input-placeholder {
@@ -745,7 +754,7 @@
           font-weight: 400;
           color: #84868B;
           line-height: 28px;
-          padding-left: 10px;
+          padding-left: 0;
         }
 
 
@@ -904,6 +913,10 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+      }
+
+      .dialog-selectChain-headerChain {
+        z-index: 10;
       }
 
       .dialog-content {
@@ -1312,6 +1325,19 @@
         img {
           margin-left: 10px;
           width: 1px;
+        }
+      }
+
+      .dia-trans-bottom-sourceHash {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-left: 30px;
+        margin-top: 15px;
+        padding-left: 0;
+        cursor: pointer;
+        img {
+          width: 15px;
         }
       }
 

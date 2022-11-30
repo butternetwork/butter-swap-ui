@@ -24,7 +24,11 @@
             <span>Network Error</span>
             <span>Click to switch</span>
           </span>
-          <div v-else-if="exitConntet&&!error"><span class="header-intall"><img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}</span></div>
+          <div @click="actionChain(2)" v-else-if="exitConntet&&!error">
+            <span class="header-intall">
+              <img :src="chain?chain.icon:''"/>{{ chain?chain.network:'' }}
+            </span>
+          </div>
         </div>
 
         <div class="header-connect">
@@ -56,8 +60,32 @@
           </div>
         </div>
       </div>
+
+      <!--        选择链-->
+      <div v-show="showSelectChain" class="dialog-selectChain dialog-selectChain-headerChain">
+        <div class="dialog-content">
+          <div class="dialog-selectChain-title">
+            <span>Select Source Chain</span>
+            <img @click="showSelectChain=false" src="../assets/cancel.png"/>
+          </div>
+          <div class="dialog-selectChain-search">
+            <img src="../assets/search.png"/>
+            <input v-model="searchVal" placeholder="Search chain by name or chain ID">
+          </div>
+          <div class="dialog-selectChain-coin">
+            <div v-for="(item,index) in listChain" :key="index" @click="handleLink(item,index)" class="dialog-Chain-coin">
+              <div class="dialog-selectChain-coin-content">
+                <img :src="item.chainLogo"/>
+                <span>{{ item.chainName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
-<!--    <div class="header-line"></div>-->
+
   </div>
 </template>
 
@@ -65,6 +93,9 @@
 import config from '@/config/base'
 import near from "@/config/near";
 import connector from "@/store/connector";
+import {SUPPORTED_CHAIN_LIST} from "butterjs-sdk/dist/constants";
+import Decimal from "decimal.js";
+
 
 export default {
   name: "Header",
@@ -75,6 +106,11 @@ export default {
   ],
   data() {
     return {
+      chainFrom:{},
+      selectChain: -1,
+      chainList:{},//链的列表
+      searchVal: '',  //弹窗链查找默认输入为空
+      showSelectChain:false,
       showTab: 0,
       tabMore: false,//更新Tab
       tabIndex: 0,
@@ -83,9 +119,50 @@ export default {
       exitConntet:false,
       showLogOut:false,//显示退出
       domainName:null,
+      chainIdHex:config.map.chainId,
     }
   },
   computed: {
+    listChain() {
+      var _this = this;
+      if (!_this.chainList) {
+        return
+      }
+      if (!_this.isNumber(_this.searchVal)) {
+        var arrByZM = [];
+        for (var i = 0; i < _this.chainList.length; i++) {
+          //for循环数据中的每一项（根据name值）
+          if (_this.chainList[i].chainName.toUpperCase().search(_this.searchVal.toUpperCase()) != -1) {
+            //判断输入框中的值是否可以匹配到数据，如果匹配成功
+            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
+          }
+        }
+      } else {
+        var arrByZM = [];
+        for (var i = 0; i < _this.chainList.length; i++) {
+          //search 需要传递 toString类型 才能传递
+          if (_this.chainList[i] && (_this.chainList[i].chainId).toString().search((_this.searchVal).toString()) != -1) {
+            //判断输入框中的值是否可以匹配到数据
+            arrByZM.push(JSON.parse(JSON.stringify(_this.chainList[i])));
+            // arrByZM.push(_this.chainList[i]);
+          }
+        }
+      }
+
+      //逻辑-->升序降序排列 false: 默认从小到大 true：默认从大到小
+      //判断，如果要letter不为空，说明要进行排序
+      // if(this.letter != ''){
+      //   arrByZM.sort(function( a , b){
+      //     if(_this.original){
+      //       return b[_this.letter] - a[_this.letter];
+      //     }else{
+      //       return a[_this.letter] - b[_this.letter];
+      //     }
+      //   });
+      // }
+      //一定要记得返回筛选后的数据
+      return arrByZM;
+    },
     address() {
       return this.$store.state.address;
     },
@@ -102,9 +179,168 @@ export default {
     },
   },
   methods: {
+    //判断是否是数组
+    isNumber(value) {         //验证是否为数字
+      let patrn = /^(-)?\d+(\.\d+)?$/;
+      if (patrn.exec(value) == null || value === "") {
+        return false
+      } else {
+        return true
+      }
+    },
+
+    async handleLink(item) {
+      //To 选择
+      let v = this
+
+      const provider = this.$store.getters.provider;
+      console.log('provider',provider)
+      let chainId = new Decimal(item.chainId).toHex();
+      let params = {chainId}
+      let account = await this.$web3.eth.getAccounts()
+
+
+      if (item.symbol== 'NEAR') {
+        let nearAccount = await near.asyncNearWallet()
+        v.account= nearAccount.currentUser.accountId
+        this.chainIdNumber = item.chainId
+        this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+        this.chainFrom = JSON.parse(JSON.stringify(item));
+        this.showSelectChain = false
+        this.$router.push(`/home?sourceNetwork=${this.chainFrom.symbol}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+        return
+      }
+
+      if (item.chainName === this.chainFrom.chainName) {
+        this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
+        return;
+      }
+
+
+      if (window.ethereum.chainId === new Decimal(item.chainId).toHex()) {
+        this.chainIdNumber = item.chainId
+        this.$store.commit("setAddress",account[0]);
+        this.$store.commit("setChainId",item.chainId);
+        this.chainFrom = JSON.parse(JSON.stringify(item));
+        this.showSelectChain = false
+        v.$router.push(`/home?sourceNetwork=${item.symbol}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+        return
+      }
+
+      if (provider) {
+        try {
+          let params = {chainId}
+          let method = 'wallet_switchEthereumChain';
+          let chains = this.$store.getters.getChains;
+          let chain = chains[chainId];
+          console.log('chain',chain)
+          if (chain.symbol !== 'ETH') {
+            method = 'wallet_addEthereumChain';
+            params.rpcUrls = [item.rpc];
+            params.chainName = item.chainName;
+          }
+          await provider.request({
+            method: method,
+            params: [params]
+          });
+          this.$store.commit("setAddress",account[0]);
+          this.$store.commit("setChainId",item.chainId);
+          this.$route.query.sourceNetwork=item.symbol
+        } catch (error) {
+          this.$router.push(`/home?sourceNetwork=${this.$route.query.sourceNetwork}&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+          v.requestData()
+          // try {
+          //   let chains = this.$store.getters.getChains;
+          //   let chain = chains[chainId];
+          //   params.rpcUrls = [item.rpc];
+          //   params.chainName = item.chainName;
+          //   console.log('params',params)
+          //   await provider.request({
+          //     method: 'wallet_addEthereumChain',
+          //     params: [params]
+          //   });
+          //   this.$store.commit("setAddress",account[0]);
+          //   this.$store.commit("setChainId",item.chainId);
+          //   this.$route.query.sourceNetwork=item.symbol
+          //   return true;
+          // } catch (error) {
+          //   this.requestData()
+          //   console.error('Failed to setup the network in Metamask:', error);
+          //   return false;
+          // }
+        }
+      } else {
+        console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
+        return false;
+      }
+    },
+
+    //打开选择链弹窗
+    actionChain(i) {
+      this.selectChain = i;
+      this.searchVal=''
+      this.showSelectChain = true;
+    },
+
+    //获取链列表
+    async actionGetChain() {
+      let v = this;
+      v.chainList = SUPPORTED_CHAIN_LIST
+      console.log( v.chainList)
+      let chainId = await this.$store.getters.getChainId;
+      console.log('chainId',chainId)
+      chainId = new Decimal(parseInt(chainId)).toHex();
+      let query = this.$route.query ? this.$route.query : {}
+      let chains = await this.$store.getters.getChains;
+      let chain = chains[chainId];
+      console.log('chain',chains,chainId)
+
+      //刷新
+      if (this.selectChain == -1) {
+        if (chain) {
+          query.sourceNetwork=chain.symbol;
+        }else {
+          query.sourceNetwork='MAP';
+        }
+        // console.log('chain',chain)
+        // query.sourceNetwork=chain.symbol;
+      } else
+          //切换
+      if (this.selectChain == 0) {
+        if (!chain) {
+          chain = chains[config.map.chainHex];
+          // chain = chains['0x1'];
+        }
+        let temp = query.sourceNetwork;
+        query.sourceNetwork = chain.symbol;
+        query.destNetwork = temp;
+      } else
+          //from
+      if (this.selectChain == 2) {
+        query.sourceNetwork = chain.symbol;
+      }
+
+      if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
+        if (query.sourceNetwork == 'BSC') {
+          query.destNetwork = 'MAP';
+        } else {
+          query.destNetwork = 'BSC';
+        }
+      }
+
+      this.showSelectChain=false;
+      this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
+
+      for (let item of this.chainList) {
+        if (item.symbol.toUpperCase() === query.sourceNetwork.toUpperCase()) {
+          v.chainFrom = JSON.parse(JSON.stringify(item));
+        }
+      }
+      // }
+    },
 
     goCommunity() {
-      window.open('https://t.me/MAPprotocolGroup','blank')
+      window.open('https://t.me/butternetwork','blank')
     },
 
    async actionLogOut() {
@@ -236,7 +472,16 @@ export default {
       let chainId = await this.$store.getters.getChainId;
       let chains = await this.$store.getters.getChains;
 
-      console.log('chainId',chains[chainId.toString()])
+      //如果是near链的话
+      if (this.$route.query.sourceNetwork==='NEAR') {
+        let nearAccount = await near.asyncNearWallet()
+        this.account= nearAccount.currentUser.accountId
+        chainId = config.near.chainId.toString()
+        console.log('config.near.chainId',chainId)
+        this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+        this.$store.commit("setChainId",chainId);
+      }
+
 
       let chain=null;
       if (chains[chainId.toString()]) {
@@ -246,14 +491,11 @@ export default {
         chain = null;
         this.error = true;
       }
+
       let address = await this.$store.getters.getAddress;
-      // console.log('matchChain',{chainId,chain:chains[chainId],address})
       if (address && address.length>0){
         this.chain=chain;
-        // console.log('this.chain',this.chain)
       }
-      console.log(' this.error', this.error)
-      console.log('this.chain',this.chain)
 
     },
     async requestData() {
@@ -264,6 +506,7 @@ export default {
       //   this.error = true
       // })
       this.matchChain();
+      this.actionGetChain()
     }
   },
   mounted() {
@@ -274,6 +517,7 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import '../views/Home';
 
 //tansfer
 .header-middle {
