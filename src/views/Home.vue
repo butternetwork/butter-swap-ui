@@ -217,7 +217,7 @@
                     <span>Processing</span>
                     <img src="../assets/arrow-right-write.png"/>
                   </div>
-                  <span class="history-coin-time historys-coin-time">{{ item.nowTime }}</span>
+                  <span class="history-coin-time historys-coin-time">{{ item.timestamp }}</span>
                 </div>
               </div>
             </div>
@@ -272,7 +272,7 @@
               <!--                          h5time-->
               <div class="history-h5-bottom">
                 <div>
-                  <span class="history-coin-time">{{ item.nowTime }}</span>
+                  <span class="history-coin-time">{{ item.timestamp }}</span>
                 </div>
                 <div>
                   <div v-if="item.state==0" class="history-status history-status-cancel">
@@ -1905,7 +1905,7 @@ export default {
             newObject.coinImg = token.logo
             fromDecimal = token.decimals
             //时间
-            newObject.nowTime = moment.utc(item.updatedAt).local().format("yyyy/MM/DD HH:mm:ss")
+            // newObject.nowTime = moment.utc(item.timestamp).local().format("yyyy/MM/DD HH:mm:ss")
             break;
           }
 
