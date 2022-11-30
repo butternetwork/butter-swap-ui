@@ -211,11 +211,6 @@ export default {
         return
       }
 
-      if (item.chainName === this.chainFrom.chainName) {
-        this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
-        return;
-      }
-
 
       if (window.ethereum.chainId === new Decimal(item.chainId).toHex()) {
         this.chainIdNumber = item.chainId
