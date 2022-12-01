@@ -2465,14 +2465,14 @@ export default {
 
       console.log('query',query)
 
-        // if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-        //   console.log('query.destNetwork',query.destNetwork)
-        //   if (query.sourceNetwork == 'MAP') {
-        //     query.destNetwork = 'BSC';
-        //   } else {
-        //     query.destNetwork = 'MAP';
-        //   }
-        // }
+        if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
+          console.log('query.destNetwork',query.destNetwork)
+          if (query.sourceNetwork == 'MAP') {
+            query.destNetwork = 'BSC';
+          } else {
+            query.destNetwork = 'MAP';
+          }
+        }
 
         this.showSelectChain=false;
         this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
