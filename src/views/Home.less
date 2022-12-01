@@ -167,13 +167,19 @@
 
       .history-tops-from-text {
         font-family: 'productBold';
-        //width: 103%;
         font-size: 13px;
         font-weight: 600;
-        padding-top: 5px;
+        padding-top: 8px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        img {
+          margin-right: 5px;
+        }
       }
 
       .history-tops-tranfrom {
+        margin-left: 15px;
         img {
           width: 18px;
           margin: 0 13px;
@@ -188,7 +194,7 @@
       }
 
       .historys-coin-time {
-        padding-top: 10px !important;
+        padding-top: 2px !important;
       }
 
       .history-top-amounts {
@@ -913,6 +919,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        z-index: 2;
       }
 
       .dialog-selectChain-headerChain {
@@ -950,6 +957,15 @@
         }
       }
 
+      .dialog-content-address {
+        padding: 20px 10px;
+        max-width: 280px;
+        max-height: 250px;
+        .dialog-approve-title {
+          padding-bottom: 10px;
+        }
+      }
+
       .dialog-approve-title {
         width: 80%;
         display: flex;
@@ -968,6 +984,35 @@
         font-size: 16px;
         font-weight: 700;
         color: #f6d536;
+      }
+
+      .dialog-content-history-text {
+        width: 70%;
+        font-size: 14px;
+        text-align: center;
+        cursor: pointer;
+        color: #f6d536;
+      }
+
+      .dialog-content-address-text {
+        padding-top: 8px;
+        font-size: 14px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .dialog-content-address-confirm {
+        margin-top: 15px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 90px;
+        height: 32px;
+        background: #f6d536;
+        border-radius: 5px;
+        color: #1a1b20;
       }
 
       .dialog-content-trans {
@@ -1299,7 +1344,7 @@
         align-items: center;
 
         img {
-          width: 25px;
+          width: 22px;
         }
 
         span {
@@ -1311,6 +1356,12 @@
           cursor: pointer;
           width: 15px;
           margin-left: 8px;
+        }
+      }
+
+      .dia-trans-top-icon-com {
+        span {
+          padding-left: 0;
         }
       }
 
@@ -1333,9 +1384,10 @@
         flex-direction: row;
         align-items: center;
         margin-left: 30px;
-        margin-top: 15px;
+        margin-top: 7px;
         padding-left: 0;
         cursor: pointer;
+        font-size: 13px;
         img {
           width: 15px;
         }
@@ -1348,12 +1400,12 @@
         justify-content: flex-start;
 
         img {
-          margin-left: 5px;
+          margin-left: 7px;
         }
       }
 
       .dia-trans-bottom-arrow {
-        width: 11px !important;
+        width: 7px !important;
         padding-left: 0;
       }
 
@@ -1484,7 +1536,7 @@
       .dialog-warn-icon {
         padding-top: 7px;
         img {
-          width: 32px;
+          width: 35px;
         }
       }
 
@@ -1566,7 +1618,7 @@
         margin-left: 35px;
         padding-top: 3px;
         border-radius: 4px;
-        border: 1px dashed rgba(0,0,0,0.15);
+        border: 1px dashed rgba(255,255,255,0.3);
         width: 80px;
         height: 25px;
         box-sizing: border-box;
@@ -1914,7 +1966,7 @@
 
         .dialog-selectChain-title {
           font-size: 18px;
-
+          width: 90%;
           img {
             width: 12px;
           }
@@ -2004,6 +2056,10 @@
           }
         }
 
+        .history-top-amount {
+          margin-left: 0;
+        }
+
         //dialog trans
         .dialog-trans-detail {
           width: 100%;
@@ -2082,13 +2138,13 @@
 
         .dia-trans-bottoms {
           img {
-            margin-left: 2px;
+            margin-left: 5px;
           }
         }
 
         .dia-trans-top-icon {
           img {
-            width: 22px;
+            width: 19px;
           }
         }
 
@@ -2261,7 +2317,7 @@
         }
 
         .history-top-left-two {
-          padding-left: 0;
+          padding-left: 30px;
         }
 
 

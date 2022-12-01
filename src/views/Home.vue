@@ -129,7 +129,7 @@
             </div>
           </div>
             <div class="tran-send-btn tran-send-btns">
-              <span class="tran-send-btns-received">Received Address:</span>
+              <span class="tran-send-btns-received">Receiving Address:</span>
               <div class="tran-send-address-input">
                 <input v-model="allAddress" placeholder="Please enter the address"/>
               </div>
@@ -156,7 +156,7 @@
               Approving... <img src="../assets/loading.gif"/>
             </button>
             <button v-if="allowance && !transferBtn"
-                    :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="actionTrans()">
+                    :class="chainSuccess==false ? 'tran-connect-approve' :''" id="transfers-btn" @click="showConfirmAddress=true">
               Transfer
             </button>
             <button v-if="allowance && transferBtn" class="tran-connect-approve">
@@ -170,41 +170,45 @@
           <!--                  pc-->
           <div class="history">
             <div class="history-title">
-              History<img @click="actionHistory()" src="../assets/refresh.png"/>
+              History
             </div>
             <div style="min-height: 300px">
               <div v-show="historyList && chainSuccess" v-for="(item,index) in historyList" @click="actionHistoryDetail(item)"
                    :key="index"
                    class="history-list history-lists">
                 <div class="history-tops">
-                  <div class="history-tops-icon">
-                    <img :src="item.sourceChain.chainImg"/>
-                  </div>
                   <div class="history-tops-from">
                     <div class="history-top-left">
                       <span class="history-top-amount history-top-amounts">{{ item.amount }}</span>
                       <span class="history-top-coin">{{ item.coin }}</span>
                     </div>
                     <div class="history-tops-from-text">
+                      <div class="history-tops-icon">
+                        <img :src="item.sourceChain.chainImg"/>
+                      </div>
                       <span>{{ item.fromChainName }}</span>
                     </div>
+                    <span class="history-coin-time historys-coin-time">{{ item.timestamp }}</span>
                   </div>
                   <div class="history-tops-tranfrom">
                     <img src="../assets/tranform.png"/>
                   </div>
+
                 </div>
                 <div class="history-tops">
-                  <div class="history-tops-icon">
-                    <img :src="item.destinationChain.chainImg"/>
-                  </div>
                   <div class="history-tops-from">
                     <div class="history-top-left">
                       <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>
                       <span class="history-top-coin">{{ item.coin }}</span>
                     </div>
                     <div class="history-tops-from-text">
+                      <div class="history-tops-icon">
+                        <img :src="item.destinationChain.chainImg"/>
+                      </div>
                       <span>{{ item.toChainName }}</span>
                     </div>
+                    <span v-if="item.completeTime" class="history-coin-time historys-coin-time">{{ item.completeTime }}</span>
+                    <span v-else class="history-coin-time historys-coin-time">Processing</span>
                   </div>
                 </div>
                 <div class="historys-statu">
@@ -216,15 +220,11 @@
                     <span>Complete</span>
                     <img src="../assets/arrow-right-write.png"/>
                   </div>
-<!--                  <div v-else-if="item.state==998" class="history-status">-->
-<!--                    <span>Failed</span>-->
-<!--                    <img src="../assets/arrow-right-write.png"/>-->
-<!--                  </div>-->
                   <div v-else class="history-status history-status-cancel">
                     <span>Processing</span>
                     <img src="../assets/arrow-right-write.png"/>
                   </div>
-                  <span class="history-coin-time historys-coin-time">{{ item.timestamp }}</span>
+<!--                  <span class="history-coin-time historys-coin-time">{{ item.timestamp }}</span>-->
                 </div>
               </div>
             </div>
@@ -270,10 +270,14 @@
                 </div>
                 <div class="history-bottom">
                   <div class="history-coin">
-                    <img :src="item.fromLogo"/> <span>{{ item.fromChainName }}</span>
+                    <img :src="item.sourceChain.chainImg"/> <span>{{ item.fromChainName }}</span>
                     <img src="../assets/tranform.png"/>
-                    <img :src="item.toLogo"/> <span>{{ item.toChainName }}</span>
+                    <img :src="item.destinationChain.chainImg"/> <span>{{ item.toChainName }}</span>
                   </div>
+                </div>
+                <div class="history-bottom">
+                  <span></span>
+                  <span></span>
                 </div>
               </div>
               <!--                          h5time-->
@@ -289,10 +293,6 @@
                   <div v-else-if="item.state==1" class="history-status history-status-success">
                     <span>Complete</span>
                     <img src="../assets/arrow-right-green.png"/>
-                  </div>
-                  <div v-else-if="item.state==998" class="history-status">
-                    <span>Failed</span>
-                    <img src="../assets/arrow-right-red.png"/>
                   </div>
                   <div v-else class="history-status history-status-cancel">
                     <span>Processing</span>
@@ -316,10 +316,6 @@
               <div v-else class="home-page-not">
                 No data
               </div>
-            </div>
-            <div class="history-ant">
-              <!--              <img src="../assets/ant.png"/>-->
-              <!--              <span>In the end</span>-->
             </div>
           </div>
         </div>
@@ -355,6 +351,16 @@
               {{selectToken.symbol}}
             </div>
             <div v-else class="bridge-rate-right">{{ gasFeeVue }} {{selectToken.symbol}}</div>
+          </div>
+          <div class="bridge-rate-content-item">
+            <div class="bridge-rate-left">
+              Original Chain Gas Fee Estimate
+            </div>
+            <div v-if="receivedAmountLoading" class="bridge-rate-right bridge-rate-right-loading">
+              <img style="width:25px" src="../assets/loading2.gif"/>
+              {{selectToken.symbol}}
+            </div>
+            <div v-else class="bridge-rate-right">{{ gasPrice }} {{chainFrom.symbol}}</div>
           </div>
           <div class="bridge-rate-content-item">
             <div class="bridge-rate-left">Estimated Time of Arrival</div>
@@ -556,7 +562,7 @@
                   <img v-if="historyDetailList.state===1"
                        src="../assets/dialog/success-red.png"/>
                   <img v-else src="../assets/dialog/success-write.png"/>
-                  <div class="dia-trans-top-icon">
+                  <div class="dia-trans-top-icon dia-trans-top-icon-com">
                     <span>Complete</span>
                   </div>
                 </div>
@@ -579,17 +585,6 @@
       </div>
     </div>
 
-    <!--          Map approve弹窗-->
-    <!-- <div v-show="dialogApproving" class="dialog-selectChain">
-       <div class="dialog-content dialog-content-approve">
-         <div class="dialog-approve-title">
-           <img @click="dialogApproving=false" src="../assets/cancel.png"/>
-         </div>
-         <img class="loading-icon" src="../assets/dialog/loading.png"/>
-         <div class="dialog-content-approve-text">Approving...</div>
-       </div>
-     </div> -->
-
     <!--          transing弹窗-->
     <div v-show="dialogTransing" class="dialog-selectChain">
       <div class="dialog-content dialog-content-approve">
@@ -600,6 +595,36 @@
         <div class="dialog-content-approve-text">Transfering...</div>
       </div>
     </div>
+
+<!--    跳转到history的弹窗-->
+    <div v-show="showGoHistory" class="dialog-selectChain">
+      <div class="dialog-content dialog-content-approve">
+        <div class="dialog-approve-title">
+          <img  @click="getAllData(showGoHistory=false)" src="../assets/cancel.png"/>
+        </div>
+        <div @click="actionHistory()" class="dialog-content-history-text">Go to History to see your transfer status</div>
+      </div>
+    </div>
+
+
+<!--    确认地址的弹窗-->
+    <div v-show="showConfirmAddress" class="dialog-selectChain">
+      <div class="dialog-content dialog-content-address">
+        <div class="dialog-approve-title">
+          <img  @click="showConfirmAddress=false" src="../assets/cancel.png"/>
+        </div>
+        <div class="dialog-warn-icon">
+          <img src="../assets/dialog/warn-two.png"/>
+        </div>
+        <div class="dialog-content-address-text">
+         Warning: Please confirm your "receiving address" is correct and of the correct blockchain before proceeding
+        </div>
+        <div @click="actionTrans()" class="dialog-content-address-confirm">Confirm</div>
+      </div>
+    </div>
+
+
+
 
     <!--          nft弹窗-->
     <div v-show="dialogNft" class="dialog-selectChain">
@@ -656,6 +681,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Decimal from 'decimal.js'
 import moment from "moment";
+import eventBus from "@/eventBus";
 
 const tokenAbi = require('@/config/token_abi.json');
 const mapAbi = require('@/config/mapData.json');
@@ -677,6 +703,7 @@ import { ButterBridge } from "butterjs-sdk/dist/core/bridge/bridge.js";
 import * as nearAPI from "near-api-js";
 const { connect, Contract ,keyStores } = nearAPI;
 import { parseNearAmount } from 'near-api-js/lib/utils/format';
+import store from "@/store";
 
 
 export default {
@@ -684,7 +711,10 @@ export default {
   components: {Footer, Header},
   data() {
     return {
-      showFeeDetail:false,
+      gasPrice:0,//Original Chain Gas
+      showConfirmAddress:false,//确认地址的弹窗
+      showGoHistory:false,//选择跳转历史记录
+      showFeeDetail:false,//fee的详情展示
       mapChainId:config.map.chainId,
       vaultBalanceLoading:false,
       error:true,//是否在链上链接
@@ -1198,12 +1228,53 @@ export default {
       this.feeDistribution = feeRate
       console.log('feeRate',feeRate)
 
+      let tokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
+      let mainDecimal;
+
+      for (let item in tokenList) {
+        if (tokenList[item].address === "0x0000000000000000000000000000000000000000") {
+          mainDecimal = tokenList[item].decimals
+        }
+      }
+
+      console.log('mainDecimal',tokenList,mainDecimal)
+
+      const bridge = new ButterBridge();
+
+      this.langToAddress = this.allAddress
+
+      let request = {
+        fromAddress: this.account,
+        fromToken: this.selectToken,
+        fromChainId: this.chainFrom.chainId,
+        toChainId: this.chainTo.chainId,
+        toAddress: this.langToAddress,
+        amount: this.$web3.utils.toWei(this.sendAmount).toString(),
+        options: {signerOrProvider: this.$web3.eth},
+      };
+
+
+      const estimatedGas = await bridge.gasEstimateBridgeToken(request);
+      console.log('gas estimate', estimatedGas);
+
+     const adjustedGas = Math.floor(Number.parseFloat(estimatedGas) * 1.2).toString();
+      console.log('adjustedGas',adjustedGas)
+
       const fee = await getBridgeFee(
           tokenDetail,
           this.chainTo.chainId,
           amount.toFixed().toString(),
           provider
       );
+
+      console.log('gasPrice', this.gasPrice)
+
+      let web3 = await this.$client(this.chainIdHex);
+      let gasPrice = await web3.eth.getGasPrice()
+      console.log('gasPriceeee',gasPrice)
+      gasPrice = new Decimal(gasPrice).mul(new Decimal(adjustedGas)).div(Math.pow(10,mainDecimal))
+      this.gasPrice =gasPrice
+      console.log('gasPrice',gasPrice.toFixed())
       console.log('amount',fee,fee.amount)
       console.log('feeRate',fee.feeRate)
       this.bridgeFee = fee.feeRate
@@ -1213,7 +1284,6 @@ export default {
       this.receivedAmount = new Decimal(this.sendAmount).sub(new Decimal(this.gasFeeVue))
       this.receivedAmountLoading = false
       console.log('gasFeeVue fee', this.gasFeeVue);
-      console.log('approve', this.allowance, this.transferBtn);
 
     },
 
@@ -1289,11 +1359,11 @@ export default {
       this.tokenList = temp;
 
       this.selectTokens = temp;
-      // for (const item of this.selectTokens) {
-      //   if (this.selectToken.symbol === item.symbol) {
-      //     this.balanceZ = item.amount
-      //   }
-      // }
+      for (const item of this.selectTokens) {
+        if (this.selectToken.symbol === item.symbol) {
+          this.balanceZ = item.amount
+        }
+      }
 
       // this.tokenAllList(this.chainIdNumber) = this.selectTokens
       let tokenlist = tokenCandidates
@@ -1323,6 +1393,8 @@ export default {
       this.actionApproveOrTransfer()
 
       this.actionStatus()
+
+      this.actionShowToken()
 
       this.actionVaultBalance()
 
@@ -1472,7 +1544,7 @@ export default {
 
       let v = this
 
-
+      this.showConfirmAddress = false
       // return
       let reward_address = v.chainFrom.contract
 
@@ -1516,8 +1588,9 @@ export default {
         );
         console.log('nearAccountState',nearAccountState)
         if (!nearAccountState.isValid) {
-          let msg = nearAccountState.errMsg.split(':')[1]
-          this.$toast(msg)
+          // let msg = nearAccountState.errMsg.split(':')[1]
+          // this.$toast(msg)
+          this.$toast(`Incorrect Receiving Address ${this.langToAddress}`)
           return
         }
       }else  {
@@ -1525,7 +1598,7 @@ export default {
           let evmAddress = validateAndParseAddressByChainId( this.langToAddress, this.chainTo.chainId);
           console.log('evmAddress',evmAddress)
         }catch (e) {
-          this.$toast(`account ${this.langToAddress} does not exist while viewing`)
+          this.$toast(`Incorrect Receiving Address ${this.langToAddress}`)
           return
         }
 
@@ -1607,6 +1680,7 @@ export default {
 
       if (this.chainFrom.symbol=='NEAR') {
         this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+        v.showGoHistory = true
         return
       }
 
@@ -1617,9 +1691,6 @@ export default {
             console.log('hash', hash);
             v.transHash = hash
             v.transferBtn = true
-            if (v.transHash != null && v.transHash != '') {
-              v.actionSubBridge()
-            }
             // console.log(`hash`, hash)
             v.dialogTransing = true
           })
@@ -1628,8 +1699,11 @@ export default {
             v.allowance = true
             v.transferBtn = false
             v.dialogTransing = false
+            v.showGoHistory = true
           });
-          this.getAllData()
+          // if (!v.showGoHistory ) {
+          //   this.getAllData()
+          // }
           // this.actionTimerHistory()
     },
 
@@ -1691,6 +1765,9 @@ export default {
 
     //获取历史记录
     async actionHistory() {
+      this.showGoHistory = false
+      this.showTab = 1
+      eventBus.$emit("listenTab",1)
       console.log('history',this.chainIdNumber, this.account,this.currentPage,this.pageSize)
       let result = await this.$http.historyList({
         chainId: this.chainFrom.chainId,
@@ -1843,43 +1920,39 @@ export default {
       let v = this
 
       if (this.selectChain === 1) {
-        if (item.chainName === this.chainFrom.chainName) {
-          this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
-          return;
-        }
-        // let toTokenList = this.$copyObject(this.tokenAllList[item.chainId]);
-        // console.log('toTokenList',toTokenList)
-        // for (const token of toTokenList) {
-        //   console.log('this.selectToken.symbol ',v.selectToken.symbol , token.symbol)
-        //   if (! token.symbol==v.selectToken.symbol ){
-        //     this.$toast('There is currently no such coin on the chain')
-        //     return
-        //   }
+        // if (item.chainName === this.chainFrom.chainName) {
+        //   this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
+        //   return;
         // }
-        console.log('chainTo',this.chainTo)
-        this.chainTo = JSON.parse(JSON.stringify(item));
-        this.destNetwork = item.symbol
-        this.showSelectChain = false
-        await this.$router.push({
-          path: '/',
-          query: {
-            sourceNetwork: this.$route.query.sourceNetwork,
-            destNetwork: this.chainTo.symbol,
-            ts: Date.now(),
+        if (item.chainName !== this.chainFrom.chainName) {
+          console.log('chainTo',this.chainTo)
+          this.chainTo = JSON.parse(JSON.stringify(item));
+          this.destNetwork = item.symbol
+          this.showSelectChain = false
+          await this.$router.push({
+            path: '/',
+            query: {
+              sourceNetwork: this.$route.query.sourceNetwork,
+              destNetwork: this.chainTo.symbol,
+              ts: Date.now(),
+            }
+          })
+          this.receivedAmount = 0
+          this.actionShowToken()
+          this.actionGasFee()
+          this.actionStatus()
+          this.actionInputFont()
+          this.actionVaultBalance()
+          if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+            let address = await this.$store.getters.getAddress;
+            this.sortAddress = this.$formatAddress(address);
+          }else  {
+            this.sortAddress = ''
           }
-        })
-        this.receivedAmount = 0
-        this.actionGasFee()
-        this.actionStatus()
-        this.actionInputFont()
-        this.actionVaultBalance()
-        if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
-          let address = await this.$store.getters.getAddress;
-          this.sortAddress = this.$formatAddress(address);
-        }else  {
-          this.sortAddress = ''
+          return
+        } else  {
+          this.actionChangeChain()
         }
-        return
       }
       const provider = this.$store.getters.provider;
       console.log('provider',provider)
@@ -1909,12 +1982,12 @@ export default {
         return
       }
 
-      if (item.chainName === this.chainFrom.chainName) {
-        this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
-        return;
-      }
+      // if (item.chainName === this.chainFrom.chainName) {
+      //   this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
+      //   return;
+      // }
 
-
+      //near链接上的情况下 切换near连
       if (window.ethereum.chainId === new Decimal(item.chainId).toHex()) {
         this.chainIdNumber = item.chainId
 
@@ -1941,35 +2014,22 @@ export default {
             params.rpcUrls = [item.rpc];
             params.chainName = item.chainName;
           }
-          await provider.request({
+          provider.request({
             method: method,
             params: [params]
+          }).then(res => {
+            console.log('res',res)
+            // if (this.chainFrom.symbol!=='NEAR') {
+            //   this.$store.commit("setAddress",account[0]);
+            //   this.$store.commit("setChainId",item.chainId);
+            //   this.$route.query.sourceNetwork=item.symbol
+            // }
+            this.showSelectChain=false;
           });
-          this.$store.commit("setAddress",account[0]);
-          this.$store.commit("setChainId",item.chainId);
-          this.$route.query.sourceNetwork=item.symbol
-          this.showSelectChain=false;
+
         } catch (error) {
+          // this.showSelectChain=false;
           v.requestData()
-          // try {
-          //   let chains = this.$store.getters.getChains;
-          //   let chain = chains[chainId];
-          //   params.rpcUrls = [item.rpc];
-          //   params.chainName = item.chainName;
-          //   console.log('params',params)
-          //   await provider.request({
-          //     method: 'wallet_addEthereumChain',
-          //     params: [params]
-          //   });
-          //   this.$store.commit("setAddress",account[0]);
-          //   this.$store.commit("setChainId",item.chainId);
-          //   this.$route.query.sourceNetwork=item.symbol
-          //   return true;
-          // } catch (error) {
-          //   this.requestData()
-          //   console.error('Failed to setup the network in Metamask:', error);
-          //   return false;
-          // }
         }
       } else {
         console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
@@ -2316,7 +2376,10 @@ export default {
 
       let contract = new this.$web3.eth.Contract(tokenAbi, tokenAddress)
       // console.log('contract',contract,tokenAddress)
-      contract.methods.allowance(v.account, MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call((error, result) => {
+      let addressUser = await this.$web3.eth.getAccounts()
+      console.log('addressUser',addressUser,v.chainFrom.chainId,v.chainIdNumber)
+      store.commit("setAddress",addressUser[0]);
+      contract.methods.allowance(addressUser[0], MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call((error, result) => {
         console.log('result',result)
         if (result && result != 0) {
           v.allowance = true;
@@ -2328,7 +2391,7 @@ export default {
             clearInterval(timer);
           }
           v.dialogApproving = false;
-          v.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
+          v.setApproveStatus(`${addressUser[0]}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
         } else {
           v.allowance = false;
           // v.approveHash = false;
@@ -2371,7 +2434,6 @@ export default {
       //刷新
       console.log('this.selectChain ',this.selectChain )
         if (this.selectChain == -1) {
-          console.log('aaaaaaaaaaaaaaaaa')
           console.log('chain'.chain)
           if (chain) {
             query.sourceNetwork=chain.symbol;
@@ -2381,14 +2443,11 @@ export default {
         } else
             //切换
         if (this.selectChain == 0) {
-          console.log('bbbbbbbbbbbbbbbb')
           if (!chain) {
             chain = chains[config.map.chainHex];
           }
-
           console.log(' query.sourceNetwork ',this.chainFrom.symbol, this.chainTo.symbol)
           console.log(' query.sourceNetwork ',query.sourceNetwork , query.destNetwork)
-
           let temp = query.sourceNetwork;
           console.log(' query.sourceNetwork ', chain.symbol, temp)
           query.sourceNetwork = chain.symbol;
@@ -2399,19 +2458,21 @@ export default {
             //from
         if (this.selectChain == 2) {
           console.log('cccccccccccccc')
+          chain = chains[chainId]
           query.sourceNetwork = chain.symbol;
+          query.destNetwork = this.chainTo.symbol;
         }
 
-      console.log('query.destNetwork',query.destNetwork)
+      console.log('query',query)
 
-        if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-          console.log('query.destNetwork',query.destNetwork)
-          if (query.sourceNetwork == 'MAP') {
-            query.destNetwork = 'BSC';
-          } else {
-            query.destNetwork = 'MAP';
-          }
-        }
+        // if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
+        //   console.log('query.destNetwork',query.destNetwork)
+        //   if (query.sourceNetwork == 'MAP') {
+        //     query.destNetwork = 'BSC';
+        //   } else {
+        //     query.destNetwork = 'MAP';
+        //   }
+        // }
 
         this.showSelectChain=false;
         this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
@@ -2457,7 +2518,7 @@ export default {
       );
       this.tokenList = tokenCandidates
 
-      console.log('tokenList1111111',this.tokenList)
+      console.log('tokenList',this.tokenList)
 
       for (let i = 0; i < this.tokenList.length; i++) {
         // if (this.tokenList[i].symbol === 'NEAR') {
@@ -2469,51 +2530,53 @@ export default {
       }
 
 
+
       if (!selectToken) {
         selectToken = JSON.parse(JSON.stringify(this.tokenList[0]))
       }
       this.selectToken = selectToken;
       this.selectToken.url = selectToken.logo;
 
-      const nearConnection = await connect(config.connectionConfig);
-      const account = await nearConnection.account(this.account);
-      let token_address = this.selectToken.address
-      let web3 = await this.$client(this.chainIdHex);
+      // const nearConnection = await connect(config.connectionConfig);
+      // const account = await nearConnection.account(this.account);
+      // let token_address = this.selectToken.address
+      // console.log('this.chainIdHex',this.chainIdHex)
+      // let web3 = await this.$client(parseInt(this.chainIdHex));
 
-      //主币余额
-      if ( token_address === '0x0000000000000000000000000000000000000000') {
-        if (this.selectToken.symbol === 'NEAR') {
-          // gets account balance
-          this.balanceZ = await account.getAccountBalance();
-          this.balanceZ = this.balanceZ.total;
-        } else {
-          this.balanceZ = await web3.eth.getBalance(this.account)
-        }
-      }
-      //代币余额
-      else {
-        if (this.chainFrom.symbol === 'NEAR') {
-          const contractToken = new Contract(
-              account,// the account object that is connecting
-              token_address, // 代币的地址
-              {
-                // name of contract you're connecting to
-                viewMethods: ["ft_balance_of"], // 获取余额的方法
-              }
-          );
-          this.balanceZ  = await contractToken.ft_balance_of({'account_id': this.account}); // 用户账户地址
-        }
-        //metamask上
-        else {
-          let contract = new web3.eth.Contract(tokenAbi, token_address)
-          // 查询代币余额
-          this.balanceZ = await contract.methods.balanceOf(this.account).call();
-        }
-      }
-      console.log(this.balanceZ );
-
-      this.balanceZ = new Decimal(this.balanceZ).div(Math.pow(10,this.selectToken.decimals))
-      this.balanceZ = Math.floor( this.balanceZ * 1000000) / 1000000
+      // //主币余额
+      // if ( token_address === '0x0000000000000000000000000000000000000000') {
+      //   if (this.selectToken.symbol === 'NEAR') {
+      //     // gets account balance
+      //     this.balanceZ = await account.getAccountBalance();
+      //     this.balanceZ = this.balanceZ.total;
+      //   } else {
+      //     this.balanceZ = await web3.eth.getBalance(this.account)
+      //   }
+      // }
+      // //代币余额
+      // else {
+      //   if (this.chainFrom.symbol === 'NEAR') {
+      //     const contractToken = new Contract(
+      //         account,// the account object that is connecting
+      //         token_address, // 代币的地址
+      //         {
+      //           // name of contract you're connecting to
+      //           viewMethods: ["ft_balance_of"], // 获取余额的方法
+      //         }
+      //     );
+      //     this.balanceZ  = await contractToken.ft_balance_of({'account_id': this.account}); // 用户账户地址
+      //   }
+      //   //metamask上
+      //   else {
+      //     let contract = new web3.eth.Contract(tokenAbi, token_address)
+      //     // 查询代币余额
+      //     this.balanceZ = await contract.methods.balanceOf(this.account).call();
+      //   }
+      // }
+      // console.log(this.balanceZ );
+      //
+      // this.balanceZ = new Decimal(this.balanceZ).div(Math.pow(10,this.selectToken.decimals))
+      // this.balanceZ = Math.floor( this.balanceZ * 1000000) / 1000000
 
       let approvedResult = await this.checkApproved(this.statusTimer);
       console.log('approvedResult',approvedResult,this.statusTimer)
@@ -2553,6 +2616,8 @@ export default {
         return;
       }
 
+      console.log('query',this.$route.query)
+
 
       this.account = address;
       this.sortAddress = this.$formatAddress(address);
@@ -2577,9 +2642,10 @@ export default {
       }
 
       this.receivedAmount = '0.0'
-
+      console.log('this.chainIdNumber',this.chainIdNumber)
       ///当前链是NEAR链
-      if (this.$route.query.sourceNetwork==='NEAR') {
+      if (this.chainIdNumber===config.near.chainId) {
+      // if (this.$route.query.sourceNetwork==='NEAR') {
         let nearAccount = await near.asyncNearWallet()
         this.account= nearAccount.currentUser.accountId
         console.log(' v.account', this.account)
@@ -2595,16 +2661,13 @@ export default {
       }
       await this.actionGetChain()
       await this.actionTokenList()
+      await this.actionShowToken()
       await this.actionChainSuccess()
       this.actionStatus()
       this.isLoadingAllData = false;
       await this.actionVaultBalance()
       await this.actionGasFee()
       this.actionInputFont()
-      if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
-      }else  {
-        this.sortAddress = ''
-      }
     },
 
     async requestData() {

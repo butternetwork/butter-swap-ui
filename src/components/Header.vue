@@ -95,6 +95,7 @@ import near from "@/config/near";
 import connector from "@/store/connector";
 import {SUPPORTED_CHAIN_LIST} from "butterjs-sdk/dist/constants";
 import Decimal from "decimal.js";
+import eventBus from "@/eventBus";
 
 
 export default {
@@ -284,56 +285,23 @@ export default {
       let v = this;
       v.chainList = SUPPORTED_CHAIN_LIST
       console.log( v.chainList)
-      let chainId = await this.$store.getters.getChainId;
-      console.log('chainId',chainId)
-      chainId = new Decimal(parseInt(chainId)).toHex();
-      let query = this.$route.query ? this.$route.query : {}
-      let chains = await this.$store.getters.getChains;
-      let chain = chains[chainId];
-      console.log('chain',chains,chainId)
-
-      //刷新
-      if (this.selectChain == -1) {
-        if (chain) {
-          query.sourceNetwork=chain.symbol;
-        }else {
-          query.sourceNetwork='MAP';
-        }
-        // console.log('chain',chain)
-        // query.sourceNetwork=chain.symbol;
-      } else
-          //切换
-      if (this.selectChain == 0) {
-        if (!chain) {
-          chain = chains[config.map.chainHex];
-          // chain = chains['0x1'];
-        }
-        let temp = query.sourceNetwork;
-        query.sourceNetwork = chain.symbol;
-        query.destNetwork = temp;
-      } else
-          //from
-      if (this.selectChain == 2) {
-        query.sourceNetwork = chain.symbol;
-      }
-
-      if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
-        if (query.sourceNetwork == 'MAP') {
-          query.destNetwork = 'BSC';
-        } else {
-          query.destNetwork = 'MAP';
-        }
-      }
-
-      this.showSelectChain=false;
-      this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
-
-      for (let item of this.chainList) {
-        if (item.symbol.toUpperCase() === query.sourceNetwork.toUpperCase()) {
-          v.chainFrom = JSON.parse(JSON.stringify(item));
-        }
-      }
+      // let chainId = await this.$store.getters.getChainId;
+      // console.log('chainId',chainId)
+      // chainId = new Decimal(parseInt(chainId)).toHex();
+      // let query = this.$route.query ? this.$route.query : {}
+      // let chains = await this.$store.getters.getChains;
+      // let chain = chains[chainId];
+      // console.log('chain',chains,chainId)
+      //
+      // this.showSelectChain=false;
+      // // this.$router.push(`/home?sourceNetwork=${query.sourceNetwork}&destNetwork=${query.destNetwork}&ts=${Date.now()}`)
+      //
+      // for (let item of this.chainList) {
+      //   if (item.symbol.toUpperCase() === query.sourceNetwork.toUpperCase()) {
+      //     v.chainFrom = JSON.parse(JSON.stringify(item));
+      //   }
       // }
+      // // }
     },
 
     goCommunity() {
@@ -469,14 +437,19 @@ export default {
       let chainId = await this.$store.getters.getChainId;
       let chains = await this.$store.getters.getChains;
 
+      let chainIdNumber = new Decimal(chainId).toNumber();
+
+      console.log('Header',chainIdNumber)
+
       //如果是near链的话
-      if (this.$route.query.sourceNetwork==='NEAR') {
+      if (chainIdNumber===config.near.chainId) {
+      // if (this.$route.query.sourceNetwork==='NEAR') {
         let nearAccount = await near.asyncNearWallet()
         this.account= nearAccount.currentUser.accountId
-        chainId = config.near.chainId.toString()
-        console.log('config.near.chainId',chainId)
-        this.$store.commit("setAddress",nearAccount.currentUser.accountId);
-        this.$store.commit("setChainId",chainId);
+        // chainId = config.near.chainId.toString()
+        // console.log('config.near.chainId',chainId)
+        // this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+        // this.$store.commit("setChainId",chainId);
       }
 
 
@@ -507,6 +480,9 @@ export default {
     }
   },
   mounted() {
+   eventBus.$on("listenTab",(res)=>{
+      this.showTab = 1
+    })
     this.requestData();
     this.actionLoaclExit()
   }

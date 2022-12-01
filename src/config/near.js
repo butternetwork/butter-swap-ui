@@ -8,6 +8,8 @@ import config from "./base";
 
 import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "butterjs-sdk/dist/constants";
 
+import store from "@/store";
+
 
 let currentUser;
 
@@ -35,8 +37,9 @@ export default {
             const walletAccountObj = walletConnection.account();
             const account = await nearConnection.account(currentUser.accountId);
             await account.getAccessKeys()
+            store.commit("setAddress",currentUser.accountId);
+            store.commit("setChainId",config.near.chainId.toString());
             console.log('walletAccountObj',walletAccountObj)
-            console.log('_networkId',walletConnection._networkId)
             console.log('success')
         }
         //没有登录
@@ -49,9 +52,9 @@ export default {
                 // "http://18.139.224.21:7001", // optional redirect URL on success
             );
 
-            this.$store.commit("setAddress",currentUser.accountId);
-            this.$store.commit("setChainId",config.near.chainId.toString());
-            this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
+            store.commit("setAddress",currentUser.accountId);
+            store.commit("setChainId",config.near.chainId.toString());
+            // this.$router.push(`/home?sourceNetwork=NEAR&destNetwork=${this.$route.query.destNetwork}&ts=${Date.now()}`)
         }
 
         console.log('currentUser',currentUser,walletConnection)
