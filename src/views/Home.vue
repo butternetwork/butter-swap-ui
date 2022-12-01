@@ -1693,7 +1693,7 @@ export default {
     async actionHistory() {
       console.log('history',this.chainIdNumber, this.account,this.currentPage,this.pageSize)
       let result = await this.$http.historyList({
-        chainId: this.chainIdNumber,
+        chainId: this.chainFrom.chainId,
         address: this.account,
         page: this.currentPage,
         size: this.pageSize,
