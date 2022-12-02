@@ -2404,6 +2404,7 @@ export default {
       //刷新
       console.log('this.selectChain ',this.selectChain )
         if (this.selectChain == -1) {
+          console.log('aaaaaaa')
           console.log('chain'.chain)
           if (chain) {
             query.sourceNetwork=chain.symbol;
@@ -2413,17 +2414,20 @@ export default {
         } else
             //切换
         if (this.selectChain == 0) {
+          console.log('bbbbbbb')
           if (!chain) {
             chain = chains[config.map.chainHex];
           }
           console.log(' query.sourceNetwork ',this.chainFrom.symbol, this.chainTo.symbol)
           console.log(' query.sourceNetwork ',query.sourceNetwork , query.destNetwork)
-          let temp = query.sourceNetwork;
-          console.log(' query.sourceNetwork ', chain.symbol, temp)
+          // let temp = query.sourceNetwork;
           query.sourceNetwork = chain.symbol;
-          query.destNetwork = temp;
 
-
+          if (this.chainFrom.symbol==='NEAR') {
+            query.destNetwork = this.chainFrom.symbol;
+          }else {
+            query.destNetwork =  this.chainTo.symbol;
+          }
         } else
             //from
         if (this.selectChain == 2) {
