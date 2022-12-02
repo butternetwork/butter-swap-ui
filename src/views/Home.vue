@@ -352,7 +352,7 @@
             </div>
             <div v-else class="bridge-rate-right">{{ gasFeeVue }} {{selectToken.symbol}}</div>
           </div>
-          <div class="bridge-rate-content-item">
+          <div v-show="chainFrom.symbol!='NEAR'" class="bridge-rate-content-item">
             <div class="bridge-rate-left">
               Original Chain Gas Fee Estimate
             </div>
@@ -360,7 +360,7 @@
               <img style="width:25px" src="../assets/loading2.gif"/>
               {{selectToken.symbol}}
             </div>
-            <div v-else class="bridge-rate-right">{{ gasPrice }} {{chainFrom.symbol}}</div>
+            <div v-else-if="gasPrice" class="bridge-rate-right">{{ gasPrice }} {{chainFrom.symbol}}</div>
           </div>
           <div class="bridge-rate-content-item">
             <div class="bridge-rate-left">Estimated Time of Arrival</div>
@@ -1254,12 +1254,6 @@ export default {
       };
 
 
-      const estimatedGas = await bridge.gasEstimateBridgeToken(request);
-      console.log('gas estimate', estimatedGas);
-
-     const adjustedGas = Math.floor(Number.parseFloat(estimatedGas) * 1.2).toString();
-      console.log('adjustedGas',adjustedGas)
-
       const fee = await getBridgeFee(
           tokenDetail,
           this.chainTo.chainId,
@@ -1269,12 +1263,24 @@ export default {
 
       console.log('gasPrice', this.gasPrice)
 
-      let web3 = await this.$client(this.chainIdHex);
-      let gasPrice = await web3.eth.getGasPrice()
-      console.log('gasPriceeee',gasPrice)
-      gasPrice = new Decimal(gasPrice).mul(new Decimal(adjustedGas)).div(Math.pow(10,mainDecimal))
-      this.gasPrice =gasPrice
-      console.log('gasPrice',gasPrice.toFixed())
+      if (this.chainFrom.symbol == 'NEAR') {
+        this.gasPrice = null
+      }else  {
+        const estimatedGas = await bridge.gasEstimateBridgeToken(request);
+        console.log('gas estimate', estimatedGas);
+
+        const adjustedGas = Math.floor(Number.parseFloat(estimatedGas) * 1.2).toString();
+        console.log('adjustedGas',adjustedGas)
+
+        let web3 = await this.$client(this.chainIdHex);
+        let gasPrice = await web3.eth.getGasPrice()
+        console.log('gasPriceeee',gasPrice)
+        gasPrice = new Decimal(gasPrice).mul(new Decimal(adjustedGas)).div(Math.pow(10,mainDecimal))
+        this.gasPrice =gasPrice
+        console.log('gasPrice',gasPrice.toFixed())
+      }
+
+
       console.log('amount',fee,fee.amount)
       console.log('feeRate',fee.feeRate)
       this.bridgeFee = fee.feeRate
@@ -2644,8 +2650,8 @@ export default {
       this.receivedAmount = '0.0'
       console.log('this.chainIdNumber',this.chainIdNumber)
       ///当前链是NEAR链
-      if (this.chainIdNumber===config.near.chainId) {
-      // if (this.$route.query.sourceNetwork==='NEAR') {
+      // if (this.chainIdNumber===config.near.chainId) {
+      if (this.$route.query.sourceNetwork==='NEAR') {
         let nearAccount = await near.asyncNearWallet()
         this.account= nearAccount.currentUser.accountId
         console.log(' v.account', this.account)
