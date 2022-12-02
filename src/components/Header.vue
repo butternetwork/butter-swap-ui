@@ -437,20 +437,20 @@ export default {
       let chainId = await this.$store.getters.getChainId;
       let chains = await this.$store.getters.getChains;
 
-      let chainIdNumber = new Decimal(chainId).toNumber();
+      // let chainIdNumber = new Decimal(chainId).toNumber();
 
-      console.log('Header',chainIdNumber)
+      // console.log('Header',chainIdNumber)
 
-      //如果是near链的话
-      if (chainIdNumber===config.near.chainId) {
-      // if (this.$route.query.sourceNetwork==='NEAR') {
-        let nearAccount = await near.asyncNearWallet()
-        this.account= nearAccount.currentUser.accountId
-        // chainId = config.near.chainId.toString()
-        // console.log('config.near.chainId',chainId)
-        // this.$store.commit("setAddress",nearAccount.currentUser.accountId);
-        // this.$store.commit("setChainId",chainId);
-      }
+      // //如果是near链的话
+      // if (chainIdNumber===config.near.chainId) {
+      // // if (this.$route.query.sourceNetwork==='NEAR') {
+      //   let nearAccount = await near.asyncNearWallet()
+      //   this.account= nearAccount.currentUser.accountId
+      //   // chainId = config.near.chainId.toString()
+      //   // console.log('config.near.chainId',chainId)
+      //   // this.$store.commit("setAddress",nearAccount.currentUser.accountId);
+      //   // this.$store.commit("setChainId",chainId);
+      // }
 
 
       let chain=null;

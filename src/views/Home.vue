@@ -2007,6 +2007,7 @@ export default {
         return
       }
 
+      let itemChainId = item.chainId
 
       if (provider) {
         try {
@@ -2020,62 +2021,25 @@ export default {
             params.rpcUrls = [item.rpc];
             params.chainName = item.chainName;
           }
-          provider.request({
+          await provider.request({
             method: method,
             params: [params]
-          }).then(res => {
-            console.log('res',res)
-            // if (this.chainFrom.symbol!=='NEAR') {
-            //   this.$store.commit("setAddress",account[0]);
-            //   this.$store.commit("setChainId",item.chainId);
-            //   this.$route.query.sourceNetwork=item.symbol
-            // }
-            this.showSelectChain=false;
-          });
-
+          })
+          this.$route.query.sourceNetwork=item.symbol
+          return  true
         } catch (error) {
-          // this.showSelectChain=false;
+          console.log('error',error)
+          this.showSelectChain=false;
           v.requestData()
+          return  false
         }
       } else {
         console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
         return false;
       }
-
-      // if (provider) {
-      //   try {
-      //     await provider.request({
-      //       method: 'wallet_switchEthereumChain',
-      //       params: [{ chainId: chainId }]
-      //     });
-      //     this.$store.commit("setAddress",account[0]);
-      //     this.$store.commit("setChainId",item.chainId);
-      //     this.$route.query.sourceNetwork=item.symbol
-      //     return true;
-      //   } catch (error) {
-      //     try {
-      //       let chains = this.$store.getters.getChains;
-      //       let chain = chains[chainId];
-      //       params.rpcUrls = [item.rpc];
-      //       params.chainName = item.chainName;
-      //       console.log('params',params)
-      //       await provider.request({
-      //         method: 'wallet_addEthereumChain',
-      //         params: [params]
-      //       });
-      //       this.$store.commit("setAddress",account[0]);
-      //       this.$store.commit("setChainId",item.chainId);
-      //       this.$route.query.sourceNetwork=item.symbol
-      //       return true;
-      //     } catch (error) {
-      //       console.error('Failed to setup the network in Metamask:', error);
-      //       return false;
-      //     }
-      //   }
-      // } else {
-      //   console.error('Can not setup the HALO network on metamask because window.ethereum is undefined');
-      //   return false;
-      // }
+      // this.showSelectChain=false;
+      //成功后 历史记录变成第一页
+      v.currentPage=1
 
       // this.$watcher.getProvider().then(async provider => {
       //   let chainId = new Decimal(item.chainId).toHex();
@@ -2631,7 +2595,9 @@ export default {
       let chainId = await this.$store.getters.getChainId;
       console.log('chainId',chainId)
       this.chainIdHex = new Decimal(chainId).toHex();
-      this.chainIdNumber = new Decimal(chainId).toNumber();
+      this.chainIdNumber = BigInt(chainId)
+      this.chainIdNumber = String(this.chainIdNumber).split('n')[0]
+      // this.chainIdNumber = new Decimal(chainId).toNumber();
 
       let chains = await this.$store.getters.getChains;
 
