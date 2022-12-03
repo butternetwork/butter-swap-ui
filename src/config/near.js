@@ -6,7 +6,7 @@ const { connect, WalletConnection ,KeyPair } = nearAPI;
 
 import config from "./base";
 
-import {ID_TO_CHAIN_ID, MCS_CONTRACT_ADDRESS_SET} from "butterjs-sdk/dist/constants";
+import {ID_TO_CHAIN_ID, MOS_CONTRACT_ADDRESS_SET} from "butterjs-sdk/dist/constants";
 
 import store from "@/store";
 
@@ -22,7 +22,7 @@ export default {
 
         const walletConnection = new WalletConnection(nearConnection);
 
-        let contract = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.near.chainId.toString())]
+        let contract = MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.near.chainId.toString())]
 
         //判断是否登录获取账户信息
         if (walletConnection.getAccountId()) {

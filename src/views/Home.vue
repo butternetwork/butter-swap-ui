@@ -180,7 +180,7 @@
                   <div class="history-tops-from">
                     <div class="history-top-left">
                       <span class="history-top-amount history-top-amounts">{{ item.amount }}</span>
-                      <span class="history-top-coin">{{ item.coin }}</span>
+                      <span class="history-top-coin">{{ item.sourceToken.symbol }}</span>
                     </div>
                     <div class="history-tops-from-text">
                       <div class="history-tops-icon">
@@ -199,7 +199,7 @@
                   <div class="history-tops-from">
                     <div class="history-top-left">
                       <span class="history-top-amount history-top-amounts">{{ item.inAmount }}</span>
-                      <span class="history-top-coin">{{ item.coin }}</span>
+                      <span class="history-top-coin">{{item.sourceToken.symbol  }}</span>
                     </div>
                     <div class="history-tops-from-text">
                       <div class="history-tops-icon">
@@ -260,11 +260,11 @@
                   <div class="history-top-show">
                     <div class="history-top-left">
                       <span class="history-top-amount">{{ item.amount }}</span>
-                      <span class="history-top-coin">{{ item.coin }}</span>
+                      <span class="history-top-coin">{{ item.sourceToken.symbol }}</span>
                     </div>
                     <div class="history-top-left history-top-left-two">
                       <span class="history-top-amount">{{ item.inAmount }}</span>
-                      <span class="history-top-coin">{{ item.coin }}</span>
+                      <span class="history-top-coin">{{  item.sourceToken.symbol }}</span>
                     </div>
                   </div>
                 </div>
@@ -282,8 +282,10 @@
               </div>
               <!--                          h5time-->
               <div class="history-h5-bottom">
-                <div>
-                  <span class="history-coin-time">{{ item.timestamp }}</span>
+                <div class="history-h5-bottom-timestamp">
+                  <span class="history-coin-time"> <img :src="item.sourceChain.chainImg"/> {{ item.timestamp }}</span>
+                  <span v-if="item.completeTime" class="history-coin-time"><img :src="item.destinationChain.chainImg"/> {{ item.completeTime }}</span>
+                  <span v-else class="history-coin-time">Processing</span>
                 </div>
                 <div>
                   <div v-if="item.state==0" class="history-status history-status-cancel">
@@ -567,6 +569,10 @@
                   </div>
                 </div>
               </div>
+              <div class="dia-trans-top-add">
+                <span @click="actionChangeChain(1)">Add destination network to your wallet</span>
+                <span v-show="historyDetailList.fromChain && historyDetailList.fromChain.chainName!='NEAR'" @click="actionAddToken(historyDetailList)">Add token to your wallet</span>
+              </div>
             </div>
           </div>
         </div>
@@ -602,7 +608,7 @@
         <div class="dialog-approve-title">
           <img  @click="getAllData(showGoHistory=false)" src="../assets/cancel.png"/>
         </div>
-        <div @click="actionHistory()" class="dialog-content-history-text">Go to History to see your transfer status</div>
+        <div @click="actionEmitHeader(1)" class="dialog-content-history-text">Go to History to see your transfer status</div>
       </div>
     </div>
 
@@ -691,8 +697,8 @@ import Web3 from 'web3'
 
 //sdk
 import {getBridgeFee, getVaultBalance,getDistributeRate} from "butterjs-sdk/dist/core/tools/dataFetch";
-import { SUPPORTED_CHAIN_LIST,MCS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
-import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/constants/supported_tokens.js";
+import { SUPPORTED_CHAIN_LIST,MOS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
+import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/utils/tokenUtil.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
 import {verifyNearAccountId,validateAndParseAddressByChainId} from "butterjs-sdk/dist/utils/addressUtil.js";
@@ -759,14 +765,14 @@ export default {
         chainLogo: require('../assets/token/map.png'),
         chain: 'MAP',
         chainId: '212',
-        contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID('212')],
+        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map.chainId)],
       },  //From Chain选择
       chainTo: {
         chainName: "BSC Testnet",
         chainLogo: require('../assets/token/bsc.png'),
         chain: 'BSC',
         chainId: '97',
-        contract: MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID('97')],
+        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.bsc.chainId)],
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
@@ -1087,6 +1093,7 @@ export default {
       if (this.showTab === 0) {
         this.actionOpenTransfer()
       } else if (this.showTab === 1) {
+        eventBus.$emit("listenTab",1)
         this.actionHistory()
       }
     },
@@ -1165,6 +1172,24 @@ export default {
       this.actionShowToken()
     },
 
+    //增加代币
+    actionAddToken(token) {
+      let newToken = token
+
+      window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address:newToken.tokenAddress,
+            symbol:newToken.tokenSymbol,
+            decimals:newToken.fromTokenDecimal,
+            // image: base64image,
+          },
+        },
+      });
+    },
+
     //关闭提示错误的弹窗
     closeErrorMessage() {
       this.showErrorMessage = false;
@@ -1181,6 +1206,7 @@ export default {
     actionInputFont() {
 
       if (!this.sendAmount) {
+        this.receivedAmount = 0
         this.showInsuffcientBalance = false
         return
       }
@@ -1243,17 +1269,6 @@ export default {
 
       this.langToAddress = this.allAddress
 
-      let request = {
-        fromAddress: this.account,
-        fromToken: this.selectToken,
-        fromChainId: this.chainFrom.chainId,
-        toChainId: this.chainTo.chainId,
-        toAddress: this.langToAddress,
-        amount: this.$web3.utils.toWei(this.sendAmount).toString(),
-        options: {signerOrProvider: this.$web3.eth},
-      };
-
-
       const fee = await getBridgeFee(
           tokenDetail,
           this.chainTo.chainId,
@@ -1266,6 +1281,19 @@ export default {
       if (this.chainFrom.symbol == 'NEAR') {
         this.gasPrice = null
       }else  {
+
+        let request = {
+          fromAddress: this.account,
+          fromToken: this.selectToken,
+          fromChainId: this.chainFrom.chainId,
+          toChainId: this.chainTo.chainId,
+          toAddress: this.langToAddress,
+          amount: this.$web3.utils.toWei(this.sendAmount).toString(),
+          options: {signerOrProvider: this.$web3.eth},
+        };
+
+        console.log('request',request)
+
         const estimatedGas = await bridge.gasEstimateBridgeToken(request);
         console.log('gas estimate', estimatedGas);
 
@@ -1294,7 +1322,26 @@ export default {
     },
 
     //交换链
-    actionChangeChain() {
+    actionChangeChain(num) {
+
+      if (num===1) {
+        this.selectChain = 0
+        console.log('this.historyDetailList.toChain',this.historyDetailList.toChain)
+        console.log(' this.chainList', this.chainList)
+        let toChain;
+        for (const item in this.chainList) {
+          console.log( this.chainList[item])
+          if ( this.chainList[item].chainId === this.historyDetailList.toChain.chainId) {
+                toChain =  this.chainList[item]
+          }
+
+        }
+
+        console.log('toChain',toChain)
+
+        this.handleLink(toChain)
+        return
+      }
       this.selectChain = 0
       this.changeChain = true
       this.handleLink(this.chainTo)
@@ -1772,8 +1819,6 @@ export default {
     //获取历史记录
     async actionHistory() {
       this.showGoHistory = false
-      this.showTab = 1
-      eventBus.$emit("listenTab",1)
       console.log('history',this.chainIdNumber, this.account,this.currentPage,this.pageSize)
       let result = await this.$http.historyList({
         chainId: this.chainFrom.chainId,
@@ -2171,7 +2216,7 @@ export default {
 
       //当前链
       // var chain = this.chainFrom.coin
-      let reward_address = MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
+      let reward_address = MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
       let token_address = v.selectToken.address
       ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
         if (v.selectToken.symbol == item.symbol) {
@@ -2252,7 +2297,7 @@ export default {
         clearInterval(v.statusTimer);
         v.statusTimer = null;
       }
-      let approving = this.getApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, v.selectToken.address);
+      let approving = this.getApproveStatus(`${v.account}${MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, v.selectToken.address);
       if (approving == 'done') {
         //关闭弹窗
         v.dialogApproving = false;
@@ -2316,7 +2361,7 @@ export default {
 
 
 
-      let approving = this.getApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress)
+      let approving = this.getApproveStatus(`${v.account}${MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress)
 
       console.log('approving',approving)
 
@@ -2333,7 +2378,7 @@ export default {
         if (timer) {
           clearInterval(timer);
         }
-        this.setApproveStatus(`${v.account}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
+        this.setApproveStatus(`${v.account}${MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
         console.log(' v.allowance ', v.allowance , v.transferBtn )
         return;
       } else if (approving === 'doing') {
@@ -2349,7 +2394,7 @@ export default {
       let addressUser = await this.$web3.eth.getAccounts()
       console.log('addressUser',addressUser,v.chainFrom.chainId,v.chainIdNumber)
       store.commit("setAddress",addressUser[0]);
-      contract.methods.allowance(addressUser[0], MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call((error, result) => {
+      contract.methods.allowance(addressUser[0], MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]).call((error, result) => {
         console.log('result',result)
         if (result && result != 0) {
           v.allowance = true;
@@ -2361,7 +2406,7 @@ export default {
             clearInterval(timer);
           }
           v.dialogApproving = false;
-          v.setApproveStatus(`${addressUser[0]}${MCS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
+          v.setApproveStatus(`${addressUser[0]}${MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]}`, tokenAddress, false);
         } else {
           v.allowance = false;
           // v.approveHash = false;
@@ -2592,7 +2637,7 @@ export default {
 
       console.log('query',this.$route.query)
 
-
+      this.showTranDetail = false
       this.account = address;
       this.sortAddress = this.$formatAddress(address);
       this.allAddress= address
@@ -2644,6 +2689,7 @@ export default {
       await this.actionVaultBalance()
       await this.actionGasFee()
       this.actionInputFont()
+      await this.actionHistory()
     },
 
     async requestData() {
