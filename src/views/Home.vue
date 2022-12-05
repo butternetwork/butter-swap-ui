@@ -571,7 +571,9 @@
               </div>
               <div class="dia-trans-top-add">
                 <span @click="actionChangeChain(1)">Add destination network to your wallet</span>
-                <span v-show="historyDetailList.fromChain && historyDetailList.fromChain.chainName!='NEAR'" @click="actionAddToken(historyDetailList)">Add token to your wallet</span>
+                <span v-show="historyDetailList.fromChain && historyDetailList.fromChain.chainName!='NEAR' && historyDetailList.tokenAddress!='0x0000000000000000000000000000000000000000' " @click="actionAddToken(historyDetailList)">
+                  Add token to your wallet
+                </span>
               </div>
             </div>
           </div>
