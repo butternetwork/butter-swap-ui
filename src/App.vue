@@ -25,6 +25,7 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: 'productRegular' !important;
 }
 
 button {
@@ -40,7 +41,7 @@ input {
 
 #app {
   color: #ffffff;
-  font-family: 'productRegular';
+  font-family: 'productRegular' ;
   width: 100%;
   height: 100%;
   background: #1b2025;

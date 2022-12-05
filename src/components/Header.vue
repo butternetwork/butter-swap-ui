@@ -692,9 +692,9 @@ export default {
   height: 40px;
   border-radius: 8px;
   text-align: center;
-  border: solid 1px #E44E3A;
-  background: #E44E3A;
-  color: white;
+  border: solid 1px #f6d536;;
+  background: #f6d536;;
+  color: #1b2025;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -727,8 +727,8 @@ export default {
 }
 
 .header-intall-error {
-  background-color: rgb(228, 78, 58);
-  color: white;
+  background-color: #f6d536;;
+  color: #1b2025;
 }
 
 .header-intalls {
