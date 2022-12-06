@@ -322,33 +322,41 @@
         }
       }
 
-      .bridge-content {
-        width: 570px;
-        max-width: 570px;
-        min-height: 578px;
-        border-radius: 40px;
-        background-color: rgb(27, 32, 37);
-        box-shadow: 0 0 10px 0 rgba(255, 209, 79, 0.15);
-        box-sizing: border-box;
-        padding: 32px;
-      }
+      .bridge-content-wrapper {
+        display: flex;
+        // align-items: center;
+        .bridge-content {
+          width: 570px;
+          max-width: 570px;
+          min-height: 578px;
+          border-radius: 40px;
+          background-color: rgb(27, 32, 37);
+          box-shadow: 0 0 10px 0 rgba(255, 209, 79, 0.15);
+          box-sizing: border-box;
+          padding: 32px;
+        }
+  
+        .bridge-content:before {
+          display: table;
+          content: "";
+        }
+  
+        .bridge-content-contCover {
+          top: 0px;
+          left: 0px;
+          width: 100%;
+          height: 100%;
+          z-index: 8;
+          position: absolute;
+          background: rgba(255, 255, 255, 0.5);
+          border-radius: 12px;
+        }
 
-      .bridge-content:before {
-        display: table;
-        content: "";
+        .bridge-best-route {
+          width: 400px;
+          height: 300px;
+        }
       }
-
-      .bridge-content-contCover {
-        top: 0px;
-        left: 0px;
-        width: 100%;
-        height: 100%;
-        z-index: 8;
-        position: absolute;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 12px;
-      }
-
 
       .bridge-title {
         width: 100%;
