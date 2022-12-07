@@ -1,0 +1,138 @@
+
+@media screen and (min-width: 441px) {
+    .bridge-content-wrapper {
+        display: flex;
+        gap: 20px;
+        .bridge-best-route {
+          max-width: 800px;
+          min-width: 500px;
+          padding: 30px 10px;
+          padding-bottom: 0;
+          position: relative;
+          .bridge-best-route-title {
+            font-size: 24px;
+            font-weight: 900;
+          }
+          .bridge-best-route-chart {
+            display: flex;
+            gap: 14px;
+            justify-content: space-between;
+            width: 100%;
+            height: 140px;
+            position: relative;
+            margin-top: 40px;
+            // background: #fff;
+            .bridge-best-route-box {
+              flex-grow: 1;
+            }
+            .bridge-best-route-box:first-child, .bridge-best-route-box:last-child {
+              flex-grow: 0;
+            }
+            .bridge-best-route-box:first-child /deep/ .best-route-card .best-route-step-index, 
+            .bridge-best-route-box:last-child /deep/ .best-route-card .best-route-step-index {
+              display: none;
+            }
+            .bridge-best-route-box:first-child /deep/ .best-route-card .best-route-step-platform,
+            .bridge-best-route-box:last-child /deep/ .best-route-card .best-route-step-platform {
+                display: none;
+            }
+          }
+          .bridge-best-route-chart::before {
+            content: "";
+            position: absolute;
+            top: -28px;
+            left: 56.5px;
+            width: calc(100% - 113px);
+            border: 1px dashed #fff;
+            opacity: .5;
+          }
+        }
+    
+        .bridge-content:before {
+          display: table;
+          content: "";
+        }
+    
+        .bridge-content-contCover {
+          top: 0px;
+          left: 0px;
+          width: 100%;
+          height: 100%;
+          z-index: 8;
+          position: absolute;
+          background: rgba(255, 255, 255, 0.5);
+          border-radius: 12px;
+        }
+      }
+}
+
+@media screen and (max-width: 440px) {
+    .bridge-content-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .bridge-best-route {
+          padding: 30px 10px;
+          width: 90%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          position: relative;
+          box-sizing: border-box;
+          .bridge-best-route-title {
+            font-size: 24px;
+            font-weight: 900;
+          }
+          .bridge-best-route-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+            position: relative;
+            margin-top: 20px;
+            padding-left: 40px;
+            .bridge-best-route-box {
+              flex-grow: 1;
+            }
+            .bridge-best-route-box:first-child, .bridge-best-route-box:last-child {
+              flex-grow: 0;
+            }
+            .bridge-best-route-box:first-child /deep/ .best-route-card .best-route-step-index, 
+            .bridge-best-route-box:last-child /deep/ .best-route-card .best-route-step-index {
+              display: none;
+            }
+            .bridge-best-route-box:first-child /deep/ .best-route-card .best-route-step-platform,
+            .bridge-best-route-box:last-child /deep/ .best-route-card .best-route-step-platform {
+                display: none;
+            }
+          }
+          .bridge-best-route-chart::before {
+            content: "";
+            top: 25px;
+            left: 16px;
+            width: 0;
+            height: calc(100% - 55px);
+            position: absolute;
+            border: 1px dashed #fff;
+            opacity: .5;
+          }
+        }
+    
+        .bridge-content:before {
+          display: table;
+          content: "";
+        }
+    
+        .bridge-content-contCover {
+          top: 0px;
+          left: 0px;
+          width: 100%;
+          height: 100%;
+          z-index: 8;
+          position: absolute;
+          background: rgba(255, 255, 255, 0.5);
+          border-radius: 12px;
+        }
+      }
+}

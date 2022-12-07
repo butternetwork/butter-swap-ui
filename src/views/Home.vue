@@ -326,10 +326,12 @@
           <div class="bridge-best-route">
             <div class="bridge-best-route-title">Best Route</div>
             <div class="bridge-best-route-chart">
-
+              <div class="bridge-best-route-box" v-for="(item, index) in routes" >
+                <BestRouteCard :key="index" :routeData="{ ...item, index }" />
+              </div>
             </div>
             <div class="bridge-best-route-table">
-              
+              <BestRouteTable :listData="routeListData" />
             </div>
           </div>
       </div>
@@ -694,6 +696,8 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BestRouteCard from "@/components/BestRouteCard";
+import BestRouteTable from "@/components/BestRouteTable";
 import Decimal from 'decimal.js'
 import moment from "moment";
 import eventBus from "@/eventBus";
@@ -723,7 +727,7 @@ import store from "@/store";
 
 export default {
   name: "Home.vue",
-  components: {Footer, Header},
+  components: {Footer, Header, BestRouteCard, BestRouteTable},
   data() {
     return {
       gasPrice:0,//Original Chain Gas
@@ -851,6 +855,51 @@ export default {
         id: '#28387',
         img: require('../assets/token/map.png')
       },//选择的nft
+      routes: [
+        {
+          label: 'form',
+          token: 'BNB',
+          platform: 'pancakeswap'
+        },
+        {
+          label: 'form',
+          token: 'BNB',
+          platform: 'pancakeswap'
+        },
+        {
+          label: 'form',
+          token: 'BNB',
+          platform: 'pancakeswap'
+        },
+        // {
+        //   label: 'form',
+        //   token: 'BNB',
+        //   platform: 'pancakeswap'
+        // },
+        {
+          label: 'to',
+          token: 'BNB',
+          platform: 'pancakeswap'
+        },
+      ],
+      routeListData: [
+        {
+          amount: '',
+          diff: ''
+        },
+        {
+          amount: '',
+          diff: ''
+        },
+        {
+          amount: '',
+          diff: ''
+        },
+        {
+          amount: '',
+          diff: ''
+        },
+      ]
     }
   },
 
@@ -2763,7 +2812,7 @@ export default {
 
 <style scoped lang="less">
 @import './Home.less';
-//
+@import './bestRoute.less';
 
 
 </style>

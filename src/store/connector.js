@@ -1,5 +1,6 @@
 import * as UAuthWeb3Modal from "@uauth/web3modal";
 import UAuthSPA from "@uauth/js";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import Web3 from "web3";
 import Decimal from "decimal.js";
@@ -45,12 +46,12 @@ class Connector {
             },
 
             // For full functionality we include the walletconnect provider as well.
-            // walletconnect: {
-            //     package: WalletConnectProvider,
-            //     options: {
-            //         infuraId: 'c16539ab6e244057b498657341375a3d',
-            //     },
-            // },
+            walletconnect: {
+                package: WalletConnectProvider,
+                options: {
+                    infuraId: 'c16539ab6e244057b498657341375a3d',
+                },
+            },
         }
 
         const web3modal = new Web3Modal({
