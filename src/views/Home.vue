@@ -330,9 +330,6 @@
                 <BestRouteCard :key="index" :routeData="{ ...item, index }" />
               </div>
             </div>
-            <div class="bridge-best-route-table">
-              <BestRouteTable :listData="routeListData" />
-            </div>
           </div>
       </div>
       <div class="bridge-rate" v-show="showFee">
@@ -776,7 +773,7 @@ export default {
       chainList: [],
       chainFrom: {
         chainName: "MAP Testnet",
-        chainLogo: 'https://files.maplabs.io/bridge/map.png',
+        chainLogo: require('../assets/token/map.png'),
         chain: 'MAP',
         chainId: '212',
         contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map.chainId)],
@@ -856,33 +853,7 @@ export default {
         id: '#28387',
         img: require('../assets/token/map.png')
       },//选择的nft
-      routes: [
-        {
-          label: 'form',
-          token: 'BNB',
-          platform: 'pancakeswap'
-        },
-        {
-          label: 'form',
-          token: 'BNB',
-          platform: 'pancakeswap'
-        },
-        {
-          label: 'form',
-          token: 'BNB',
-          platform: 'pancakeswap'
-        },
-        // {
-        //   label: 'form',
-        //   token: 'BNB',
-        //   platform: 'pancakeswap'
-        // },
-        {
-          label: 'to',
-          token: 'BNB',
-          platform: 'pancakeswap'
-        },
-      ],
+      routes: null,
       routeListData: {
           path: [],
           amount: '',
@@ -898,6 +869,9 @@ export default {
       } else {
         this.showFee = false
       }
+
+      console.log(this.chainFrom.contract, 'chainFrom.contract')
+      this.getBestRoute()
     },
     address(newVal) {
       this.allAddress = this.$store.getters.getAddress;
@@ -1011,18 +985,63 @@ export default {
 
   methods: {
     async getBestRoute () {
+      console.log(this.chainFrom.contract, this.chainTo.contract, 'contract')
+      // let queryParams = {
+      //   fromChainId: this.chainFrom.chainId,
+      //   toChainId: this.chainTo.chainId,
+      //   amountIn: '1000',
+      //   tokenInAddress: this.chainFrom.contract,
+      //   tokenInDecimal: this.selectToken.decimals,
+      //   tokenOutAddress: this.chainTo.contract,
+      //   tokenOutDecimal: this.selectToken.decimals,
+      //   tokenInSymbol: this.selectToken.symbol,
+      //   tokenOutSymbol: this.selectToken.symbol
+      // }
+
       let queryParams = {
-        fromChainId: this.chainFrom.chainId,
-        toChainId: this.chainTo.chainId,
+        fromChainId: '56',
+        toChainId: '5566818579631833088',
         amountIn: '1000',
-        tokenInAddress: this.chainFrom.contract,
-        tokenInDecimal: this.selectToken.decimals,
-        tokenOutAddress: this.chainTo.contract,
-        tokenOutDecimal: this.selectToken.decimals,
-        tokenInSymbol: this.selectToken.symbol,
-        tokenOutSymbol: this.selectToken.symbol
+        tokenInAddress: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+        tokenInDecimal: '18',
+        tokenOutAddress: 'wrap.near',
+        tokenOutDecimal: '6',
+        tokenInSymbol: 'WBNB',
+        tokenOutSymbol: 'WWEAR'
       }
-      let resData = await this.$http.bestPath(queryParams)
+      let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
+      let swapRoute = [
+        {
+          // token: srcChain[0].tokenIn.symbol,
+          path: srcChain,
+        },
+        {
+          // token: mapChain[0].tokenIn.symbol,
+          path: mapChain
+        },
+        {
+          // token: targetChain[0].tokenIn.symbol,
+          path: targetChain
+        }
+      ]
+
+      this.routes = [
+        {
+          label: 'from',
+          path: false,
+          token: this.selectToken.symbol,
+          // tokenIcon: this.selectToken.logo,
+          tokenIcon: require('../assets/token/usd.png')
+        },
+        ...swapRoute,
+        {
+          label: 'to',
+          path: false,
+          token: this.selectToken.symbol,
+          // tokenIcon: this.selectToken.logo,
+          tokenIcon: require('../assets/token/usd.png')
+        }
+      ]
 
       console.log(resData, 'resData')
 

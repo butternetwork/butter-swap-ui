@@ -2,8 +2,16 @@
     <div class="best-route-card">
         <div class="best-route-step-index">{{ routeData.index }}</div>
         <div class="best-route-step-label">{{ routeData.label }}</div>
-        <div class="best-route-step-token">{{ routeData.token }}</div>
-        <div class="best-route-step-platform">{{ routeData.platform }}</div>
+        <div v-if="!routeData.path.length" class="best-route-step-token">
+            <img :src="routeData.tokenIcon" alt="">
+            {{ routeData.token }}
+        </div>
+
+        <div class="best-route-step-pathTable">
+
+        </div>
+
+        <!-- <div v-if="routeData.platform" class="best-route-step-platform">{{ routeData.platform }}</div> -->
     </div>
 </template>
 
@@ -35,10 +43,18 @@ export default {
 
 <style scoped lang="less">
 
+.best-route-step-pathTable {
+    display: flex;
+    flex-direction: column;
+    .pathItem {
+        display: flex;
+    }
+}
+
 @media screen and (min-width: 941px) {
     .best-route-card {
         min-width: 106px;
-        min-height: 100px;
+        min-height: 67px;
         position: relative;
         border-radius: 10px;
         background-color: #000;
@@ -62,9 +78,17 @@ export default {
         }
         .best-route-step-token {
             text-align: center;
-            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
             font-weight: 700;
+            img {
+                width: 30px;
+                height: 30px;
+                object-fit: cover;
+                margin-right: 6px;
+            }
         }
         .best-route-step-platform {
             position: relative;
@@ -87,23 +111,23 @@ export default {
     }
 
     .best-route-card::before {
-        content: "";
-        position: absolute;
-        top: -32px;
-        left: 50%;
+        top: 50%;
+        left: -28px;
         width: 10px;
         height: 10px;
-        transform: translateX(-25%);
+        transform: translateY(-50%);
+        content: "";
+        position: absolute;
         background-color: #f6d536;
         border-radius: 50%;
     }
     .best-route-card::after {
+        top: calc(50% - 8px);
+        left: -6.5px;
+        width: 13px;
+        height: 13px;
         content: "";
         position: absolute;
-        top: -10px;
-        left: calc(50% - 8px);
-        width: 20px;
-        height: 20px;
         border-radius: 2px;
         transform: rotate(45deg);
         background-color: #000;
@@ -112,6 +136,7 @@ export default {
 @media screen and (max-width: 940px) {
     .best-route-card {
         width: 100%;
+        min-height: 67px;
         position: relative;
         border-radius: 10px;
         background-color: #000;
@@ -135,6 +160,17 @@ export default {
         }
         .best-route-step-token {
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            img {
+                width: 30px;
+                height: 30px;
+                object-fit: cover;
+                margin-right: 6px;
+            }
         }
         .best-route-step-platform {
             position: relative;
