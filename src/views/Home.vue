@@ -1014,13 +1014,13 @@ export default {
       let queryParams = {
         fromChainId: this.chainFrom.chainId,
         toChainId: this.chainTo.chainId,
-        amountIn: '500',
+        amountIn: '1000',
         tokenInAddress: this.chainFrom.contract,
-        tokenInDecimal: '18',
+        tokenInDecimal: this.selectToken.decimals,
         tokenOutAddress: this.chainTo.contract,
-        tokenOutDecimal: '6',
-        tokenInSymbol: 'WBNB',
-        tokenOutSymbol: 'WNEAR'
+        tokenOutDecimal: this.selectToken.decimals,
+        tokenInSymbol: this.selectToken.symbol,
+        tokenOutSymbol: this.selectToken.symbol
       }
       let resData = await this.$http.bestPath(queryParams)
 
