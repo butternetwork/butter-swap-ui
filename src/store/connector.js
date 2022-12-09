@@ -53,20 +53,20 @@ class Connector {
                 options: uauthOptions,
             },
 
-            'custom-trustwallet': {
-                display: trustDisplay,
-                connector: () => {
-                    if (!window.trustwallet) {
-                        // alert('trust wallet is not install')
-                        console.log('trust wallet is not install')
-                        WalletConnectQRCodeModal.open('https://trustwallet.com/')
-                    } else {
-                        return window.trustwallet
-                    }
-                },
+            // 'custom-trustwallet': {
+            //     display: trustDisplay,
+            //     connector: () => {
+            //         if (!window.trustwallet) {
+            //             // alert('trust wallet is not install')
+            //             console.log('trust wallet is not install')
+            //             WalletConnectQRCodeModal.open('https://trustwallet.com/')
+            //         } else {
+            //             return window.trustwallet
+            //         }
+            //     },
 
-                package: WalletConnectProvider,
-            },
+            //     package: WalletConnectProvider,
+            // },
 
             // For full functionality we include the walletconnect provider as well.
             walletconnect: {
