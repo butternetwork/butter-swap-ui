@@ -63,7 +63,7 @@ const store = new Vuex.Store({
                 chainId:'0x13881',
                 symbol: 'Matic',
                 name: 'Matic',
-                network: 'Polygon Mainnet',
+                network: 'Polygon testnet',
                 icon: require('../assets/polygon.png')
             },
             // '0x89': {
