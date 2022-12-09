@@ -776,7 +776,7 @@ export default {
       chainList: [],
       chainFrom: {
         chainName: "MAP Testnet",
-        chainLogo: require('../assets/token/map.png'),
+        chainLogo: 'https://files.maplabs.io/bridge/map.png',
         chain: 'MAP',
         chainId: '212',
         contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map.chainId)],
