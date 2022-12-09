@@ -4,7 +4,9 @@ Axios.defaults.timeout = 30000;
 import config from '../config'
 
 let request = function (path, params, isPost) {
-    Axios.defaults.baseURL = config.baseUrl
+    // Axios.defaults.baseURL = config.baseUrl
+    Axios.defaults.baseURL = '/'
+
     // eslint-disable-next-line no-undefined
     if (params === undefined) {
         params = {}
@@ -28,7 +30,7 @@ let request = function (path, params, isPost) {
                 params: params,
             }).then(
                 res => {
-                    if(res.data && res.data.code && res.data.code == 200){
+                    if(res.data && res.data.code && res.data.code == 200 || res.data && res.status === 200) {
                         resolve(res.data);
                     }
 

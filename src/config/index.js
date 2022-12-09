@@ -8,4 +8,5 @@ if(process.env.NODE_ENV==='production'){
 	let pro = require('./config.pro.js');
 	config = Object.assign(config,pro);
 }
+
 module.exports = config;

@@ -1,19 +1,15 @@
 <template>
     <div class="best-route-table">
         <div class="best-route-table-header">
-            <div class="header-index"></div>
             <div class="header-route-path">Route</div>
             <div class="header-amount">Amount</div>
-            <div class="header-diff">Diff</div>
         </div>
         <div class="best-route-table-list">
-            <div class="best-route-table-list-item" v-for="(item, index) in listData">
-                <div class="item-index">{{ index }}</div>
+            <div class="best-route-table-list-item">
                 <div class="item-route-path">
-
+                    {{ listData.path }}
                 </div>
-                <div class="item-amount">{{ item.amount }}</div>
-                <div class="item-diff">{{ item.amount }}</div>
+                <div class="item-amount">{{ listData.amount }}</div>
             </div>
         </div>
     </div>
@@ -24,7 +20,7 @@ export default {
     name: "BestRouteCard",
     props: {
         listData: {
-            type: Array,
+            type: Object,
             default: {}
         },
     },
@@ -47,11 +43,10 @@ export default {
 
 <style scoped lang="less">
 
-@media screen and (min-width: 441px) {
+@media screen and (min-width: 941px) {
     .best-route-table {
     display: flex;
-    padding: 20px 0;
-    padding-top: 36px;
+    padding: 21px 18px;
     flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 0 10px 0 rgba(255, 209, 79, 0.15);
@@ -62,7 +57,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        text-align: center;
+        text-align: left;
         .header-index {
             width: 120px;
             flex: 1;
@@ -71,7 +66,8 @@ export default {
             flex: 1;
         }
         .header-amount {
-            flex: 1;
+            width: 240px;
+            flex-shrink: 0;
         }
         .header-diff {
             flex: 1;
@@ -81,7 +77,6 @@ export default {
         .best-route-table-list-item {
             display: flex;
             align-items: center;
-            padding: 20px 0;
             .item-index {
                 width: 120px;
                 text-align: center;
@@ -104,7 +99,7 @@ export default {
     }
 }
 }
-@media screen and (max-width: 440px) {
+@media screen and (max-width: 940px) {
     .best-route-table {
     display: flex;
     padding: 20px 0;

@@ -323,7 +323,7 @@
             </div>
           </div>
           </div>
-          <div class="bridge-best-route">
+          <div class="bridge-best-route" v-if="showTab==0">
             <div class="bridge-best-route-title">Best Route</div>
             <div class="bridge-best-route-chart">
               <div class="bridge-best-route-box" v-for="(item, index) in routes" >
@@ -388,7 +388,6 @@
     </div>
 
     <Footer/>
-
 
     <!--        选择链-->
     <div v-show="showSelectChain" class="dialog-selectChain">
@@ -720,9 +719,11 @@ import { ButterBridge } from "butterjs-sdk/dist/core/bridge/bridge.js";
 
 
 import * as nearAPI from "near-api-js";
+import Axios from 'axios'
 const { connect, Contract ,keyStores } = nearAPI;
 import { parseNearAmount } from 'near-api-js/lib/utils/format';
 import store from "@/store";
+import testData from "./testdata.json"
 
 
 export default {
@@ -882,24 +883,10 @@ export default {
           platform: 'pancakeswap'
         },
       ],
-      routeListData: [
-        {
+      routeListData: {
+          path: [],
           amount: '',
-          diff: ''
-        },
-        {
-          amount: '',
-          diff: ''
-        },
-        {
-          amount: '',
-          diff: ''
-        },
-        {
-          amount: '',
-          diff: ''
-        },
-      ]
+      }
     }
   },
 
@@ -1023,6 +1010,25 @@ export default {
   },
 
   methods: {
+    async getBestRoute () {
+      let queryParams = {
+        fromChainId: this.chainFrom.chainId,
+        toChainId: this.chainTo.chainId,
+        amountIn: '500',
+        tokenInAddress: this.chainFrom.contract,
+        tokenInDecimal: '18',
+        tokenOutAddress: this.chainTo.contract,
+        tokenOutDecimal: '6',
+        tokenInSymbol: 'WBNB',
+        tokenOutSymbol: 'WNEAR'
+      }
+      let resData = await this.$http.bestPath(queryParams)
+
+      console.log(resData, 'resData')
+
+      resData
+    },
+
     async getSortAddress(hash) {
         if (hash) {
           return hash.substr(0, 9) + '...' + hash.substr(hash.length-8,hash.length())
@@ -1845,7 +1851,6 @@ export default {
       this.cleanLoadingTimer();
     },
 
-
     //查询未完成的历史交易
     async actionUndoneTransfer() {
       if (!this.account) {
@@ -1864,7 +1869,6 @@ export default {
       }
     },
 
-
     //调取历史loading 定时器
     actionTimerHistory() {
       let timer = setInterval(() => {
@@ -1872,7 +1876,6 @@ export default {
       }, 30000)
       this.historyTimerLoading.push(timer)
     },
-
 
     //获取历史记录
     async actionHistory() {
@@ -1970,6 +1973,7 @@ export default {
 
     //获取历史详情
     async actionHistoryDetail(item) {
+      console.log('actionHistoryDetail')
       let v = this
       v.showTranDetail = true
 
@@ -2799,6 +2803,7 @@ export default {
 
  async mounted() {
    //token列表
+   this.getBestRoute()
 
     this.isLoadingAllData = false;
     this.cleanHistoryTimer();

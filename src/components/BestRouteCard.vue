@@ -35,7 +35,7 @@ export default {
 
 <style scoped lang="less">
 
-@media screen and (min-width: 441px) {
+@media screen and (min-width: 941px) {
     .best-route-card {
         min-width: 106px;
         min-height: 100px;
@@ -51,8 +51,8 @@ export default {
             top: 16px;
             right: 16px;
             font-weight: 600;
-            font-size: 50px;
-            line-height: 40px;
+            font-size: 35px;
+            line-height: 35px;
             opacity: .2;
             z-index: 0;
             pointer-events: none;
@@ -73,14 +73,15 @@ export default {
             opacity: .6;
         }
         .best-route-step-platform::before {
-            content: "";
+            content: "-";
             position: absolute;
             width: 6px;
             height: 6px;
-            top: 8px;
-            left: -5px;
-            background-color: #f6d536;
-            border-radius: 50%;
+            // top: 8px;
+            left: -2px;
+            line-height: 20px;
+            // background-color: #f6d536;
+            // border-radius: 50%;
             opacity: .5;
         }
     }
@@ -108,7 +109,7 @@ export default {
         background-color: #000;
     }
 }
-@media screen and (max-width: 440px) {
+@media screen and (max-width: 940px) {
     .best-route-card {
         width: 100%;
         position: relative;
