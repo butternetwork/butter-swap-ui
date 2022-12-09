@@ -231,7 +231,7 @@ export default {
           let method = 'wallet_switchEthereumChain';
           let chains = this.$store.getters.getChains;
           let chain = chains[chainId];
-          console.log('chain',chain)
+          console.log('chain',chain, chainId)
           if (chain.symbol !== 'ETH') {
             method = 'wallet_addEthereumChain';
             params.rpcUrls = [item.rpc];
