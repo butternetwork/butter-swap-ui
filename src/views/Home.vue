@@ -46,7 +46,7 @@
                     Max: <span @click="actionMaxBalance()">{{ balanceZ }}</span>
                     <img @click="actionTokenList()"  src="../assets/refresh.png"/>
                   </span>
-                  <input id="tran-send-bottom-red" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
+                  <input id="tran-send-bottom-red" autoComplete="off" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
                         placeholder="0.0"/>
                   <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
                     <span>Vault:</span>
@@ -329,6 +329,9 @@
               <div class="bridge-best-route-box" v-for="(item, index) in routes" >
                 <BestRouteCard :key="index" :routeData="{ ...item, index }" />
               </div>
+            </div>
+            <div v-if="!routes" >
+              <BestRouteBlankCard :isLoading="isBestRouteLoading" />
             </div>
           </div>
       </div>
@@ -693,6 +696,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BestRouteCard from "@/components/BestRouteCard";
+import BestRouteBlankCard from "@/components/BestRouteBlankCard";
 import BestRouteTable from "@/components/BestRouteTable";
 import Decimal from 'decimal.js'
 import moment from "moment";
@@ -725,7 +729,7 @@ import testData from "./testdata.json"
 
 export default {
   name: "Home.vue",
-  components: {Footer, Header, BestRouteCard, BestRouteTable},
+  components: {Footer, Header, BestRouteCard, BestRouteBlankCard, BestRouteTable},
   data() {
     return {
       gasPrice:0,//Original Chain Gas
@@ -857,7 +861,8 @@ export default {
       routeListData: {
           path: [],
           amount: '',
-      }
+      },
+      isBestRouteLoading: false
     }
   },
 
@@ -896,6 +901,9 @@ export default {
       );
 
       let tokenListRes = tokenCandidates
+
+      console.log(tokenListRes, 'tokenCandidates')
+      
       if (tokenListRes) {
         if (inputContent !== '0x') {
           for (let i = 0; i < tokenListRes.length; i++) {
@@ -985,67 +993,93 @@ export default {
 
   methods: {
     async getBestRoute () {
-      console.log(this.chainFrom.contract, this.chainTo.contract, 'contract')
-      // let queryParams = {
-      //   fromChainId: this.chainFrom.chainId,
-      //   toChainId: this.chainTo.chainId,
-      //   amountIn: '1000',
-      //   tokenInAddress: this.chainFrom.contract,
-      //   tokenInDecimal: this.selectToken.decimals,
-      //   tokenOutAddress: this.chainTo.contract,
-      //   tokenOutDecimal: this.selectToken.decimals,
-      //   tokenInSymbol: this.selectToken.symbol,
-      //   tokenOutSymbol: this.selectToken.symbol
-      // }
+      try {
+        this.routes = null
+        this.isBestRouteLoading = true
+        const fromTokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
+        const toTokenList = ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId.toString());
 
-      let queryParams = {
-        fromChainId: '56',
-        toChainId: '5566818579631833088',
-        amountIn: '1000',
-        tokenInAddress: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-        tokenInDecimal: '18',
-        tokenOutAddress: 'wrap.near',
-        tokenOutDecimal: '6',
-        tokenInSymbol: 'WBNB',
-        tokenOutSymbol: 'WWEAR'
+        const [fromToken] = fromTokenList.filter(token => token.symbol === this.selectToken.symbol)
+        const [toToken] = toTokenList.filter(token => token.symbol === this.selectToken.symbol)
+
+        console.log(fromTokenList, toTokenList, 'fromTokentoToken')
+
+        let queryParams = {
+          fromChainId: this.chainFrom.chainId,
+          toChainId: this.chainTo.chainId,
+          amountIn: this.sendAmount,
+          tokenInAddress: fromToken.address,
+          tokenInDecimal: fromToken.decimals,
+          tokenOutAddress: toToken.address,
+          tokenOutDecimal: toToken.decimals,
+          tokenInSymbol: this.selectToken.symbol,
+          tokenOutSymbol: this.selectToken.symbol
+        }
+
+        // let queryParams = {
+        //   fromChainId: '97',
+        //   toChainId: '5566818579631833088',
+        //   amountIn: '1000',
+        //   tokenInAddress: '0x593F6F6748dc203DFa636c299EeA6a39C0734EEd',
+        //   tokenInDecimal: '18',
+        //   tokenOutAddress: 'wrap.near',
+        //   tokenOutDecimal: '6',
+        //   tokenInSymbol: 'WMOS',
+        //   tokenOutSymbol: 'WNEAR'
+        // }
+
+        let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
+        // let { srcChain, mapChain, targetChain } = testData
+
+        let swapRoute = [
+          // {
+          //   label: this.$store.getters.getChainName[srcChain[0]?.chainId],
+          //   paths: srcChain,
+          // },
+          // {
+          //   label: this.$store.getters.getChainName[mapChain[0]?.chainId],
+          //   paths: mapChain
+          // },
+          // {
+          //   label: this.$store.getters.getChainName[targetChain[0]?.chainId],
+          //   paths: targetChain
+          // }
+        ]
+        let arr = [srcChain, mapChain, targetChain]
+
+        arr.forEach((item) => {
+          if (item.length) {
+            console.log(item, 'item')
+            swapRoute.push({
+              label: this.$store.getters.getChainName[item[0]?.chainId],
+              paths: item,
+            })
+          }
+        })
+
+        this.routes = [
+          {
+            label: 'from',
+            paths: [],
+            token: this.selectToken.symbol,
+            tokenIcon: this.selectToken.logo,
+          },
+          ...swapRoute,
+          {
+            label: 'to',
+            paths: [],
+            token: this.selectToken.symbol,
+            tokenIcon: this.selectToken.logo,
+          }
+        ]
+        this.isBestRouteLoading = false
+      } catch (ex) {
+        console.log('getBestRoute error:', ex)
+        let timer = setTimeout(() => {
+          this.isBestRouteLoading = false
+          clearTimeout(timer)
+        }, 1000);
       }
-      let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
-      let swapRoute = [
-        {
-          // token: srcChain[0].tokenIn.symbol,
-          path: srcChain,
-        },
-        {
-          // token: mapChain[0].tokenIn.symbol,
-          path: mapChain
-        },
-        {
-          // token: targetChain[0].tokenIn.symbol,
-          path: targetChain
-        }
-      ]
-
-      this.routes = [
-        {
-          label: 'from',
-          path: false,
-          token: this.selectToken.symbol,
-          // tokenIcon: this.selectToken.logo,
-          tokenIcon: require('../assets/token/usd.png')
-        },
-        ...swapRoute,
-        {
-          label: 'to',
-          path: false,
-          token: this.selectToken.symbol,
-          // tokenIcon: this.selectToken.logo,
-          tokenIcon: require('../assets/token/usd.png')
-        }
-      ]
-
-      console.log(resData, 'resData')
-
-      resData
     },
 
     async getSortAddress(hash) {
@@ -1535,6 +1569,8 @@ export default {
       this.actionVaultBalance()
 
       this.actionInputFont()
+
+      this.getBestRoute()
 
     },
 
@@ -2601,6 +2637,8 @@ export default {
       this.tokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
       // console.log(' this.tokenList', this.tokenList,ID_TO_SUPPORTED_TOKEN(this.chainIdNumber))
 
+      // console.log(this.tokenList, 'tokenList 111')
+
       let selectToken = null;
       let flag = false;
       if (!this.tokenList) {
@@ -2823,7 +2861,7 @@ export default {
 
  async mounted() {
    //token列表
-   this.getBestRoute()
+  //  this.getBestRoute()
 
     this.isLoadingAllData = false;
     this.cleanHistoryTimer();

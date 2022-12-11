@@ -74,6 +74,12 @@ const store = new Vuex.Store({
             //     icon: require('../assets/token/polygon.png')
             // }
         },
+        chianIdMap: {
+            '56': 'BNB',
+            '22776': 'MAP Protocol',
+            '1313161554': 'NEAR',
+            '212': '',
+        },
         changed: 0,
         address: '',
         chainId: '',
@@ -93,6 +99,9 @@ const store = new Vuex.Store({
     getters: {
         getChains:(state)=>{
             return state.chains;
+        },
+        getChainName: (state) => {
+            return state.chianIdMap;
         },
         getAddress: (state) => {
             return state.address;

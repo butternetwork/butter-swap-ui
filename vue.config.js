@@ -9,7 +9,8 @@ module.exports = {
     devServer: {
         proxy: {
             '/test-api': {
-                target: 'https://testnet-api.butterswap.io',  // 后台接口域名
+                // target: 'https://testnet-api.butterswap.io',  // 后台接口域名
+                target: "http://54.255.196.147:9009/",
                 ws: true,        //如果要代理 websockets，配置这个参数
                 secure: false,  // 如果是https接口，需要配置这个参数
                 changeOrigin: true,  //是否跨域
