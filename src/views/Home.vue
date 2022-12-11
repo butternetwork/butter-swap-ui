@@ -1028,24 +1028,13 @@ export default {
         //   tokenOutSymbol: 'WNEAR'
         // }
 
-        let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
-        // let { srcChain, mapChain, targetChain } = testData
+        // let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
+        let { srcChain, mapChain, targetChain } = testData
 
-        let swapRoute = [
-          // {
-          //   label: this.$store.getters.getChainName[srcChain[0]?.chainId],
-          //   paths: srcChain,
-          // },
-          // {
-          //   label: this.$store.getters.getChainName[mapChain[0]?.chainId],
-          //   paths: mapChain
-          // },
-          // {
-          //   label: this.$store.getters.getChainName[targetChain[0]?.chainId],
-          //   paths: targetChain
-          // }
-        ]
+        let swapRoute = []
         let arr = [srcChain, mapChain, targetChain]
+
+        console.log(targetChain, 'targetChain')
 
         arr.forEach((item) => {
           if (item.length) {
