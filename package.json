@@ -18,7 +18,7 @@
     "axios": "^0.19.0",
     "bignumber.js": "^9.1.0",
     "bn.js": "^5.2.0",
-    "butterjs-sdk": "^1.1.1-beta",
+    "butterjs-sdk": "^1.1.2-beta.1",
     "core-js": "^3.6.5",
     "decimal.js": "^10.2.1",
     "dotenv": "^16.0.3",
