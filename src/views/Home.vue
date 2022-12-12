@@ -48,6 +48,16 @@
                   </span>
                   <input id="tran-send-bottom-red" autoComplete="off" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
                         placeholder="0.0"/>
+                  <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
+                    <span>Vault:</span>
+                    <div v-if="vaultBalanceLoading">
+                      <img style="width:30px" src="../assets/loading2.gif"/>
+                    </div>
+                    <div v-else>
+                      <span class="font-yellow" v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainFrom.chainName}}</span>
+                      <span class="font-yellow" v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="tran-send-bottom">
                 <div @click="actionChain(2)" class="tran-from-btn">
@@ -86,6 +96,16 @@
                     <span v-if="receivedAmountLoading"> <img style="width:30px" src="../assets/loading2.gif"/></span>
                     <span v-else-if="receivedAmount<0">Amount is less than fee</span>
                     <span v-else>{{ receivedAmount }}</span>
+                  </div>
+                  <div v-show="showToVault" class="tran-send-vault">
+                    <span>Vault:</span>
+                    <div v-if="vaultBalanceLoading">
+                      <img style="width:30px" src="../assets/loading2.gif"/>
+                    </div>
+                    <div v-else>
+                      <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainTo.chainName}}</span>
+                      <span class="font-yellow" v-else>{{ toVault }} {{ selectToken.symbol }}</span>
+                    </div>
                   </div>
                 </div>
                 <div class="tran-send-bottom">
@@ -701,7 +721,7 @@ import Web3 from 'web3'
 
 //sdk
 import {getSwapFee, getVaultBalance,getDistributeRate} from "butterjs-sdk/dist/core/tools/dataFetch";
-import { SUPPORTED_CHAIN_LIST,MOS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
+import { SUPPORTED_CHAIN_LIST,MOS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID, BUTTER_ROUTER_ADDRESS_SET} from 'butterjs-sdk/dist/constants/index.js';
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/utils/tokenUtil.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
@@ -734,8 +754,8 @@ export default {
       ReceivedAmount:0,
       showExit: false,//退出
       showFee: false,//显示Fee
-      showFromVault: true,//From 如果代币是ismint 不显示
-      showToVault: true,// From如果代币是ismint 不显示
+      showFromVault: false,//From 如果代币是ismint 不显示
+      showToVault: false,// From如果代币是ismint 不显示
       fromVault: 0,//fromVault
       toVault: 0,//toVault
       isLoadingAllData: false,
@@ -767,18 +787,18 @@ export default {
       showTranDetail: false,
       chainList: [],
       chainFrom: {
-        chainName: "MAP Testnet",
-        chainLogo: require('../assets/token/map.png'),
-        chain: 'MAP',
-        chainId: '212',
-        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map.chainId)],
-      },  //From Chain选择
-      chainTo: {
         chainName: "BSC Testnet",
         chainLogo: require('../assets/token/bsc.png'),
         chain: 'BSC',
         chainId: '97',
         contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.bsc.chainId)],
+      },  //From Chain选择
+      chainTo: {
+        chainName: "Polygon Testnet",
+        chainLogo: 'https://files.mapprotocol.io/bridge/polygon.png',
+        chain: 'POLYGON',
+        chainId: '80001',
+        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID('80001')],
       }, //To Chain 选择
       selectToken: {},// 选择Token
       selectTokenTarget: {},
@@ -857,6 +877,7 @@ export default {
       },
       isBestRouteLoading: false,
       routerStr: '',
+      isSwap: false,
     }
   },
 
@@ -1013,6 +1034,8 @@ export default {
         let { srcChain, mapChain, targetChain } = routerRes
         
         this.routerStr = JSON.stringify(routerRes)
+        this.isSwap = this.getTradeType(srcChain, targetChain) === 'swap'
+        this.showFromVault = this.showToVault = !this.isSwap
 
         let swapRoute = []
         let arr = [srcChain, mapChain, targetChain]
@@ -1057,7 +1080,18 @@ export default {
         }, 1000);
       }
     },
-
+    getTradeType (src, target) {
+      if (!src.length && !target.length) {
+        return 'bridge'
+      }
+      let arr = src.concat(target)
+      let res = arr.map(item => item.path)
+      console.log(res.flat().length, res.flat(), 'getTradeType')
+      if (res.flat().length) {
+        return 'swap'
+      }
+      return 'bridge'
+    },
     getRouteAmountOut (resList) {
       let amountResult = 0;
         let flag = true;
@@ -1398,6 +1432,8 @@ export default {
           this.routerStr,
           provider
       );
+
+      console.log(fee, 'getSwapFee')
 
       console.log('gasPrice', this.gasPrice)
 
@@ -2078,7 +2114,7 @@ export default {
 
     //切换链
     async handleLink(item) {
-      console.log('handleLink')
+      console.log(item, 'handleLink')
       //To 选择
       let v = this
 
@@ -2328,7 +2364,14 @@ export default {
 
       //当前链
       // var chain = this.chainFrom.coin
-      let reward_address = MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
+      let reward_address;
+
+      if (this.isSwap) {
+        reward_address = MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
+      } else {
+        reward_address = BUTTER_ROUTER_ADDRESS_SET[ID_TO_CHAIN_ID(v.chainFrom.chainId)]
+      }
+
       let token_address = v.selectToken.address
       ID_TO_SUPPORTED_TOKEN(v.chainFrom.chainId).forEach(item => {
         if (v.selectToken.symbol == item.symbol) {
