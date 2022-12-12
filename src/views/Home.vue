@@ -48,17 +48,6 @@
                   </span>
                   <input id="tran-send-bottom-red" autoComplete="off" @input="actionInputFont()" v-model="sendAmount" maxlength="20"
                         placeholder="0.0"/>
-                  <div v-show="showFromVault" class="tran-send-vault tran-send-vaults">
-                    <span>Vault:</span>
-                    <div v-if="vaultBalanceLoading">
-                      <img style="width:30px" src="../assets/loading2.gif"/>
-                    </div>
-                    <div v-else>
-                      <span class="font-yellow" v-if="fromVault && fromVault.isMintable">{{ selectToken.symbol }} is a mintable token on {{this.chainFrom.chainName}}</span>
-                      <span class="font-yellow" v-else>{{ fromVault }} {{ selectToken.symbol }}</span>
-                    </div>
-
-                  </div>
                 </div>
                 <div class="tran-send-bottom">
                 <div @click="actionChain(2)" class="tran-from-btn">
@@ -68,7 +57,7 @@
                   </div>
                   <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
                 </div>
-                <div @click="actionOpenToken()" class="tran-send-btn">
+                <div @click="actionOpenToken('from')" class="tran-send-btn">
                   <div class="tran-send-btn-left">
                     <img :src="selectToken.logo"/>
                     <span>{{ selectToken.symbol }}</span>
@@ -98,16 +87,6 @@
                     <span v-else-if="receivedAmount<0">Amount is less than fee</span>
                     <span v-else>{{ receivedAmount }}</span>
                   </div>
-                  <div v-show="showToVault" class="tran-send-vault">
-                    <span>Vault:</span>
-                    <div v-if="vaultBalanceLoading">
-                      <img style="width:30px" src="../assets/loading2.gif"/>
-                    </div>
-                    <div v-else>
-                      <span class="font-yellow" v-if="toVault && toVault.isMintable">{{ selectToken.symbol }} is a mintable token  on {{this.chainTo.chainName}}</span>
-                      <span class="font-yellow" v-else>{{ toVault }} {{ selectToken.symbol }}</span>
-                    </div>
-                  </div>
                 </div>
                 <div class="tran-send-bottom">
                   <div @click="actionChain(1)" class="tran-from-btn">
@@ -117,11 +96,12 @@
                     </div>
                     <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
                   </div>
-                  <div class="tran-send-btn">
+                  <div @click="actionOpenToken('to')" class="tran-send-btn">
                     <div class="tran-send-btn-left">
-                      <img :src="selectToken.logo"/>
-                      <span>{{ selectToken.symbol }}</span>
+                      <img :src="selectTokenTarget.logo"/>
+                      <span>{{ selectTokenTarget.symbol }}</span>
                     </div>
+                    <img class="tran-send-arrow-icon" src="../assets/arrow-bottom-white.png"/>
                   </div>
                 </div>
               </div>
@@ -413,7 +393,7 @@
     </div>
 
     <!--        选择token-->
-    <div v-show="showSelectToken" class="dialog-selectChain">
+    <div v-show="(showSelectToken)" class="dialog-selectChain">
       <div class="dialog-content dialog-content-Token">
         <div class="dialog-selectChain-title">
           <span>Select a token</span>
@@ -458,6 +438,16 @@
         </div>
       </div>
     </div>
+
+    <SelectTokenModalVue 
+      :chainFrom="chainFrom" 
+      :source="selectTokenSource"
+      :chainTo="chainTo" 
+      :showSelectTokenModal="showSelectToken"
+      :selectTokens="selectTokens" 
+      @closeModal="(showSelectToken = false)" 
+      @actionSelectToken="actionSelectToken"
+    />
 
     <!--        history交易详情-->
     <div v-show="showTranDetail" class="dialog-selectChain">
@@ -698,6 +688,7 @@ import Footer from "@/components/Footer";
 import BestRouteCard from "@/components/BestRouteCard";
 import BestRouteBlankCard from "@/components/BestRouteBlankCard";
 import BestRouteTable from "@/components/BestRouteTable";
+import SelectTokenModalVue from "@/components/SelectTokenModal.vue";
 import Decimal from 'decimal.js'
 import moment from "moment";
 import eventBus from "@/eventBus";
@@ -729,7 +720,7 @@ import testData from "./testdata.json"
 
 export default {
   name: "Home.vue",
-  components: {Footer, Header, BestRouteCard, BestRouteBlankCard, BestRouteTable},
+  components: {Footer, Header, BestRouteCard, BestRouteBlankCard, BestRouteTable, SelectTokenModalVue},
   data() {
     return {
       gasPrice:0,//Original Chain Gas
@@ -790,6 +781,8 @@ export default {
         contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.bsc.chainId)],
       }, //To Chain 选择
       selectToken: {},// 选择Token
+      selectTokenTarget: {},
+      selectTokenSource: 'from',
       tokenList: [],//Token列表
       historyList: [],//history记录
       historyFromLogo: '', //历史记录 From logo
@@ -875,8 +868,8 @@ export default {
         this.showFee = false
       }
 
-      console.log(this.chainFrom.contract, 'chainFrom.contract')
-      this.getBestRoute()
+      // console.log(this.chainFrom.contract, 'chainFrom.contract')
+      this.debounce(this.getBestRoute, 500)()
     },
     address(newVal) {
       this.allAddress = this.$store.getters.getAddress;
@@ -993,6 +986,7 @@ export default {
 
   methods: {
     async getBestRoute () {
+      if (!this.sendAmount) return 
       try {
         this.routes = null
         this.isBestRouteLoading = true
@@ -1000,9 +994,7 @@ export default {
         const toTokenList = ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId.toString());
 
         const [fromToken] = fromTokenList.filter(token => token.symbol === this.selectToken.symbol)
-        const [toToken] = toTokenList.filter(token => token.symbol === this.selectToken.symbol)
-
-        console.log(fromTokenList, toTokenList, 'fromTokentoToken')
+        const [toToken] = toTokenList.filter(token => token.symbol === this.selectTokenTarget.symbol)
 
         let queryParams = {
           fromChainId: this.chainFrom.chainId,
@@ -1013,32 +1005,23 @@ export default {
           tokenOutAddress: toToken.address,
           tokenOutDecimal: toToken.decimals,
           tokenInSymbol: this.selectToken.symbol,
-          tokenOutSymbol: this.selectToken.symbol
+          tokenOutSymbol: this.selectTokenTarget.symbol
         }
 
-        // let queryParams = {
-        //   fromChainId: '97',
-        //   toChainId: '5566818579631833088',
-        //   amountIn: '1000',
-        //   tokenInAddress: '0x593F6F6748dc203DFa636c299EeA6a39C0734EEd',
-        //   tokenInDecimal: '18',
-        //   tokenOutAddress: 'wrap.near',
-        //   tokenOutDecimal: '6',
-        //   tokenInSymbol: 'WMOS',
-        //   tokenOutSymbol: 'WNEAR'
-        // }
-
-        // let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
-        let { srcChain, mapChain, targetChain } = testData
+        let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
 
         let swapRoute = []
         let arr = [srcChain, mapChain, targetChain]
+        let resList = [targetChain, mapChain, srcChain]
 
-        console.log(targetChain, 'targetChain')
+        let amountResult = this.getRouteAmountOut(resList)
+        this.receivedAmount = amountResult
+        this.receivedAmountLoading = false
+
+        console.log(amountResult, 'amountResult')
 
         arr.forEach((item) => {
           if (item.length) {
-            console.log(item, 'item')
             swapRoute.push({
               label: this.$store.getters.getChainName[item[0]?.chainId],
               paths: item,
@@ -1057,8 +1040,8 @@ export default {
           {
             label: 'to',
             paths: [],
-            token: this.selectToken.symbol,
-            tokenIcon: this.selectToken.logo,
+            token: this.selectTokenTarget.symbol,
+            tokenIcon: this.selectTokenTarget.logo,
           }
         ]
         this.isBestRouteLoading = false
@@ -1069,6 +1052,33 @@ export default {
           clearTimeout(timer)
         }, 1000);
       }
+    },
+
+    getRouteAmountOut (resList) {
+      let amountResult = 0;
+        let flag = true;
+        resList.forEach(result => {
+          if (flag && result.length) {
+            flag = false
+            result.forEach(path => {
+              amountResult += Number(path.amountOut)
+            })
+          }
+        })
+        return amountResult.toFixed(2)
+    },
+    debounce(fn, delay) {
+        let timer = null;
+        
+        return function() {
+            if (timer) {
+                clearTimeout(timer)
+            }
+            timer = setTimeout(() => {
+                fn.apply(this, arguments)
+                timer = null
+            }, delay)
+        }
     },
 
     async getSortAddress(hash) {
@@ -1272,10 +1282,11 @@ export default {
     },
 
     //打开Token弹窗
-    actionOpenToken() {
+    actionOpenToken(source) {
+      this.selectTokenSource = source
       this.searchToken = ''
       this.showSelectToken = true
-      this.actionShowToken()
+      this.actionShowToken(source)
     },
 
     //增加代币
@@ -1310,6 +1321,7 @@ export default {
 
     //输入数值超出时 显示红色
     actionInputFont() {
+      console.log('input input')
 
       if (!this.sendAmount) {
         this.receivedAmount = 0
@@ -1454,28 +1466,17 @@ export default {
     },
 
     //Token弹窗余额获取
-    async actionShowToken() {
+    async actionShowToken(source) {
+      console.log(source, 'source actionShowToken')
       console.log('==========',typeof this.chainIdNumber)
-      // this.actionTokenList()
+
       if (this.selectTokens) {
         this.selectTokens.forEach(item => {
           item.amount = null;
         })
       }
       let v = this
-      // await  this.actionTokenList()
 
-      let prodiver = this.actionProvider()
-
-      const tokenCandidates = await getTokenCandidates(
-          v.chainFrom.chainId, // from chain
-          v.chainTo.chainId, // to chain
-          // prodiver
-          prodiver
-      );
-      console.log('target token', tokenCandidates);
-
-      let tokenList = this.$copyObject(tokenCandidates);
       let selectTokens = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString()));
       let formTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString()));
       let toTokenList = this.$copyObject(ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId.toString()));
@@ -1486,11 +1487,13 @@ export default {
         return;
       }
 
+      let tokenList = source === 'to' ? toTokenList : formTokenList
+      this.selectTokens = tokenList
 
       //获取地址
       let temp = [];
-      for (let i = 0; i < tokenCandidates.length; i++) {
-        let item = tokenCandidates[i]
+      for (let i = 0; i < tokenList.length; i++) {
+        let item = tokenList[i]
         console.log('item',item)
         //如果当前链的币种是选择链上的主币   获取主币余额
         let item2 = {};
@@ -1501,7 +1504,6 @@ export default {
           else  {
             item2 = await v.getBalance(item)
           }
-          // item2 = await v.getBalance(item)
         }
         //代币余额
         else {
@@ -1511,35 +1513,33 @@ export default {
           else  {
             item2 = await v.getTokenBalance(item)
           }
-          // item2 = await v.getTokenBalance(item)
         }
         temp.push(this.$copyObject(item2))
       }
-      this.tokenList = temp;
 
+      console.log(this.selectTokens, 'source actionShowToken temp')
+      this.tokenList = temp;
       this.selectTokens = temp;
+
       for (const item of this.selectTokens) {
         if (this.selectToken.symbol === item.symbol) {
           this.balanceZ = item.amount
         }
       }
-
-      // this.tokenAllList(this.chainIdNumber) = this.selectTokens
-      let tokenlist = tokenCandidates
-      tokenlist = this.selectTokens;
-
-      console.log('tokenlist', tokenlist)
     },
 
     //选择Token
-    async actionSelectToken(item, index) {
+    async actionSelectToken(item, source) {
+      console.log(item, source, 'actionSelectToken')
+      
+      let dataKey = source === 'from' ? 'selectToken' : 'selectTokenTarget'
 
-      this.selectToken.symbol = item.symbol
-      this.selectToken.decimals = item.decimals
-      this.selectToken.logo = item.logo
-      this.selectToken.address = item.address
-      this.selectToken.isToken = item.isToken
-      this.selectToken.isNative = item.isNative
+      this[dataKey].symbol = item.symbol
+      this[dataKey].decimals = item.decimals
+      this[dataKey].logo = item.logo
+      this[dataKey].address = item.address
+      this[dataKey].isToken = item.isToken
+      this[dataKey].isNative = item.isNative
 
       // this.selectToken=item
 
@@ -1553,7 +1553,7 @@ export default {
 
       this.actionStatus()
 
-      this.actionShowToken()
+      this.actionShowToken(source)
 
       this.actionVaultBalance()
 
@@ -2073,7 +2073,7 @@ export default {
 
     //切换链
     async handleLink(item) {
-      console.log('switch chain')
+      console.log('handleLink')
       //To 选择
       let v = this
 
@@ -2624,9 +2624,6 @@ export default {
 
       console.log('this.chainFrom.chainId.toString()',this.chainFrom,this.chainFrom.chainId.toString())
       this.tokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
-      // console.log(' this.tokenList', this.tokenList,ID_TO_SUPPORTED_TOKEN(this.chainIdNumber))
-
-      // console.log(this.tokenList, 'tokenList 111')
 
       let selectToken = null;
       let flag = false;
@@ -2634,36 +2631,14 @@ export default {
         return
       }
 
-      let prodiver = this.actionProvider()
+      const fromTokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
+      const toTokenList = ID_TO_SUPPORTED_TOKEN(this.chainTo.chainId.toString());
 
-      console.log('getTokenCandidates',v.chainFrom.chainId.toString(),v.chainTo.chainId.toString())// to )
+      this.selectToken = fromTokenList[0];
+      this.selectToken.url = fromTokenList[0].logo;
 
-      const tokenCandidates = await getTokenCandidates(
-          v.chainFrom.chainId.toString(), // from chain
-          v.chainTo.chainId.toString(), // to chain
-          // prodiver
-          prodiver
-      );
-      this.tokenList = tokenCandidates
-
-      console.log('tokenList',this.tokenList)
-
-      for (let i = 0; i < this.tokenList.length; i++) {
-        // if (this.tokenList[i].symbol === 'NEAR') {
-        if (this.tokenList[i].symbol === 'MAP') {
-          selectToken = JSON.parse(JSON.stringify(this.tokenList[i]))
-          flag = true;
-          break;
-        }
-      }
-
-
-
-      if (!selectToken) {
-        selectToken = JSON.parse(JSON.stringify(this.tokenList[0]))
-      }
-      this.selectToken = selectToken;
-      this.selectToken.url = selectToken.logo;
+      this.selectTokenTarget = toTokenList[0];
+      this.selectTokenTarget.url = toTokenList[0].logo;
 
       // const nearConnection = await connect(config.connectionConfig);
       // const account = await nearConnection.account(this.account);
