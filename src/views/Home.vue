@@ -700,7 +700,7 @@ import near from '@/config/near'
 import Web3 from 'web3'
 
 //sdk
-import {getBridgeFee, getVaultBalance,getDistributeRate} from "butterjs-sdk/dist/core/tools/dataFetch";
+import {getSwapFee, getVaultBalance,getDistributeRate} from "butterjs-sdk/dist/core/tools/dataFetch";
 import { SUPPORTED_CHAIN_LIST,MOS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/utils/tokenUtil.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
@@ -855,7 +855,8 @@ export default {
           path: [],
           amount: '',
       },
-      isBestRouteLoading: false
+      isBestRouteLoading: false,
+      routerStr: '',
     }
   },
 
@@ -1008,7 +1009,10 @@ export default {
           tokenOutSymbol: this.selectTokenTarget.symbol
         }
 
-        let { srcChain, mapChain, targetChain } = await this.$http.bestPath(queryParams)
+        let routerRes = await this.$http.bestPath(queryParams)
+        let { srcChain, mapChain, targetChain } = routerRes
+        
+        this.routerStr = JSON.stringify(routerRes)
 
         let swapRoute = []
         let arr = [srcChain, mapChain, targetChain]
@@ -1387,10 +1391,11 @@ export default {
 
       this.langToAddress = this.allAddress
 
-      const fee = await getBridgeFee(
+      const fee = await getSwapFee(
           tokenDetail,
           this.chainTo.chainId,
           amount.toFixed().toString(),
+          this.routerStr,
           provider
       );
 
