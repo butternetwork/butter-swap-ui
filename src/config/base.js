@@ -28,7 +28,7 @@ export default
         bsc_mainnet: {
             chainId: '56',
             chainHex: '0x38',
-            rpc: "",
+            rpc: "https://bsc-dataseed1.defibit.io/",
             chainName: "BSC Mainnet"
         },
         map: {

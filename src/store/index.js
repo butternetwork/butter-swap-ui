@@ -84,6 +84,7 @@ const store = new Vuex.Store({
             state.address = payload;
         },
         setChainId(state, payload) {
+            console.log(state, payload, 'chain changed')
             eventbus.$emit('dataChanged', true)
             payload = new Decimal(payload).toHex();
             console.log('payload',payload)

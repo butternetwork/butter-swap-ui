@@ -817,8 +817,8 @@ export default {
       approveMapHash: '',//Approve Map hash
       // dialogApproving: false,//approveing map diaglog
       mapBalance: '',
-      chainIdHex: config.map_mainnet.chainHex,
-      chainIdNumber: config.map_mainnet.chainId,
+      chainIdHex: config.bsc_mainnet.chainHex,
+      chainIdNumber: config.bsc_mainnet.chainId,
 
       selectTokens: [],
       nftList: [
@@ -1538,6 +1538,7 @@ export default {
 
     //获取主币余额
     async getBalance(item) {
+      console.log('getBalance mainCoin')
       let web3 = await this.$client(this.chainIdHex);
       if (!web3 || !this.tokenList) {
         return item
@@ -1561,13 +1562,21 @@ export default {
 
     //获取代币余额
     async getTokenBalance(item) {
+      console.log(this.account, this.chainIdHex, 'getBalance token')
       let web3 = await this.$client(this.chainIdHex);
       if (!this.chainList || !web3) {
         return item;
       }
       let token_address = item.address;
       let contract = new web3.eth.Contract(tokenAbi, token_address)
-      let balance = await contract.methods.balanceOf(this.account).call();
+      console.log(contract, token_address, 'getBalance')
+      let balance;
+
+      try {
+        balance = await contract.methods.balanceOf(this.account).call();
+      } catch (ex) {
+        balance = 0
+      }
 
       //获取代币精度
       let decimals = item.decimals
@@ -2007,7 +2016,7 @@ export default {
           this.actionStatus()
           this.actionInputFont()
           this.actionVaultBalance()
-          if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
+          if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP' || this.$route.query.destNetwork=='POLYGON') {
             let address = await this.$store.getters.getAddress;
             this.sortAddress = this.$formatAddress(address);
           }else  {
@@ -2467,7 +2476,7 @@ export default {
           if (chain) {
             query.sourceNetwork=chain.symbol;
           }else {
-            query.sourceNetwork='MAP';
+            query.sourceNetwork='BSC';
           }
         } else
             //切换
@@ -2554,14 +2563,14 @@ export default {
 
       for (let i = 0; i < this.tokenList.length; i++) {
         // if (this.tokenList[i].symbol === 'NEAR') {
-        if (this.tokenList[i].symbol === 'MAP') {
+        if (this.tokenList[i].symbol === 'BSC') {
           selectToken = JSON.parse(JSON.stringify(this.tokenList[i]))
           flag = true;
           break;
         }
       }
 
-      if (!selectToken) {
+      if (!selectToken && this.tokenList.length) {
         selectToken = JSON.parse(JSON.stringify(this.tokenList[0]))
       }
       this.selectToken = selectToken;
@@ -2660,6 +2669,8 @@ export default {
       // this.chainIdNumber = new Decimal(chainId).toNumber();
 
       let chains = await this.$store.getters.getChains;
+
+      console.log(chainId.toString(), 'chains chains')
 
       let chain=null;
       if (chains[chainId.toString()]) {

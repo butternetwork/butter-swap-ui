@@ -125,6 +125,7 @@ class Connector {
     }
 
     chainChanged(chainId) {
+        console.log(chainId, 'chain changed')
         const id = new Decimal(chainId).toHex();
         store.commit('setChainId', id);
     }

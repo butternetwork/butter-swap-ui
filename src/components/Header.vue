@@ -401,7 +401,7 @@ export default {
     },
     async actionNetwork() {
       const provider = this.$store.getters.provider;
-      let chainId = config.map.chainHex
+      let chainId = config.bsc_mainnet.chainHex
       if (provider) {
         try {
           await provider.request({
