@@ -2499,10 +2499,10 @@ export default {
 
         if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
           console.log('query.destNetwork',query.destNetwork)
-          if (query.sourceNetwork == 'MAP') {
+          if (query.sourceNetwork == 'POLYGON') {
             query.destNetwork = 'BSC';
           } else {
-            query.destNetwork = 'MAP';
+            query.destNetwork = 'POLYGON';
           }
         }
 
