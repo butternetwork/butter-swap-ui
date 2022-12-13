@@ -7,7 +7,7 @@ import api from './api/api'
 import eventbus from './eventBus.js'
 import './assets/css/stylesheet.css'
 import Decimal from 'decimal.js';
-import { SUPPORTED_CHAIN_LIST} from 'butterjs-sdk/dist/constants/index.js';
+import { SUPPORTED_CHAIN_LIST_MAINNET } from 'butterjs-sdk/dist/constants/index.js';
 
 const CLIENT_CACHE={}
 const Web3 = require('web3');
@@ -70,7 +70,7 @@ async function asyncChainClient(chainId){
 }
 
 async function asyncChainList(){
-  let chainList = SUPPORTED_CHAIN_LIST
+  let chainList = SUPPORTED_CHAIN_LIST_MAINNET
 
   console.log('chainList',chainList)
   if (chainList &&chainList.length>0){

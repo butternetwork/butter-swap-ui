@@ -699,7 +699,7 @@ import Web3 from 'web3'
 
 //sdk
 import {getBridgeFee, getVaultBalance,getDistributeRate} from "butterjs-sdk/dist/core/tools/dataFetch";
-import { SUPPORTED_CHAIN_LIST,MOS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
+import { SUPPORTED_CHAIN_LIST_MAINNET,MOS_CONTRACT_ADDRESS_SET,ID_TO_CHAIN_ID} from 'butterjs-sdk/dist/constants/index.js';
 import {ID_TO_SUPPORTED_TOKEN} from "butterjs-sdk/dist/utils/tokenUtil.js";
 import { getTokenCandidates } from "butterjs-sdk/dist/core/tools/dataFetch.js";
 import {Token} from "butterjs-sdk/dist/entities/index.js";
@@ -2438,7 +2438,7 @@ export default {
     //获取链列表
     async actionGetChain() {
         let v = this;
-        v.chainList = SUPPORTED_CHAIN_LIST
+        v.chainList = SUPPORTED_CHAIN_LIST_MAINNET
         console.log( v.chainList)
 
       // console.log('v.chainIdNumber',v.chainIdNumber,ew Decimal(v.chainIdNumber).toHex())

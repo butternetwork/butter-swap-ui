@@ -93,7 +93,7 @@
 import config from '@/config/base'
 import near from "@/config/near";
 import connector from "@/store/connector";
-import {SUPPORTED_CHAIN_LIST} from "butterjs-sdk/dist/constants";
+import {SUPPORTED_CHAIN_LIST_MAINNET} from "butterjs-sdk/dist/constants";
 import Decimal from "decimal.js";
 import eventBus from "@/eventBus";
 
@@ -283,7 +283,7 @@ export default {
     //获取链列表
     async actionGetChain() {
       let v = this;
-      v.chainList = SUPPORTED_CHAIN_LIST
+      v.chainList = SUPPORTED_CHAIN_LIST_MAINNET
       console.log( v.chainList)
       // let chainId = await this.$store.getters.getChainId;
       // console.log('chainId',chainId)
