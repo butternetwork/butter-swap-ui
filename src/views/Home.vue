@@ -763,16 +763,12 @@ export default {
       showTranDetail: false,
       chainList: [],
       chainFrom: {
-        // chainName: "MAP Mainnet",
-        // chainLogo: require('../assets/token/map.png'),
-        // chain: 'MAP',
-        // chainId: config.map_mainnet.chainId,
-        // contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map_mainnet.chainId)],
         chainName: "BSC Mainnet",
         chainLogo: require('../assets/token/bsc.png'),
         chain: 'BSC',
         chainId: config.bsc_mainnet.chainId,
         contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.bsc_mainnet.chainId)],
+        symbol: 'BSC'
       },  //From Chain选择
       chainTo: {
         chainName: config.polygon.chainName,
@@ -780,6 +776,7 @@ export default {
         chain: 'MATIC',
         chainId: config.polygon.chainId,
         contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.polygon.chainId)],
+        symbol: 'MATIC'
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
@@ -1357,6 +1354,7 @@ export default {
       }
       this.selectChain = 0
       this.changeChain = true
+      console.log(this.chainTo, 'chainTo')
       this.handleLink(this.chainTo)
     },
 
@@ -1572,11 +1570,7 @@ export default {
       console.log(contract, token_address, 'getBalance')
       let balance;
 
-      try {
-        balance = await contract.methods.balanceOf(this.account).call();
-      } catch (ex) {
-        balance = 0
-      }
+      balance = await contract.methods.balanceOf(this.account).call();
 
       //获取代币精度
       let decimals = item.decimals
@@ -1992,6 +1986,8 @@ export default {
       //To 选择
       let v = this
 
+      console.log(item, 'handleLink')
+
       if (this.selectChain === 1) {
         // if (item.chainName === this.chainFrom.chainName) {
         //   this.$toast(this.$t('Source Chain and Destination Chain cannot be the same'))
@@ -2016,7 +2012,7 @@ export default {
           this.actionStatus()
           this.actionInputFont()
           this.actionVaultBalance()
-          if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP' || this.$route.query.destNetwork=='POLYGON') {
+          if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP' || this.$route.query.destNetwork=='MATIC') {
             let address = await this.$store.getters.getAddress;
             this.sortAddress = this.$formatAddress(address);
           }else  {
@@ -2508,10 +2504,10 @@ export default {
 
         if (!query.destNetwork || query.destNetwork=='' || query.sourceNetwork == query.destNetwork) {
           console.log('query.destNetwork',query.destNetwork)
-          if (query.sourceNetwork == 'POLYGON') {
+          if (query.sourceNetwork == 'MATIC') {
             query.destNetwork = 'BSC';
           } else {
-            query.destNetwork = 'POLYGON';
+            query.destNetwork = 'MATIC';
           }
         }
 

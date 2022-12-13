@@ -45,7 +45,7 @@ export default {
     polygon:{
         chainId: '137',
         chainHex: '0x89',
-        rpc: "https://polygon-rpc.com/",
+        rpc: "https://matic-mainnet.chainstacklabs.com",
         chainName: "Polygon Mainnet"
     },
 
