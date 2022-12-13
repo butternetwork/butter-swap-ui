@@ -1296,18 +1296,24 @@ export default {
 
         console.log('request',request)
 
-        const estimatedGas = await bridge.gasEstimateBridgeToken(request);
-        console.log('gas estimate', estimatedGas);
+        try {
+          const estimatedGas = await bridge.gasEstimateBridgeToken(request);
+          console.log('gas estimate', estimatedGas);
 
-        const adjustedGas = Math.floor(Number.parseFloat(estimatedGas) * 1.2).toString();
-        console.log('adjustedGas',adjustedGas)
+          const adjustedGas = Math.floor(Number.parseFloat(estimatedGas) * 1.2).toString();
+          console.log('adjustedGas',adjustedGas)
 
-        let web3 = await this.$client(this.chainIdHex);
-        let gasPrice = await web3.eth.getGasPrice()
-        console.log('gasPriceeee',gasPrice)
-        gasPrice = new Decimal(gasPrice).mul(new Decimal(adjustedGas)).div(Math.pow(10,mainDecimal))
-        this.gasPrice =gasPrice
-        console.log('gasPrice',gasPrice.toFixed())
+          let web3 = await this.$client(this.chainIdHex);
+          let gasPrice = await web3.eth.getGasPrice()
+          console.log('gasPriceeee',gasPrice)
+          gasPrice = new Decimal(gasPrice).mul(new Decimal(adjustedGas)).div(Math.pow(10,mainDecimal))
+          this.gasPrice =gasPrice
+          console.log('gasPrice',gasPrice.toFixed())
+        }catch (e) {
+          this.gasPrice = 'Insufficient balance'
+        }
+
+
       }
 
 
