@@ -763,18 +763,23 @@ export default {
       showTranDetail: false,
       chainList: [],
       chainFrom: {
-        chainName: "MAP Testnet",
-        chainLogo: require('../assets/token/map.png'),
-        chain: 'MAP',
-        chainId: '212',
-        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map.chainId)],
-      },  //From Chain选择
-      chainTo: {
-        chainName: "BSC Testnet",
+        // chainName: "MAP Mainnet",
+        // chainLogo: require('../assets/token/map.png'),
+        // chain: 'MAP',
+        // chainId: config.map_mainnet.chainId,
+        // contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.map_mainnet.chainId)],
+        chainName: "BSC Mainnet",
         chainLogo: require('../assets/token/bsc.png'),
         chain: 'BSC',
-        chainId: '97',
-        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.bsc.chainId)],
+        chainId: config.bsc_mainnet.chainId,
+        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.bsc_mainnet.chainId)],
+      },  //From Chain选择
+      chainTo: {
+        chainName: config.polygon.chainName,
+        chainLogo: require('../assets/token/polygon.png'),
+        chain: 'MATIC',
+        chainId: config.polygon.chainId,
+        contract: MOS_CONTRACT_ADDRESS_SET[ID_TO_CHAIN_ID(config.polygon.chainId)],
       }, //To Chain 选择
       selectToken: {},// 选择Token
       tokenList: [],//Token列表
@@ -812,8 +817,8 @@ export default {
       approveMapHash: '',//Approve Map hash
       // dialogApproving: false,//approveing map diaglog
       mapBalance: '',
-      chainIdHex: config.bsc.chainHex,
-      chainIdNumber:config.bsc.chainId,
+      chainIdHex: config.map_mainnet.chainHex,
+      chainIdNumber: config.map_mainnet.chainId,
 
       selectTokens: [],
       nftList: [
@@ -2525,7 +2530,7 @@ export default {
 
       console.log('this.chainFrom.chainId.toString()',this.chainFrom,this.chainFrom.chainId.toString())
       this.tokenList = ID_TO_SUPPORTED_TOKEN(this.chainFrom.chainId.toString());
-      // console.log(' this.tokenList', this.tokenList,ID_TO_SUPPORTED_TOKEN(this.chainIdNumber))
+      console.log(' this.tokenList', this.tokenList,ID_TO_SUPPORTED_TOKEN(this.chainIdNumber))
 
       let selectToken = null;
       let flag = false;
@@ -2555,8 +2560,6 @@ export default {
           break;
         }
       }
-
-
 
       if (!selectToken) {
         selectToken = JSON.parse(JSON.stringify(this.tokenList[0]))
@@ -2625,9 +2628,9 @@ export default {
     //provider
     actionProvider() {
       let provider = {
-        url: 'https://testnet-rpc.maplabs.io', // map test rpc
+        url: config.map_mainnet.rpc, // map test rpc
         // url: 'http://18.142.54.137:7445', // map test rpc
-        chainId: 212,
+        chainId: config.map_mainnet.chainId, // 22776
       };
       return provider
     },
@@ -2756,6 +2759,9 @@ export default {
     this.cleanStatusTimer();
     this.requestData();
     this.actionEixtMount()
+
+    console.log(SUPPORTED_CHAIN_LIST_MAINNET, 'SUPPORTED_CHAIN_LIST_MAINNET')
+    console.log('config', config)
   },
 }
 </script>

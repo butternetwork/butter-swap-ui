@@ -5,7 +5,8 @@ const { keyStores } = nearAPI;
 
 export default
     {
-        baseUrl: 'https://omniscan-api-testnet.mapscan.io/',// 生产接口请求地址
+        // baseUrl: 'https://omniscan-api-testnet.mapscan.io/',// 生产接口请求地址
+        baseUrl: 'https://api.mapomniscan.com/',
 
         tokenCoin: "0x9E976F211daea0D652912AB99b0Dc21a7fD728e4",//默认链的默认代币地址
         mapAddress: "0xb586DC60e9e39F87c9CB8B7D7E30b2f04D40D14c",//eth正式地址
@@ -24,15 +25,29 @@ export default
             chainId: '97',
             chainHex: '0x61',
         },
+        bsc_mainnet: {
+            chainId: '56',
+            chainHex: '0x38',
+            rpc: "",
+            chainName: "BSC Mainnet"
+        },
         map: {
             chainId: '212',
             chainHex: '0xd4',
             rpc:"https://testnet-rpc.maplabs.io",
             chainName:"MAP Testnet"
         },
+        map_mainnet: {
+            chainId: '22776',
+            chainHex: '0x58f8',
+            rpc: "https://poc3-rpc.maplabs.io/",
+            chainName:"MAP Mainnet"
+        },
         polygon:{
             chainId: '137',
             chainHex: '0x89',
+            rpc: "https://polygon-rpc.com/",
+            chainName: "Polygon Mainnet"
         },
 
         near:{

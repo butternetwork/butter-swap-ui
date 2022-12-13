@@ -38,13 +38,13 @@ const store = new Vuex.Store({
             //     network: 'Ethereum Testnet',
             //     icon: require('../assets/token/eth-icon.png')
             // },
-            // '0x38': {
-            //     chainId:'0x38',
-            //     symbol: 'BSC',
-            //     name: 'BinanceSmartChain',
-            //     network: 'BSC Mainnet',
-            //     icon: require('../assets/token/bsc.png')
-            // },
+            '0x38': {
+                chainId:'0x38',
+                symbol: 'BSC',
+                name: 'BinanceSmartChain',
+                network: 'BSC Mainnet',
+                icon: require('../assets/token/bsc.png')
+            },
             '0x61': {
                 chainId:'0x61',
                 symbol: 'BSC',
@@ -52,13 +52,13 @@ const store = new Vuex.Store({
                 network: 'BSC Testnet',
                 icon: require('../assets/binance.png')
             },
-            // '0x58f8': {
-            //     chainId:'0x58f8',
-            //     symbol: 'MAP',
-            //     name: 'MAP Protocol',
-            //     network: 'MAP Mainnet',
-            //     icon: require('../assets/token/map-black.png')
-            // },
+            '0x58f8': {
+                chainId:'0x58f8',
+                symbol: 'MAP',
+                name: 'MAP Protocol',
+                network: 'MAP Mainnet',
+                icon: require('../assets/token/map-black.png')
+            },
             // '0x13881': {
             //     chainId:'0x13881',
             //     symbol: 'Matic',
@@ -66,13 +66,13 @@ const store = new Vuex.Store({
             //     network: 'Polygon Mainnet',
             //     icon: require('../assets/polygon.png')
             // },
-            // '0x89': {
-            //     chainId:'0x89',
-            //     symbol: 'POLYGON',
-            //     name: 'Polygon',
-            //     network: 'Polygon Mainnet',
-            //     icon: require('../assets/token/polygon.png')
-            // }
+            '0x89': {
+                chainId:'0x89',
+                symbol: 'POLYGON',
+                name: 'Polygon',
+                network: 'Polygon Mainnet',
+                icon: require('../assets/token/polygon.png')
+            }
         },
         changed: 0,
         address: '',

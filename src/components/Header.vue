@@ -120,7 +120,7 @@ export default {
       exitConntet:false,
       showLogOut:false,//显示退出
       domainName:null,
-      chainIdHex:config.map.chainId,
+      chainIdHex: config.map_mainnet.chainId,
     }
   },
   computed: {

@@ -24,15 +24,29 @@ export default {
         chainId: '97',
         chainHex: '0x61',
     },
+    bsc_mainnet: {
+        chainId: '56',
+        chainHex: '0x38',
+        rpc: "",
+        chainName: "BSC Mainnet"
+    },
     map: {
         chainId: '212',
         chainHex: '0xd4',
         rpc:"https://testnet-rpc.maplabs.io",
         chainName:"MAP Testnet"
     },
+    map_mainnet: {
+        chainId: '22776',
+        chainHex: '0x58f8',
+        rpc: "https://poc3-rpc.maplabs.io/",
+        chainName:"MAP Mainnet"
+    },
     polygon:{
         chainId: '137',
         chainHex: '0x89',
+        rpc: "https://polygon-rpc.com/",
+        chainName: "Polygon Mainnet"
     },
 
     near:{
