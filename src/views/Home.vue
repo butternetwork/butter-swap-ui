@@ -1440,7 +1440,6 @@ export default {
       if (this.chainFrom.symbol == 'NEAR') {
         this.gasPrice = null
       }else  {
-
         let request = {
           fromAddress: this.account,
           fromToken: this.selectToken,
@@ -1466,7 +1465,6 @@ export default {
         this.gasPrice =gasPrice
         console.log('gasPrice',gasPrice.toFixed())
       }
-
 
       console.log('amount',fee,fee.amount)
       console.log('feeRate',fee.feeRate)
@@ -1571,8 +1569,6 @@ export default {
 
     //选择Token
     async actionSelectToken(item, source) {
-      console.log(item, source, 'actionSelectToken')
-      
       let dataKey = source === 'from' ? 'selectToken' : 'selectTokenTarget'
 
       this[dataKey].symbol = item.symbol
@@ -1596,12 +1592,11 @@ export default {
 
       this.actionShowToken(source)
 
-      this.actionVaultBalance()
+      // this.actionVaultBalance()
 
       this.actionInputFont()
 
       this.getBestRoute()
-
     },
 
     //near链主币
@@ -2141,7 +2136,7 @@ export default {
           this.actionGasFee()
           this.actionStatus()
           this.actionInputFont()
-          this.actionVaultBalance()
+          // this.actionVaultBalance()
           if (this.$route.query.destNetwork=='BSC' || this.$route.query.destNetwork=='MAP') {
             let address = await this.$store.getters.getAddress;
             this.sortAddress = this.$formatAddress(address);
@@ -2818,7 +2813,7 @@ export default {
       await this.actionChainSuccess()
       this.actionStatus()
       this.isLoadingAllData = false;
-      await this.actionVaultBalance()
+      // await this.actionVaultBalance()
       await this.actionGasFee()
       this.actionInputFont()
       await this.actionHistory()
