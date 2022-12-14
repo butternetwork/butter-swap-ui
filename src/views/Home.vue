@@ -2568,9 +2568,9 @@ export default {
 
       if (!selectToken && this.tokenList.length) {
         selectToken = JSON.parse(JSON.stringify(this.tokenList[0]))
+        this.selectToken = selectToken;
+        this.selectToken.url = selectToken.logo;
       }
-      this.selectToken = selectToken;
-      this.selectToken.url = selectToken.logo;
 
       // const nearConnection = await connect(config.connectionConfig);
       // const account = await nearConnection.account(this.account);
