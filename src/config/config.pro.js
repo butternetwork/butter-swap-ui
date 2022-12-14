@@ -50,6 +50,10 @@ export default {
     },
 
     near:{
+        chainId: '5566818579631833088',
+        chainHex: '0x4d41500100000000',
+    },
+    near_test:{
         chainId: '5566818579631833089',
         chainHex: '0x4d41500100000001',
     },

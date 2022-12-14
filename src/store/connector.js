@@ -18,7 +18,7 @@ class Connector {
 
         const uauthOptions = {
             clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
-            redirectUri: "https://test-bridge.butternetwork.io",//http://localhost:8080
+            redirectUri: "https://bridge.butternetwork.io",//http://localhost:8080
             scope: "openid wallet"
         };
         // const uauthOptions = {
@@ -65,7 +65,7 @@ class Connector {
 
         const uauthOptions = {
             clientID: "4b5a89d2-9384-41be-824e-8d0bce9f8867",//测试 e22e8fc1-04da-4ecc-89de-c446854294d2
-            redirectUri: "https://test-bridge.butternetwork.io",//http://localhost:8080
+            redirectUri: "https://bridge.butternetwork.io",//http://localhost:8080
             scope: "openid wallet"
         };
 

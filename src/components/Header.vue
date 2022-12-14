@@ -431,7 +431,7 @@ export default {
       }
     },
     goMap() {
-      window.open('https://test-bridge.butternetwork.io', '_blank')
+      window.open('https://bridge.butternetwork.io', '_blank')
     },
     async matchChain() {
       let chainId = await this.$store.getters.getChainId;

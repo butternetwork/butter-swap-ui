@@ -47,8 +47,8 @@ export default {
             walletConnection.requestSignIn(
                 contract, // contract requesting access
                 "Butter Bridge", // optional title
-                "https://test-bridge.butternetwork.io" , // optional redirect URL on success
-                "https://test-bridge.butternetwork.io" , // optional redirect URL on success
+                "https://bridge.butternetwork.io" , // optional redirect URL on success
+                "https://bridge.butternetwork.io" , // optional redirect URL on success
                 // "http://18.139.224.21:7001", // optional redirect URL on success
             );
 
