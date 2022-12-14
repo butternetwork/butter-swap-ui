@@ -68,7 +68,8 @@ export default
             networkId: "testnet",
             keyStore: new keyStores.BrowserLocalStorageKeyStore(), // first create a key store
              nodeUrl: "https://rpc.testnet.near.org",
-             walletUrl: "https://testnet.mynearwallet.com/",
+             walletUrl: "https://app.mynearwallet.com/",
+            //  walletUrl: "https://testnet.mynearwallet.com/",
              helperUrl: "https://helper.testnet.near.org",
              explorerUrl: "https://explorer.testnet.near.org",
         }
